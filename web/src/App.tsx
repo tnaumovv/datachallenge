@@ -144,7 +144,6 @@ export function App() {
         >
           <span className="brand-identity">
             <span className="freedom-logo" aria-hidden="true" />
-            <small>Контроль качества</small>
           </span>
         </a>
         <div className="sidebar-divider" />
@@ -179,13 +178,7 @@ export function App() {
       </aside>
       <div className="app-main">
         <div className="app-topline">
-          <span className="workspace-path">
-            <span className="workspace-name">Контроль качества</span>
-            <span className="path-separator" aria-hidden="true">
-              /
-            </span>{' '}
-            {titles[view.page]}
-          </span>
+          <span className="workspace-path">{titles[view.page]}</span>
           {demo && <strong className="topline-demo">Демо · данные и оценки вымышлены</strong>}
         </div>
         {loadError && data && (
