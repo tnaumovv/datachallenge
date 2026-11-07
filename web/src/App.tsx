@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
-import type { ChecklistVersion, Conversation } from '../../shared/contracts.js';
+import type { ChecklistInput, ChecklistVersion, Conversation } from '../../shared/contracts.js';
 import { api } from './api';
 import { AppealsPage } from './AppealsPage';
+import { ChecklistEditor } from './ChecklistEditor';
 import { EvaluationPanel } from './EvaluationPanel';
 import { Transcript, channelName } from './Transcript';
 
 declare const __CQA_DEMO__: boolean;
 
 type ReviewLocation = {
-  page: 'dialogs' | 'appeals';
+  page: 'dialogs' | 'appeals' | 'checklists';
   appealId: string | null;
   conversationId: string | null;
   evaluationId: string | null;
@@ -21,6 +22,7 @@ type WorkspaceData =
 
 function readLocation(): ReviewLocation {
   const url = new URL(window.location.href);
+  const page = /^\/(appeals|checklists)\/?$/.exec(url.pathname)?.[1];
   const route = /^\/dialogs\/([^/]+)\/?$/.exec(url.pathname);
   let conversationId = route?.[1] ?? null;
 
@@ -33,7 +35,7 @@ function readLocation(): ReviewLocation {
   }
 
   return {
-    page: /^\/appeals\/?$/.test(url.pathname) ? 'appeals' : 'dialogs',
+    page: page === 'appeals' || page === 'checklists' ? page : 'dialogs',
     appealId: url.searchParams.get('appeal'),
     conversationId,
     evaluationId: url.searchParams.get('evaluation'),
@@ -42,7 +44,7 @@ function readLocation(): ReviewLocation {
 }
 
 function reviewUrl(view: ReviewLocation): string {
-  if (view.page === 'appeals') return '/appeals';
+  if (view.page !== 'dialogs') return `/${view.page}`;
   const path = view.conversationId
     ? `/dialogs/${encodeURIComponent(view.conversationId)}`
     : '/dialogs';
@@ -56,6 +58,7 @@ export function App() {
   const [data, setData] = useState<WorkspaceData>({ status: 'loading' });
   const [loadKey, setLoadKey] = useState(0);
   const [view, setView] = useState(readLocation);
+  const isChecklistPage = view.page === 'checklists';
 
   useEffect(() => {
     const sync = () => setView(readLocation());
@@ -67,7 +70,8 @@ export function App() {
     const controller = new AbortController();
     const { signal } = controller;
 
-    Promise.all([api.conversations(signal), api.checklists(signal)]).then(
+    const conversations = isChecklistPage ? Promise.resolve([]) : api.conversations(signal);
+    Promise.all([conversations, api.checklists(signal)]).then(
       ([conversations, checklists]) => {
         if (!signal.aborted) setData({ status: 'ready', conversations, checklists });
       },
@@ -77,7 +81,7 @@ export function App() {
     );
 
     return () => controller.abort();
-  }, [loadKey]);
+  }, [isChecklistPage, loadKey]);
 
   function navigate(next: ReviewLocation, replace = false) {
     const url = reviewUrl(next);
@@ -91,6 +95,15 @@ export function App() {
   function refreshWorkspace() {
     setData({ status: 'loading' });
     setLoadKey((current) => current + 1);
+  }
+
+  async function saveChecklistVersion(checklistId: string, input: ChecklistInput) {
+    const version = await api.createChecklistVersion(checklistId, input);
+    setData((current) => {
+      if (current.status !== 'ready') return current;
+      return { ...current, checklists: [version, ...current.checklists] };
+    });
+    return version;
   }
 
   const current =
@@ -120,18 +133,32 @@ export function App() {
             <a href="/appeals" aria-current={view.page === 'appeals' ? 'page' : undefined}>
               Апелляции
             </a>
+            <a href="/checklists" aria-current={isChecklistPage ? 'page' : undefined}>
+              Чек-листы
+            </a>
           </nav>
           <div className="sponsor">
             <span>При поддержке</span> <strong>Freedom Bank</strong>
           </div>
         </div>
       </header>
-      {data.status === 'loading' && (
+      {isChecklistPage && (
+        <main className="checklists-page">
+          <ChecklistEditor
+            versions={data.status === 'ready' ? data.checklists : []}
+            loading={data.status === 'loading'}
+            loadError={data.status === 'error'}
+            onReload={refreshWorkspace}
+            onSaveVersion={saveChecklistVersion}
+          />
+        </main>
+      )}
+      {!isChecklistPage && data.status === 'loading' && (
         <main className="screen-state">
           <p role="status">Загружаем диалоги и чек-листы…</p>
         </main>
       )}
-      {data.status === 'error' && (
+      {!isChecklistPage && data.status === 'error' && (
         <main className="screen-state">
           <h2>Не удалось загрузить диалоги</h2>
           <p>Проверьте подключение и повторите попытку.</p>

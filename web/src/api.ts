@@ -2,6 +2,7 @@ import type {
   ApiError,
   Appeal,
   AppealInput,
+  ChecklistInput,
   ChecklistVersion,
   Conversation,
   DecisionInput,
@@ -9,7 +10,6 @@ import type {
   EvaluationRequest,
   ImportRequest,
   ImportResult,
-  ChecklistInput,
   ScoreRequest,
   ScoreResponse,
 } from '../../shared/contracts.js';
@@ -32,7 +32,7 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
-function post<T>(path: string, body: unknown, signal: AbortSignal): Promise<T> {
+function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   return request<T>(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -44,6 +44,8 @@ function post<T>(path: string, body: unknown, signal: AbortSignal): Promise<T> {
 export const api = {
   conversations: (signal: AbortSignal) => request<Conversation[]>('/conversations', { signal }),
   checklists: (signal: AbortSignal) => request<ChecklistVersion[]>('/checklists', { signal }),
+  createChecklistVersion: (checklistId: string, input: ChecklistInput, signal?: AbortSignal) =>
+    post<ChecklistVersion>(`/checklists/${encodeURIComponent(checklistId)}/versions`, input, signal),
   evaluations: (conversationId: string | null, signal: AbortSignal) =>
     request<Evaluation[]>(
       conversationId ? `/evaluations?${new URLSearchParams({ conversationId })}` : '/evaluations',
@@ -64,8 +66,6 @@ export const api = {
   resolveAppeal: (id: string, body: DecisionInput, signal: AbortSignal) =>
     post<Evaluation>(`/appeals/${encodeURIComponent(id)}/decision`, body, signal),
   importRecords: (body: ImportRequest, signal: AbortSignal) => post<ImportResult>('/import', body, signal),
-  saveVersion: (checklistId: string, body: ChecklistInput, signal: AbortSignal) =>
-    post<ChecklistVersion>(`/checklists/${encodeURIComponent(checklistId)}/versions`, body, signal),
   scorePreview: (body: ScoreRequest, signal: AbortSignal) => post<ScoreResponse>('/score', body, signal),
 };
 

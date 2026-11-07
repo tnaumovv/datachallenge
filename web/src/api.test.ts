@@ -12,7 +12,7 @@ describe('API contract integration', () => {
   });
   it('creates a new checklist version rather than updating an old one', async () => {
     const fetcher=vi.fn().mockResolvedValue(new Response('{}',{status:201})); vi.stubGlobal('fetch',fetcher);
-    await api.saveVersion('chat/list', {title:'Новая',sections:[],criteria:[]}, new AbortController().signal);
+    await api.createChecklistVersion('chat/list', {title:'Новая',sections:[],criteria:[]}, new AbortController().signal);
     expect(fetcher.mock.calls[0][0]).toBe('/api/checklists/chat%2Flist/versions');
     expect(fetcher.mock.calls[0][1].method).toBe('POST');
   });

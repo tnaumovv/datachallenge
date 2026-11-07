@@ -709,7 +709,8 @@ h2 {
   color: var(--green-dark);
 }
 
-.queue {
+.queue,
+.checklists-page {
   max-width: 1040px;
   margin: 0 auto;
   padding: 20px 24px;
@@ -955,7 +956,8 @@ textarea.field {
     width: 100%;
   }
 
-  .queue {
+  .queue,
+  .checklists-page {
     padding: 10px;
   }
 
