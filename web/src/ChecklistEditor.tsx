@@ -9,6 +9,7 @@ import {
   type DraftError,
 } from './ChecklistEditor.model.js';
 import './ChecklistEditor.css';
+import { ActionButton } from './ActionButton';
 
 export type ChecklistEditorProps = {
   /** Canonical versions returned by GET /api/checklists. Keep prior data during refresh. */
@@ -230,12 +231,16 @@ export function ChecklistEditor({
           <h2 id={`${prefix}-heading`} ref={headingRef} tabIndex={-1}>
             Версии чек-листа
           </h2>
-          <p className="ce-muted">Настройте правила проверки и сохраните новую версию.</p>
         </div>
         {!draft && selected && (
-          <button type="button" className="ce-button ce-primary" onClick={startEditing}>
-            Создать новую версию
-          </button>
+          <ActionButton
+            icon="plus"
+            variant="primary"
+            className="ce-button ce-primary"
+            onClick={startEditing}
+          >
+            Новая версия
+          </ActionButton>
         )}
       </header>
       <div className="ce-version-picker">
@@ -256,9 +261,6 @@ export function ChecklistEditor({
             </option>
           ))}
         </select>
-        {draft && (
-          <p className="ce-muted">Чтобы выбрать другую версию, сохраните или отмените изменения.</p>
-        )}
       </div>
       {loading && (
         <p role="status" className="ce-notice">
@@ -296,7 +298,7 @@ export function ChecklistEditor({
           <div className="ce-draft-heading">
             <span className="ce-badge">Новая версия</span>
             <p className="ce-muted">
-              На основе версии {base.version}. Существующие оценки сохранят прежние правила.
+              На основе версии {base.version}. Текущие оценки не изменятся.
             </p>
           </div>
           {(errors.length > 0 || saveError) && (
@@ -459,7 +461,7 @@ export function ChecklistEditor({
                             }}
                           >
                             <option value="binary">Да / Нет</option>
-                            <option value="scale">Дискретная шкала</option>
+                            <option value="scale">Шкала баллов</option>
                           </select>,
                         )}
                         {field(
@@ -661,9 +663,15 @@ export function ChecklistEditor({
             </div>
           )}
           <footer className="ce-actions ce-save-bar">
-            <button className="ce-button ce-primary" type="submit" disabled={saving}>
-              {saving ? 'Сохранение…' : 'Сохранить новую версию'}
-            </button>
+            <ActionButton
+              icon="save"
+              variant="primary"
+              className="ce-button ce-primary"
+              type="submit"
+              disabled={saving}
+            >
+              {saving ? 'Сохранение…' : 'Сохранить версию'}
+            </ActionButton>
             <button
               className="ce-button"
               type="button"

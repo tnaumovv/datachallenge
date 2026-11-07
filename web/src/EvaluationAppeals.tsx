@@ -11,6 +11,7 @@ import type {
 import { api, appealErrorMessage } from './api';
 import { answerLabel, appealStatusLabel, scoreLabel } from './review-format';
 import { buildDecision, buildPreviewRequest } from './appeal-preview';
+import { ActionButton } from './ActionButton';
 
 type History = { status: 'loading' | 'error' } | { status: 'ready'; items: Appeal[] };
 
@@ -145,13 +146,14 @@ export function AppealForm({
           <button className="button secondary" type="button" disabled={action.busy} onClick={close}>
             Отмена
           </button>
-          <button
-            className="button primary"
+          <ActionButton
+            icon="appeals"
+            variant="primary"
             type="submit"
             disabled={action.busy || !comment.trim()}
           >
             {action.busy ? 'Отправляем…' : 'Отправить апелляцию'}
-          </button>
+          </ActionButton>
         </div>
       </form>
     </dialog>
@@ -372,7 +374,7 @@ function DecisionForm({
             checked={decision === 'confirm'}
             onChange={() => setDecision('confirm')}
           />{' '}
-          Подтвердить ответ
+          Оставить ответ
         </label>
         <label>
           <input
@@ -440,9 +442,9 @@ function DecisionForm({
         </div>
       )}
       <div className="form-actions">
-        <button className="button primary" type="submit" disabled={action.busy || !body}>
+        <ActionButton icon="check" variant="primary" type="submit" disabled={action.busy || !body}>
           {action.busy ? 'Сохраняем…' : 'Сохранить решение'}
-        </button>
+        </ActionButton>
       </div>
     </form>
   );
