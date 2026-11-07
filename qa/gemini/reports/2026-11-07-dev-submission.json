@@ -1,0 +1,59 @@
+{
+  "teamName": "Paradox",
+  "date": "2026-11-07",
+  "artifact": "results/dev/results.json",
+  "sha256": "3a833c2379e392654b65501e1e3f3d44452acc84f9ecaf9b4430223cd1bba192",
+  "dialogs": 65,
+  "channels": {
+    "agent chat": 60,
+    "voice call": 5
+  },
+  "languages": {
+    "RU": 35,
+    "KZ": 15,
+    "EN": 15
+  },
+  "statuses": {
+    "completed": 65
+  },
+  "modelNames": ["gemini-3.5-flash-lite"],
+  "modelId": "gemini-3.5-flash-lite",
+  "configurationId": "2f479593c030f84cf5a6024615ec0b995bd927173960a94884d04348ba728af2",
+  "promptVersion": "cqa-evaluator-v4",
+  "checklistVersionId": "2e14148d-4385-49d5-9cf9-0ff4a2222e53",
+  "checklistVersion": 2,
+  "calls": 68,
+  "knownInputTokens": 240498,
+  "knownCombinedOutputTokens": 69031,
+  "attemptsWithUnknownUsage": 1,
+  "knownUsageCostUsd": 0.2447269,
+  "conservativeCostUpperBoundUsd": 0.5797797,
+  "approvedBudgetUsd": 5,
+  "grossFlaggedSourceIds": ["p1-ru-022", "p1-ru-023", "p1-ru-029", "p1-kz-013", "p1-en-013"],
+  "originalRowsPreserved": {
+    "conversations": 65,
+    "checklist_versions": 2,
+    "evaluations": 6,
+    "appeals": 0
+  },
+  "startedAt": "2026-11-07T14:51:45.107Z",
+  "finishedAt": "2026-11-07T15:04:12.832Z",
+  "independentAccuracyConfirmed": false,
+  "controlDatasetAvailable": false,
+  "costScope": "Only the 65 DEV evaluations in this approved run; excludes earlier and concurrent experiments.",
+  "pricing": {
+    "source": "https://ai.google.dev/gemini-api/docs/pricing",
+    "checkedAt": "2026-11-07",
+    "inputUsdPerMillionTokens": 0.3,
+    "outputIncludingThinkingUsdPerMillionTokens": 2.5
+  },
+  "verification": {
+    "exactSourceIdCoverage": true,
+    "independentScoreCalculation": true,
+    "evidenceTurnRanges": true,
+    "allSelectedEvaluationsBelongToApprovedRun": true,
+    "credentialAndIdentifierPatternScanPassed": true,
+    "savedEvaluationsAfterRestart": 73,
+    "evaluationApiResponseUnchangedAfterRestart": true
+  }
+}

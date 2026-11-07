@@ -14,7 +14,7 @@
 
 - Team name is Paradox. DEV has exactly 60 chats and five calls; PROD requires the ten actual control chats when supplied.
 - Preserve `.env` credentials, imported transcripts, database history and collaborators' commits; keep them out of Git.
-- Use the existing free Gemini project; do not enable billing or silently switch providers/models.
+- Use the existing Gemini key. The user subsequently approved up to $5 for this DEV run including retries; do not enable billing or silently switch providers/models.
 - A saved model error is an error record. Missing predictions cannot be invented or replaced with reference answers.
 - Export original model answers using one saved standard eight-criterion version, not the separate demonstration version.
 - User authorized local configuration updates, real DEV evaluation and Git push. No additional design approval is needed for these audited fixes.
@@ -31,26 +31,27 @@
 
 **Files:** `vitest.config.ts`, `package.json`, `.env.example`, `README.md`, `docs/AI_MODELS.md`; local ignored `.env`.
 
-- [ ] Preserve the observed failing `npm test` evidence (364 pass, two temporary suites fail).
-- [ ] Include only server/web/qa tests; add the root config to formatting checks.
-- [ ] Set the documented Gemini profile to `gemini-3.5-flash-lite`, low thinking, 8192 output tokens, 120000 ms timeout. Keep `AI_PROVIDER=none` in the public empty-key template.
-- [ ] Back up and update only model settings in the local `.env`; verify secrets remain byte-identical.
-- [ ] Verify tests in both the isolated checkout and original checkout with ignored backup tests present, then typecheck/build/smoke.
-- [ ] Commit the scoped changes.
+- [x] Preserve the observed failing `npm test` evidence (364 pass, two temporary suites fail).
+- [x] Include only server/web/qa tests; add the root config to formatting checks.
+- [x] Set the documented Gemini profile to `gemini-3.5-flash-lite`, low thinking, 8192 output tokens, 120000 ms timeout. Keep `AI_PROVIDER=none` in the public empty-key template.
+- [x] Back up and update only model settings in the local `.env`; verify secrets remain byte-identical.
+- [x] Verify tests in both the isolated checkout and original checkout with ignored backup tests present, then typecheck/build/smoke.
+- [x] Commit the scoped changes.
 
 ## Task 2: Real DEV processing and artifact preparation
 
 **Interfaces:** Existing `GET /api/ai/status`, conversation/checklist/evaluation endpoints, `POST /api/evaluations`, and `npm run export:results`.
 
-- [ ] Back up SQLite consistently and record baseline counts, hashes and model configuration.
-- [ ] Verify Free Tier and quota for the configured project; start with a real language sample, retaining all calls and errors.
-- [ ] Evaluate all available DEV dialogs sequentially with a fixed configuration, bounded retries and periodic saved progress. Stop on exhausted quota/authentication/configuration change.
-- [ ] Export `results/dev/results.json` with team Paradox when every DEV dialog has a terminal persisted evaluation. Validate round-trip correspondence with the source database.
-- [ ] Publish a concise readiness record with measured counts and any actual remaining prerequisites; do not fabricate PROD.
+- [x] Back up SQLite consistently and record baseline counts, hashes and model configuration.
+- [x] Verify the account boundary and obtain a concrete budget when Free Tier cannot be established; start with real RU/KZ/EN and call samples, retaining all calls and errors. The user approved up to $5; all four samples succeeded.
+- [x] Evaluate all available DEV dialogs sequentially with a fixed configuration, bounded retries and periodic saved progress. All 65 completed; 68 attempts, conservative charge $0.5797797 within $5.
+- [x] Export `results/dev/results.json` with team Paradox when every DEV dialog has a terminal persisted evaluation. Validate round-trip correspondence with the source database.
+- [x] Prepare a concise readiness record with measured counts and any actual remaining prerequisites; do not fabricate PROD.
 
 ## Task 3: Verify, review and publish
 
-- [ ] Run the full suite, both typechecks, formatting, production build, smoke and diff checks.
-- [ ] Review the complete change independently; fix confirmed defects and verify them.
-- [ ] Fetch/reconcile without force, push main, confirm remote artifacts and green CI.
-- [ ] Fast-forward the original checkout, restart its server with the aligned configuration, and verify persistence and current metadata.
+- [x] Run the full suite, both typechecks, formatting, production build, smoke and diff checks. The application change passed GitHub Actions on commit `4f6cbe6`.
+- [x] Review the application changes and budget runner independently; no blockers found. Separately validate all 65 artifact records and source correspondence.
+- [x] Restart the original server with the aligned configuration and verify persistence and current metadata. All 73 saved evaluation payloads survived unchanged.
+
+Final publication sequence: fetch/reconcile without force, commit the DEV artifact and readiness notes, push main, confirm the exact remote bytes and green CI, then fast-forward the clean original checkout. This sequence is verified against Git and the CI run after the artifact commit is created.
