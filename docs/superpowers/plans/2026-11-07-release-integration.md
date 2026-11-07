@@ -56,13 +56,22 @@
 **Interfaces:** `npm run build` produces `dist/server`, `dist/shared`, `dist/web`; `npm start` serves both API and UI. `node scripts/smoke.mjs` uses only a temporary SQLite DB and `AI_PROVIDER=none`.
 
 - [ ] Review the requirement and backend audits. Implement only confirmed blockers with a failing regression test first.
-- [ ] Fetch and inspect upstream changes, then merge the frontend's checked commit without overwriting Merey's work.
-- [ ] Smoke-test import, duplicate import, checklist versioning, manual scoring, missing-provider behavior, direct UI routes and persistence after restart against the actual built server.
+- [x] Fetch and inspect upstream changes, then merge the frontend's checked commit without overwriting Merey's work.
+- [x] Smoke-test import, duplicate import, checklist versioning, manual scoring, missing-provider behavior, direct UI routes and persistence after restart against the actual built server.
 - [x] Add CI for clean installation, tests, typecheck, build, formatting and production smoke.
 - [x] Verify actual DEV import separately into a temporary DB without printing credentials or transcripts: 65 records, RU35/KZ15/EN15, 60 chats/5 calls, five audio links, repeat import 0/65, all four tables created.
-- [ ] Update README and a concise readiness record with commands, real evidence and outstanding external prerequisites.
-- [ ] Run browser QA for the four screens, then perform a fresh full verification and independent review.
+- [x] Update README and a concise readiness record with commands, real evidence and outstanding external prerequisites.
+- [x] Run browser QA for the four screens, then perform a fresh full verification and independent review.
 - [ ] Fetch/reconcile, push without force, and confirm the final remote commit and CI result.
+
+### Submission appendix follow-up
+
+The later organizer appendix, “Как сдать результаты” (JSON 1.0), requires `results/dev/results.json` for 65 DEV records and `results/prod/results.json` for 10 control records. These are submission artifacts, not the internal API representation.
+
+- [ ] Integrate an isolated exporter with the eight official criterion IDs, `null` for N/A, one-based full-transcript evidence positions, actual model metadata and explicit error records.
+- [ ] Validate completeness, duplicates, allowed values and score arithmetic before writing a submission file; preserve original evaluations and appeal history.
+- [ ] Document the export/validate/commit/push sequence. Generate actual artifacts only from available persisted results; never label synthetic fixtures as DEV/PROD model predictions.
+- [ ] Reconcile the two active AI tasks' scoped commits and record the frozen-sample measurements separately from independent human Ground Truth. External checks use only the user's authorized free quota.
 
 ## Coordination and rulings
 
@@ -75,4 +84,4 @@
 - Baseline after those integrations: clean `npm ci`, 185 tests, application/QA typechecks, production build, full source formatting, and compiled startup/restart smoke passed. This does not yet verify the frontend's unfinished route integration or live model quality.
 - Later integration includes Merey's final editor/demo fixes, the four-screen snapshot `24c3780`, and the hidden-worktree serving regression fix `7c1fd1c`. The latter first reproduced HTTP500 and then passed with a root-relative `sendFile` call.
 - Integration now runs on `codex/cqa-release` in its own managed worktree. The source checkout remains available to the active Gemini reliability task and its local data; the UI worktree owns the user's subsequent Freedom styling request.
-- Fresh integrated verification: 206 tests passed, app/QA typechecks, production build, full formatting and startup/restart smoke passed. Independent source reviews found no actionable backend or frontend blockers. Final Freedom runtime QA and the separate live-model reliability work remain pending.
+- Fresh integrated verification: 206 tests passed, app/QA typechecks, production build, full formatting and startup/restart smoke passed. Independent source reviews found no actionable backend or frontend blockers. Freedom `783181a` is merged and published through `a29bb06`; its CI passed. Chrome runtime QA covered four routes at 320/390/768/1024/1512px without document overflow or page errors, with native modal focus and saved-evidence reload checks. The separate live-model reliability work remains pending.
