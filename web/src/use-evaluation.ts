@@ -4,6 +4,11 @@ import { api, startErrorMessage } from './api';
 
 type History = { status: 'loading' | 'error' } | { status: 'ready'; items: Evaluation[] };
 
+function withEvaluation(history: History, next: Evaluation): History {
+  return history.status === 'ready'
+    ? { status: 'ready', items: history.items.map((item) => (item.id === next.id ? next : item)) }
+    : history;
+}
 export function useEvaluation(
   conversationId: string,
   requestedId: string | null,
@@ -56,14 +61,7 @@ export function useEvaluation(
         const next = await api.evaluation(evaluationId, signal);
         if (signal.aborted) return;
 
-        setHistory((history) =>
-          history.status === 'ready'
-            ? {
-                status: 'ready',
-                items: history.items.map((item) => (item.id === next.id ? next : item)),
-              }
-            : history,
-        );
+        setHistory((history) => withEvaluation(history, next));
         if (next.status === 'queued' || next.status === 'running') {
           timer = window.setTimeout(poll, 1000);
         }
@@ -123,6 +121,7 @@ export function useEvaluation(
     pollBlocked: pendingId !== null && pendingId === blockedPollId,
     resumePoll: () => setBlockedPollId(null),
     reload,
+    update: (next: Evaluation) => setHistory((history) => withEvaluation(history, next)),
     run,
   };
 }

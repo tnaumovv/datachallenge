@@ -10,6 +10,8 @@ import type {
   ScoreSummary,
 } from '../../shared/contracts.js';
 import { useEvaluation } from './use-evaluation';
+import { AppealForm, AppealHistory, AppealReview, useEvaluationAppeals } from './EvaluationAppeals';
+import { answerLabel, numbers } from './review-format';
 
 const evaluationLabel: Record<Evaluation['status'], string> = {
   queued: 'В очереди',
@@ -18,19 +20,10 @@ const evaluationLabel: Record<Evaluation['status'], string> = {
   failed: 'Ошибка оценки',
 };
 
-const numbers = new Intl.NumberFormat('ru', { maximumFractionDigits: 2 });
-
 function points(value: number | null, maximum: number | null) {
   return value !== null && maximum !== null
     ? `${numbers.format(value)} / ${numbers.format(maximum)}`
     : null;
-}
-
-function answerLabel(criterion: Criterion, value: CriterionAnswer['value']) {
-  if (value === 'NA') return 'Не применимо';
-  if (criterion.scoringMode === 'flag') return value ? 'Нарушение' : 'Без нарушения';
-  if (typeof value === 'boolean') return value ? 'Да' : 'Нет';
-  return numbers.format(value);
 }
 
 function isRevised(original?: CriterionAnswer, current?: CriterionAnswer) {
@@ -47,12 +40,16 @@ export function EvaluationPanel({
   conversation,
   checklists,
   requestedId,
+  selectedAppealId,
+  onSelectAppeal,
   onSelect,
   onEvidence,
 }: {
   conversation: Conversation;
   checklists: ChecklistVersion[];
   requestedId: string | null;
+  selectedAppealId: string | null;
+  onSelectAppeal: (evaluationId: string, appealId: string | null) => void;
   onSelect: (id: string | null) => void;
   onEvidence: (messageId: string, evaluationId: string) => void;
 }) {
@@ -201,19 +198,23 @@ export function EvaluationPanel({
                 )}
               </div>
             )}
-            {completed && evaluation.finalScore && (
-              <ScoreCard evaluation={evaluation} score={evaluation.finalScore} />
-            )}
-            {checklist && !missingEvaluation && (
-              <Criteria
-                key={`${checklist.id}:${evaluation?.id ?? ''}:${completed}`}
-                checklist={checklist}
-                evaluation={completed ? evaluation : undefined}
-                onEvidence={(messageId) => {
-                  if (evaluation) onEvidence(messageId, evaluation.id);
-                }}
-              />
-            )}
+            {checklist &&
+              !missingEvaluation &&
+              (completed && evaluation.finalScore ? (
+                <CompletedReview
+                  key={evaluation.id}
+                  evaluation={evaluation}
+                  score={evaluation.finalScore}
+                  checklist={checklist}
+                  selectedAppealId={selectedAppealId}
+                  onSelectAppeal={(id) => onSelectAppeal(evaluation.id, id)}
+                  onEvaluationChanged={review.update}
+                  onRefresh={review.reload}
+                  onEvidence={(messageId) => onEvidence(messageId, evaluation.id)}
+                />
+              ) : (
+                <Criteria key={checklist.id} checklist={checklist} onEvidence={() => {}} />
+              ))}
           </>
         )}
       </div>
@@ -221,6 +222,93 @@ export function EvaluationPanel({
   );
 }
 
+function CompletedReview({
+  evaluation,
+  score,
+  checklist,
+  selectedAppealId,
+  onSelectAppeal,
+  onEvaluationChanged,
+  onRefresh,
+  onEvidence,
+}: {
+  evaluation: Evaluation;
+  score: ScoreSummary;
+  checklist: ChecklistVersion;
+  selectedAppealId: string | null;
+  onSelectAppeal: (id: string | null) => void;
+  onEvaluationChanged: (evaluation: Evaluation) => void;
+  onRefresh: () => void;
+  onEvidence: (id: string) => void;
+}) {
+  const [draft, setDraft] = useState<Criterion | null>(null);
+  const appeals = useEvaluationAppeals(evaluation.id);
+  const items = appeals.history.status === 'ready' ? appeals.history.items : [];
+  const pending = new Map(
+    items
+      .filter((appeal) => appeal.status === 'pending')
+      .map((appeal) => [appeal.criterionId, appeal]),
+  );
+  const selected = items.find((appeal) => appeal.id === selectedAppealId);
+  const criterion =
+    selected && checklist.criteria.find((criterion) => criterion.id === selected.criterionId);
+
+  return (
+    <>
+      <ScoreCard evaluation={evaluation} score={score} />
+      <AppealHistory
+        history={appeals.history}
+        checklist={checklist}
+        selectedId={selectedAppealId}
+        onSelect={onSelectAppeal}
+        onReload={appeals.reload}
+      />
+      {selected && criterion && (
+        <AppealReview
+          key={selected.id}
+          appeal={selected}
+          criterion={criterion}
+          onClose={() => {
+            onSelectAppeal(null);
+            document.getElementById(`appeal-entry-${selected.id}`)?.focus();
+          }}
+          onReload={onRefresh}
+          onResolved={(next) => {
+            onEvaluationChanged(next);
+            appeals.reload();
+          }}
+        />
+      )}
+      <Criteria
+        checklist={checklist}
+        evaluation={evaluation}
+        onEvidence={onEvidence}
+        pendingCriteria={new Set(pending.keys())}
+        onAppeal={
+          appeals.history.status === 'ready'
+            ? (criterion) => {
+                const active = pending.get(criterion.id);
+                if (active) onSelectAppeal(active.id);
+                else setDraft(criterion);
+              }
+            : undefined
+        }
+      />
+      {draft && (
+        <AppealForm
+          evaluationId={evaluation.id}
+          criterion={draft}
+          onClose={() => setDraft(null)}
+          onCreated={(appeal) => {
+            setDraft(null);
+            onSelectAppeal(appeal.id);
+            appeals.reload();
+          }}
+        />
+      )}
+    </>
+  );
+}
 function ScoreCard({ evaluation, score }: { evaluation: Evaluation; score: ScoreSummary }) {
   const revised = evaluation.effectiveAnswers.some((answer) =>
     isRevised(
@@ -259,10 +347,14 @@ function Criteria({
   checklist,
   evaluation,
   onEvidence,
+  pendingCriteria,
+  onAppeal,
 }: {
   checklist: ChecklistVersion;
   evaluation?: Evaluation;
   onEvidence: (id: string) => void;
+  pendingCriteria?: Set<string>;
+  onAppeal?: (criterion: Criterion) => void;
 }) {
   const score = evaluation?.finalScore;
 
@@ -299,6 +391,8 @@ function Criteria({
                 )}
                 open={Boolean(evaluation) && sectionIndex === 0 && index === 0}
                 onEvidence={onEvidence}
+                appealPending={pendingCriteria?.has(criterion.id)}
+                onAppeal={onAppeal ? () => onAppeal(criterion) : undefined}
               />
             ))}
           </section>
@@ -316,6 +410,8 @@ function CriterionRow({
   contribution,
   open,
   onEvidence,
+  appealPending,
+  onAppeal,
 }: {
   criterion: Criterion;
   answer?: CriterionAnswer;
@@ -324,6 +420,8 @@ function CriterionRow({
   contribution?: ScoreSummary['contributions'][number];
   open: boolean;
   onEvidence: (id: string) => void;
+  appealPending?: boolean;
+  onAppeal?: () => void;
 }) {
   const revised = isRevised(original, answer);
   const awarded = contribution && points(contribution.points, contribution.maxPoints);
@@ -361,6 +459,15 @@ function CriterionRow({
             )}
             <Quotes title="Цитата из диалога" messages={directQuotes} onSelect={onEvidence} />
             <Quotes title="Проверенный фрагмент" messages={checked} onSelect={onEvidence} />
+            {onAppeal && (
+              <button
+                className="button secondary criterion-appeal"
+                type="button"
+                onClick={onAppeal}
+              >
+                {appealPending ? 'Открыть апелляцию' : 'Подать апелляцию'}
+              </button>
+            )}
             {revised && evidence && (
               <Quotes
                 title="Исходные доказательства"
