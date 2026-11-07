@@ -85,7 +85,7 @@ export function useEvaluation(
     setLoadKey((key) => key + 1);
   }
 
-  async function run(checklistVersionId: string, retryId?: string) {
+  async function run(checklistVersionId: string, retryId?: string, force = false) {
     if (mutation.current) return;
     const controller = new AbortController();
     const { signal } = controller;
@@ -96,7 +96,7 @@ export function useEvaluation(
     try {
       const { evaluationIds } = retryId
         ? await api.retry(retryId, signal)
-        : await api.start({ conversationIds: [conversationId], checklistVersionId }, signal);
+        : await api.start({ conversationIds: [conversationId], checklistVersionId, force }, signal);
       if (signal.aborted) return;
       if (!evaluationIds[0]) throw new Error('Empty evaluation result');
       onSelect(evaluationIds[0]);

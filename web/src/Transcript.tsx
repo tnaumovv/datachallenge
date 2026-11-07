@@ -67,6 +67,11 @@ export function Transcript({
         {conversation.channel === 'voice call' && (!hasAudio || audioFailed) && (
           <p className="muted audio-unavailable">Аудиозапись недоступна.</p>
         )}
+        {hasAudio && (
+          <a className="recording-link" href={audioUrl} target="_blank" rel="noopener noreferrer">
+            Открыть запись ↗
+          </a>
+        )}
       </div>
       <div className="panel-scroll transcript-scroll" tabIndex={0} aria-label="Реплики диалога">
         <ol className="messages">

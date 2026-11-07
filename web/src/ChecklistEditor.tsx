@@ -24,6 +24,7 @@ export type ChecklistEditorProps = {
    * Do not invoke Gemini here. A rejected promise retains the draft and is never retried automatically.
    */
   onSaveVersion: (checklistId: string, input: ChecklistInput) => Promise<ChecklistVersion>;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 function Field({
@@ -91,6 +92,7 @@ export function ChecklistEditor({
   loadError = false,
   onReload,
   onSaveVersion,
+  onDirtyChange,
 }: ChecklistEditorProps) {
   const prefix = useId();
   const [selectedId, setSelectedId] = useState(initialVersionId ?? '');
@@ -102,6 +104,7 @@ export function ChecklistEditor({
   const [saveError, setSaveError] = useState(false);
   const [success, setSuccess] = useState('');
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [activeCriterion, setActiveCriterion] = useState(0);
   const inFlight = useRef(false);
   const summaryRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -113,6 +116,11 @@ export function ChecklistEditor({
   const dirty = Boolean(
     draft && base && JSON.stringify(draft) !== JSON.stringify(toChecklistDraft(base)),
   );
+
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -162,6 +170,7 @@ export function ChecklistEditor({
     setErrors([]);
     setSaveError(false);
     setSuccess('');
+    setActiveCriterion(0);
     requestAnimationFrame(() => document.getElementById(`${prefix}-title`)?.focus());
   }
   function discard() {
@@ -175,6 +184,7 @@ export function ChecklistEditor({
   function addCriterion() {
     if (!draft) return;
     const index = draft.criteria.length;
+    setActiveCriterion(index);
     setDraft({
       ...draft,
       criteria: [...draft.criteria, newCriterion(crypto.randomUUID(), draft.sections[0].id)],
@@ -301,7 +311,11 @@ export function ChecklistEditor({
                           href={`#${prefix}-${error.path}`}
                           onClick={(event) => {
                             event.preventDefault();
-                            document.getElementById(`${prefix}-${error.path}`)?.focus();
+                            const criterionIndex = /^criteria\.(\d+)/.exec(error.path);
+                            if (criterionIndex) setActiveCriterion(Number(criterionIndex[1]));
+                            requestAnimationFrame(() =>
+                              document.getElementById(`${prefix}-${error.path}`)?.focus(),
+                            );
                           }}
                         >
                           {error.message}
@@ -338,215 +352,296 @@ export function ChecklistEditor({
                 required
               />,
             )}
-            {draft.criteria.map((criterion, index) => {
-              const path = `criteria.${index}`;
-              const flag = criterion.scoringMode === 'flag';
-              return (
-                <fieldset className="ce-criterion" key={criterion.id}>
-                  <legend>
-                    {index + 1}. {criterion.title || 'Новый критерий'}
-                  </legend>
-                  <div className="ce-grid">
-                    {field(
-                      'Название критерия',
-                      `${path}.title`,
-                      <input
-                        {...fieldProps(`${path}.title`)}
-                        value={criterion.title}
-                        onChange={(event) => changeCriterion(index, { title: event.target.value })}
-                        required
-                      />,
-                    )}
-                    {field(
-                      'Раздел',
-                      `${path}.sectionId`,
-                      <select
-                        {...fieldProps(`${path}.sectionId`)}
-                        value={criterion.sectionId}
-                        onChange={(event) =>
-                          changeCriterion(index, { sectionId: event.target.value })
-                        }
-                      >
-                        {draft.sections.map((section) => (
-                          <option key={section.id} value={section.id}>
-                            {section.title}
-                          </option>
-                        ))}
-                      </select>,
+            <div className="ce-edit-layout">
+              <aside className="ce-outline" aria-label="Критерии чек-листа">
+                {draft.sections.map((section) => (
+                  <div className="ce-outline-group" key={section.id}>
+                    <h3>{section.title}</h3>
+                    {draft.criteria.map(
+                      (criterion, index) =>
+                        criterion.sectionId === section.id && (
+                          <button
+                            type="button"
+                            key={criterion.id}
+                            aria-pressed={index === activeCriterion}
+                            onClick={() => setActiveCriterion(index)}
+                          >
+                            <span>{criterion.title || 'Новый критерий'}</span>
+                            <small>
+                              {criterion.scoringMode === 'flag' ? 'Флаг' : criterion.weight}
+                            </small>
+                          </button>
+                        ),
                     )}
                   </div>
-                  {field(
-                    'Формулировка проверки',
-                    `${path}.instruction`,
-                    <textarea
-                      {...fieldProps(`${path}.instruction`)}
-                      value={criterion.instruction}
-                      onChange={(event) =>
-                        changeCriterion(index, { instruction: event.target.value })
-                      }
-                      rows={3}
-                      required
-                    />,
-                  )}
-                  <div className="ce-grid">
-                    {field(
-                      'Тип ответа',
-                      `${path}.answerType`,
-                      <select
-                        {...fieldProps(`${path}.answerType`)}
-                        value={criterion.answerType}
-                        disabled={flag}
-                        onChange={(event) => {
-                          const answerType = event.target.value as Criterion['answerType'];
-                          changeCriterion(index, {
-                            answerType,
-                            levels:
-                              answerType === 'scale' && !criterion.levels.length
-                                ? [
-                                    { key: crypto.randomUUID(), value: '0', description: '' },
-                                    { key: crypto.randomUUID(), value: '10', description: '' },
-                                  ]
-                                : criterion.levels,
-                          });
-                        }}
-                      >
-                        <option value="binary">Да / Нет</option>
-                        <option value="scale">Дискретная шкала</option>
-                      </select>,
-                    )}
-                    {field(
-                      'Вес критерия',
-                      `${path}.weight`,
-                      <input
-                        {...fieldProps(`${path}.weight`)}
-                        type="number"
-                        min="0"
-                        max="10000"
-                        step="any"
-                        value={criterion.weight}
-                        disabled={flag}
-                        onChange={(event) => changeCriterion(index, { weight: event.target.value })}
-                        required
-                      />,
-                    )}
-                  </div>
-                  {flag && (
-                    <p className="ce-muted">
-                      Отдельная отметка: ответ «Да / Нет», нулевой вес, без N/A. Она показывается
-                      отдельно от балла.
-                    </p>
-                  )}
-                  {criterion.answerType === 'scale' && (
-                    <fieldset className="ce-levels" {...fieldProps(`${path}.levels`)} tabIndex={-1}>
-                      <legend>Уровни шкалы</legend>
-                      <p className="ce-muted">
-                        Укажите разные значения, включая 0 и положительный максимум. Вес задаёт
-                        вклад критерия в итог.
-                      </p>
-                      {criterion.levels.map((level, levelIndex) => (
-                        <div className="ce-level-row" key={level.key}>
-                          {field(
-                            `Значение уровня ${levelIndex + 1}`,
-                            `${path}.levels.${levelIndex}.value`,
-                            <input
-                              {...fieldProps(`${path}.levels.${levelIndex}.value`)}
-                              type="number"
-                              min="0"
-                              step="any"
-                              value={level.value}
-                              onChange={(event) =>
-                                changeCriterion(index, {
-                                  levels: criterion.levels.map((item, i) =>
-                                    i === levelIndex
-                                      ? { ...item, value: event.target.value }
-                                      : item,
-                                  ),
-                                })
-                              }
-                              required
-                            />,
-                          )}
-                          {field(
-                            `Описание уровня ${levelIndex + 1}`,
-                            `${path}.levels.${levelIndex}.description`,
-                            <input
-                              {...fieldProps(`${path}.levels.${levelIndex}.description`)}
-                              value={level.description}
-                              onChange={(event) =>
-                                changeCriterion(index, {
-                                  levels: criterion.levels.map((item, i) =>
-                                    i === levelIndex
-                                      ? { ...item, description: event.target.value }
-                                      : item,
-                                  ),
-                                })
-                              }
-                            />,
+                ))}
+                <button className="ce-button" type="button" onClick={addCriterion}>
+                  ＋ Добавить критерий
+                </button>
+              </aside>
+              <div className="ce-definition">
+                {draft.criteria.map((criterion, index) => {
+                  const path = `criteria.${index}`;
+                  const flag = criterion.scoringMode === 'flag';
+                  return (
+                    <fieldset
+                      className="ce-criterion"
+                      key={criterion.id}
+                      hidden={index !== activeCriterion}
+                    >
+                      <legend>
+                        {index + 1}. {criterion.title || 'Новый критерий'}
+                      </legend>
+                      <div className="ce-grid">
+                        {field(
+                          'Название критерия',
+                          `${path}.title`,
+                          <input
+                            {...fieldProps(`${path}.title`)}
+                            value={criterion.title}
+                            onChange={(event) =>
+                              changeCriterion(index, { title: event.target.value })
+                            }
+                            required
+                          />,
+                        )}
+                        {field(
+                          'Раздел',
+                          `${path}.sectionId`,
+                          <select
+                            {...fieldProps(`${path}.sectionId`)}
+                            value={criterion.sectionId}
+                            onChange={(event) =>
+                              changeCriterion(index, { sectionId: event.target.value })
+                            }
+                          >
+                            {draft.sections.map((section) => (
+                              <option key={section.id} value={section.id}>
+                                {section.title}
+                              </option>
+                            ))}
+                          </select>,
+                        )}
+                      </div>
+                      {field(
+                        'Формулировка проверки',
+                        `${path}.instruction`,
+                        <textarea
+                          {...fieldProps(`${path}.instruction`)}
+                          value={criterion.instruction}
+                          onChange={(event) =>
+                            changeCriterion(index, { instruction: event.target.value })
+                          }
+                          rows={3}
+                          required
+                        />,
+                      )}
+                      <div className="ce-grid">
+                        {field(
+                          'Тип ответа',
+                          `${path}.answerType`,
+                          <select
+                            {...fieldProps(`${path}.answerType`)}
+                            value={criterion.answerType}
+                            disabled={flag}
+                            onChange={(event) => {
+                              const answerType = event.target.value as Criterion['answerType'];
+                              changeCriterion(index, {
+                                answerType,
+                                levels:
+                                  answerType === 'scale' && !criterion.levels.length
+                                    ? [
+                                        { key: crypto.randomUUID(), value: '0', description: '' },
+                                        { key: crypto.randomUUID(), value: '10', description: '' },
+                                      ]
+                                    : criterion.levels,
+                              });
+                            }}
+                          >
+                            <option value="binary">Да / Нет</option>
+                            <option value="scale">Дискретная шкала</option>
+                          </select>,
+                        )}
+                        {field(
+                          'Вес критерия',
+                          `${path}.weight`,
+                          <input
+                            {...fieldProps(`${path}.weight`)}
+                            type="number"
+                            min="0"
+                            max="10000"
+                            step="any"
+                            value={criterion.weight}
+                            disabled={flag}
+                            onChange={(event) =>
+                              changeCriterion(index, { weight: event.target.value })
+                            }
+                            required
+                          />,
+                        )}
+                      </div>
+                      {flag && (
+                        <p className="ce-muted">
+                          Отдельная отметка: ответ «Да / Нет», нулевой вес, без N/A. Она
+                          показывается отдельно от балла.
+                        </p>
+                      )}
+                      {field(
+                        'Учёт критерия',
+                        `${path}.scoringMode`,
+                        <select
+                          {...fieldProps(`${path}.scoringMode`)}
+                          value={criterion.scoringMode}
+                          onChange={(event) =>
+                            changeCriterion(
+                              index,
+                              event.target.value === 'flag'
+                                ? {
+                                    scoringMode: 'flag',
+                                    answerType: 'binary',
+                                    weight: '0',
+                                    allowNA: false,
+                                    naRule: null,
+                                    levels: [],
+                                  }
+                                : { scoringMode: 'weighted' },
+                            )
+                          }
+                        >
+                          <option value="weighted">Участвует в балле</option>
+                          <option value="flag">Отдельный флаг нарушения</option>
+                        </select>,
+                      )}
+                      {criterion.answerType === 'scale' && (
+                        <fieldset
+                          className="ce-levels"
+                          {...fieldProps(`${path}.levels`)}
+                          tabIndex={-1}
+                        >
+                          <legend>Уровни шкалы</legend>
+                          <p className="ce-muted">
+                            Укажите разные значения, включая 0 и положительный максимум. Вес задаёт
+                            вклад критерия в итог.
+                          </p>
+                          {criterion.levels.map((level, levelIndex) => (
+                            <div className="ce-level-row" key={level.key}>
+                              {field(
+                                `Значение уровня ${levelIndex + 1}`,
+                                `${path}.levels.${levelIndex}.value`,
+                                <input
+                                  {...fieldProps(`${path}.levels.${levelIndex}.value`)}
+                                  type="number"
+                                  min="0"
+                                  step="any"
+                                  value={level.value}
+                                  onChange={(event) =>
+                                    changeCriterion(index, {
+                                      levels: criterion.levels.map((item, i) =>
+                                        i === levelIndex
+                                          ? { ...item, value: event.target.value }
+                                          : item,
+                                      ),
+                                    })
+                                  }
+                                  required
+                                />,
+                              )}
+                              {field(
+                                `Описание уровня ${levelIndex + 1}`,
+                                `${path}.levels.${levelIndex}.description`,
+                                <input
+                                  {...fieldProps(`${path}.levels.${levelIndex}.description`)}
+                                  value={level.description}
+                                  onChange={(event) =>
+                                    changeCriterion(index, {
+                                      levels: criterion.levels.map((item, i) =>
+                                        i === levelIndex
+                                          ? { ...item, description: event.target.value }
+                                          : item,
+                                      ),
+                                    })
+                                  }
+                                />,
+                              )}
+                              <button
+                                className="ce-button ce-remove"
+                                type="button"
+                                aria-label={`Удалить уровень ${levelIndex + 1}`}
+                                onClick={() =>
+                                  changeCriterion(index, {
+                                    levels: criterion.levels.filter((_, i) => i !== levelIndex),
+                                  })
+                                }
+                              >
+                                Удалить
+                              </button>
+                            </div>
+                          ))}
+                          {fieldError(`${path}.levels`) && (
+                            <p className="ce-field-error" id={`${prefix}-${path}.levels-error`}>
+                              {fieldError(`${path}.levels`)}
+                            </p>
                           )}
                           <button
-                            className="ce-button ce-remove"
+                            className="ce-button"
                             type="button"
-                            aria-label={`Удалить уровень ${levelIndex + 1}`}
                             onClick={() =>
                               changeCriterion(index, {
-                                levels: criterion.levels.filter((_, i) => i !== levelIndex),
+                                levels: [
+                                  ...criterion.levels,
+                                  { key: crypto.randomUUID(), value: '', description: '' },
+                                ],
                               })
                             }
                           >
-                            Удалить
+                            Добавить уровень
                           </button>
-                        </div>
-                      ))}
-                      {fieldError(`${path}.levels`) && (
-                        <p className="ce-field-error" id={`${prefix}-${path}.levels-error`}>
-                          {fieldError(`${path}.levels`)}
-                        </p>
+                        </fieldset>
                       )}
+                      <label className="ce-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={criterion.allowNA}
+                          disabled={flag}
+                          onChange={(event) =>
+                            changeCriterion(index, { allowNA: event.target.checked })
+                          }
+                        />
+                        Разрешить N/A — критерий неприменим
+                      </label>
+                      {criterion.allowNA &&
+                        field(
+                          'Когда критерий неприменим',
+                          `${path}.naRule`,
+                          <textarea
+                            {...fieldProps(`${path}.naRule`)}
+                            value={criterion.naRule ?? ''}
+                            rows={2}
+                            onChange={(event) =>
+                              changeCriterion(index, { naRule: event.target.value })
+                            }
+                            required
+                          />,
+                        )}
                       <button
-                        className="ce-button"
+                        className="ce-button ce-delete"
                         type="button"
-                        onClick={() =>
-                          changeCriterion(index, {
-                            levels: [
-                              ...criterion.levels,
-                              { key: crypto.randomUUID(), value: '', description: '' },
-                            ],
-                          })
-                        }
+                        disabled={draft.criteria.length <= 1}
+                        onClick={() => {
+                          setDraft({
+                            ...draft,
+                            criteria: draft.criteria.filter((_, i) => i !== index),
+                          });
+                          setActiveCriterion(Math.max(0, index - 1));
+                        }}
                       >
-                        Добавить уровень
+                        Удалить критерий
                       </button>
                     </fieldset>
-                  )}
-                  <label className="ce-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={criterion.allowNA}
-                      disabled={flag}
-                      onChange={(event) =>
-                        changeCriterion(index, { allowNA: event.target.checked })
-                      }
-                    />
-                    Разрешить N/A — критерий неприменим
-                  </label>
-                  {criterion.allowNA &&
-                    field(
-                      'Когда критерий неприменим',
-                      `${path}.naRule`,
-                      <textarea
-                        {...fieldProps(`${path}.naRule`)}
-                        value={criterion.naRule ?? ''}
-                        rows={2}
-                        onChange={(event) => changeCriterion(index, { naRule: event.target.value })}
-                        required
-                      />,
-                    )}
-                </fieldset>
-              );
-            })}
-            <button className="ce-button" type="button" onClick={addCriterion}>
-              Добавить критерий
-            </button>
+                  );
+                })}
+              </div>
+            </div>
           </fieldset>
           {confirmDiscard && (
             <div className="ce-notice" role="alert">

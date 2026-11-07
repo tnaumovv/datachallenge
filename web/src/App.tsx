@@ -1,331 +1,367 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import type { ChecklistInput, ChecklistVersion, Conversation } from '../../shared/contracts.js';
 import { api } from './api';
 import { AppealsPage } from './AppealsPage';
 import { ChecklistEditor } from './ChecklistEditor';
+import { DialogsPage, conversationTitle } from './DialogsPage';
 import { EvaluationPanel } from './EvaluationPanel';
 import { Transcript, channelName } from './Transcript';
+import { pageLocation, readLocation, reviewUrl, type ReviewLocation } from './navigation';
 
 declare const __CQA_DEMO__: boolean;
-
-type ReviewLocation = {
-  page: 'dialogs' | 'appeals' | 'checklists';
-  appealId: string | null;
-  conversationId: string | null;
-  evaluationId: string | null;
-  messageId: string | null;
+type WorkspaceData = {
+  conversations: Conversation[];
+  checklists: ChecklistVersion[];
+  hasConversations: boolean;
+};
+const titles = {
+  dialogs: 'Диалоги',
+  checklists: 'Чек-листы',
+  appeals: 'Апелляции',
+  'not-found': 'Страница не найдена',
 };
 
-type WorkspaceData =
-  | { status: 'loading' | 'error' }
-  | { status: 'ready'; conversations: Conversation[]; checklists: ChecklistVersion[] };
-
-function readLocation(): ReviewLocation {
-  const url = new URL(window.location.href);
-  const page = /^\/(appeals|checklists)\/?$/.exec(url.pathname)?.[1];
-  const route = /^\/dialogs\/([^/]+)\/?$/.exec(url.pathname);
-  let conversationId = route?.[1] ?? null;
-
-  if (conversationId) {
-    try {
-      conversationId = decodeURIComponent(conversationId);
-    } catch {
-      // Keep the unmatched path segment so the workspace can show "Диалог не найден".
-    }
-  }
-
-  return {
-    page: page === 'appeals' || page === 'checklists' ? page : 'dialogs',
-    appealId: url.searchParams.get('appeal'),
-    conversationId,
-    evaluationId: url.searchParams.get('evaluation'),
-    messageId: url.hash.slice(1) || null,
-  };
-}
-
-function reviewUrl(view: ReviewLocation): string {
-  if (view.page !== 'dialogs') return `/${view.page}`;
-  const path = view.conversationId
-    ? `/dialogs/${encodeURIComponent(view.conversationId)}`
-    : '/dialogs';
-  const query = new URLSearchParams();
-  if (view.evaluationId) query.set('evaluation', view.evaluationId);
-  if (view.appealId) query.set('appeal', view.appealId);
-  return `${path}${query.size ? `?${query}` : ''}${view.messageId ? `#${encodeURIComponent(view.messageId)}` : ''}`;
+function NavIcon({ name }: { name: 'dialogs' | 'checklists' | 'appeals' }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {name === 'dialogs' ? (
+        <path d="M20 11a7 7 0 0 1-7 7H8l-5 3V6a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3z" />
+      ) : name === 'checklists' ? (
+        <>
+          <rect x="5" y="4" width="15" height="17" rx="3" />
+          <path d="M9 4V2m6 2V2M9 11l2 2 5-5m-7 9h7" />
+        </>
+      ) : (
+        <>
+          <path d="M12 3v17M5 21h14M4 7h16M6 7l-4 7h8zm12 0-4 7h8z" />
+          <circle cx="12" cy="5" r="2" />
+        </>
+      )}
+    </svg>
+  );
 }
 
 export function App() {
-  const [data, setData] = useState<WorkspaceData>({ status: 'loading' });
-  const [loadKey, setLoadKey] = useState(0);
   const [view, setView] = useState(readLocation);
+  const [data, setData] = useState<WorkspaceData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [loadKey, setLoadKey] = useState(0);
+  const [editorDirty, setEditorDirty] = useState(false);
+  const currentView = useRef(view);
+  currentView.current = view;
+  const dirty = useRef(editorDirty);
+  dirty.current = editorDirty;
+  const dataRef = useRef(data);
+  dataRef.current = data;
   const isChecklistPage = view.page === 'checklists';
-
   useEffect(() => {
-    const sync = () => setView(readLocation());
+    if (window.location.pathname === '/') window.history.replaceState(null, '', '/dialogs');
+    function sync() {
+      const next = readLocation();
+      if (
+        dirty.current &&
+        next.page !== currentView.current.page &&
+        !window.confirm('На экране есть несохранённые изменения. Покинуть редактор?')
+      ) {
+        window.history.pushState(null, '', reviewUrl(currentView.current));
+        return;
+      }
+      setView(next);
+    }
     window.addEventListener('popstate', sync);
     return () => window.removeEventListener('popstate', sync);
   }, []);
-
+  useEffect(() => {
+    document.title = titles[view.page] + ' — CQA';
+  }, [view.page]);
   useEffect(() => {
     const controller = new AbortController();
-    const { signal } = controller;
-
-    const conversations = isChecklistPage ? Promise.resolve([]) : api.conversations(signal);
-    Promise.all([conversations, api.checklists(signal)]).then(
+    setLoading(true);
+    setLoadError(false);
+    const conversations = isChecklistPage
+      ? Promise.resolve(dataRef.current?.conversations ?? [])
+      : api.conversations(controller.signal);
+    Promise.all([conversations, api.checklists(controller.signal)]).then(
       ([conversations, checklists]) => {
-        if (!signal.aborted) setData({ status: 'ready', conversations, checklists });
+        if (!controller.signal.aborted) {
+          setData({
+            conversations,
+            checklists,
+            hasConversations: isChecklistPage ? (dataRef.current?.hasConversations ?? false) : true,
+          });
+          setLoading(false);
+        }
       },
       () => {
-        if (!signal.aborted) setData({ status: 'error' });
+        if (!controller.signal.aborted) {
+          setLoadError(true);
+          setLoading(false);
+        }
       },
     );
-
     return () => controller.abort();
   }, [isChecklistPage, loadKey]);
-
   function navigate(next: ReviewLocation, replace = false) {
+    if (
+      editorDirty &&
+      next.page !== view.page &&
+      !window.confirm('На экране есть несохранённые изменения. Покинуть редактор?')
+    )
+      return;
     const url = reviewUrl(next);
-    if (url !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+    if (url !== window.location.pathname + window.location.search + window.location.hash) {
       if (replace) window.history.replaceState(null, '', url);
       else window.history.pushState(null, '', url);
     }
     setView(next);
   }
-
+  function navClick(event: MouseEvent<HTMLAnchorElement>, page: ReviewLocation['page']) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)
+      return;
+    event.preventDefault();
+    navigate(pageLocation(page));
+  }
   function refreshWorkspace() {
-    setData({ status: 'loading' });
-    setLoadKey((current) => current + 1);
+    setLoadKey((key) => key + 1);
   }
-
   async function saveChecklistVersion(checklistId: string, input: ChecklistInput) {
-    const version = await api.createChecklistVersion(checklistId, input);
-    setData((current) => {
-      if (current.status !== 'ready') return current;
-      return { ...current, checklists: [version, ...current.checklists] };
-    });
-    return version;
+    const created = await api.createChecklistVersion(checklistId, input);
+    setData((current) =>
+      current
+        ? {
+            ...current,
+            checklists: [created, ...current.checklists.filter((item) => item.id !== created.id)],
+          }
+        : current,
+    );
+    return created;
   }
-
-  const current =
-    data.status === 'ready'
-      ? view.conversationId
-        ? data.conversations.find((conversation) => conversation.id === view.conversationId)
-        : data.conversations[0]
-      : undefined;
-
+  const conversation = data?.conversations.find((item) => item.id === view.conversationId);
+  const demo = typeof __CQA_DEMO__ !== 'undefined' && __CQA_DEMO__;
   return (
-    <>
-      <header className="topbar">
-        <div className="topbar-inner">
-          <div className="brand">
-            <img className="brand-mark" src="/cqa.svg" width="34" height="34" alt="" />
-            <div>
-              <h1>Контроль качества</h1>
-              {__CQA_DEMO__ && (
-                <span className="demo-label">Демо · вымышленные данные и оценки</span>
+    <div className="app-shell">
+      <a href="#main-content" className="skip-link">
+        Перейти к содержимому
+      </a>
+      <aside className="app-sidebar">
+        <a
+          className="app-brand"
+          href="/dialogs"
+          onClick={(e) => navClick(e, 'dialogs')}
+          aria-label="CQA — Диалоги"
+        >
+          <span className="brand-symbol" aria-hidden="true">
+            c.
+          </span>
+          <span>
+            CQA<small>Контроль качества</small>
+          </span>
+        </a>
+        <div className="sidebar-divider" />
+        <p className="nav-caption">Рабочая область</p>
+        <nav className="sidebar-nav" aria-label="Разделы">
+          {(['dialogs', 'checklists', 'appeals'] as const).map((page) => (
+            <a
+              key={page}
+              href={'/' + page}
+              aria-current={view.page === page ? 'page' : undefined}
+              onClick={(e) => navClick(e, page)}
+            >
+              <NavIcon name={page} />
+              <span>{titles[page]}</span>
+              <span className="nav-arrow" aria-hidden="true">
+                ↗
+              </span>
+            </a>
+          ))}
+        </nav>
+        <div className="sidebar-bottom">
+          <div className="sidebar-orbit" aria-hidden="true" />
+          <span>
+            Качество начинается
+            <br />с внимания к диалогу.
+          </span>
+          {demo && <strong className="demo-label">Демо · вымышленные данные и оценки</strong>}
+        </div>
+      </aside>
+      <div className="app-main">
+        <div className="app-topline">
+          <span>
+            CQA <span aria-hidden="true">/</span> {titles[view.page]}
+          </span>
+          <span className="topline-caption">Проверка и пересмотр диалогов</span>
+          {demo && <strong className="topline-demo">Демо · вымышленные данные</strong>}
+        </div>
+        {loadError && data && (
+          <div className="notice notice-error global-notice" role="alert">
+            Не удалось обновить данные. Сохранённое на экране осталось доступным.
+            <button className="button secondary" onClick={refreshWorkspace}>
+              Повторить
+            </button>
+          </div>
+        )}
+        {!data || (!isChecklistPage && !data.hasConversations) ? (
+          <main id="main-content" className="page-content" tabIndex={-1}>
+            <div className="panel empty-state">
+              {loading ? (
+                <>
+                  <span className="loading-ring" aria-hidden="true" />
+                  <h1>Загружаем рабочую область…</h1>
+                  <p role="status">Получаем данные с сервера.</p>
+                </>
+              ) : (
+                <>
+                  <h1>Не удалось загрузить данные</h1>
+                  <p>Проверьте подключение к серверу и повторите попытку.</p>
+                  <button className="button primary" onClick={refreshWorkspace}>
+                    Повторить
+                  </button>
+                </>
               )}
             </div>
-          </div>
-          <nav className="main-nav" aria-label="Разделы">
-            <a href="/dialogs" aria-current={view.page === 'dialogs' ? 'page' : undefined}>
-              Диалоги
-            </a>
-            <a href="/appeals" aria-current={view.page === 'appeals' ? 'page' : undefined}>
-              Апелляции
-            </a>
-            <a href="/checklists" aria-current={isChecklistPage ? 'page' : undefined}>
-              Чек-листы
-            </a>
-          </nav>
-          <div className="sponsor">
-            <span>При поддержке</span> <strong>Freedom Bank</strong>
-          </div>
-        </div>
-      </header>
-      {isChecklistPage && (
-        <main className="checklists-page">
-          <ChecklistEditor
-            versions={data.status === 'ready' ? data.checklists : []}
-            loading={data.status === 'loading'}
-            loadError={data.status === 'error'}
-            onReload={refreshWorkspace}
-            onSaveVersion={saveChecklistVersion}
-          />
-        </main>
-      )}
-      {!isChecklistPage && data.status === 'loading' && (
-        <main className="screen-state">
-          <p role="status">Загружаем диалоги и чек-листы…</p>
-        </main>
-      )}
-      {!isChecklistPage && data.status === 'error' && (
-        <main className="screen-state">
-          <h2>Не удалось загрузить диалоги</h2>
-          <p>Проверьте подключение и повторите попытку.</p>
-          <button className="button primary" onClick={refreshWorkspace}>
-            Повторить
-          </button>
-        </main>
-      )}
-      {data.status === 'ready' && view.page === 'appeals' && (
-        <AppealsPage
-          conversations={data.conversations}
-          checklists={data.checklists}
-          onOpen={(evaluation, appealId) =>
-            navigate({
-              page: 'dialogs',
-              conversationId: evaluation.conversationId,
-              evaluationId: evaluation.id,
-              messageId: null,
-              appealId,
-            })
-          }
-        />
-      )}
-      {data.status === 'ready' && view.page === 'dialogs' && (
-        <main className="workspace">
-          <DialogList
-            conversations={data.conversations}
-            activeId={current?.id}
-            onSelect={(id) =>
-              navigate({
-                page: 'dialogs',
-                conversationId: id,
-                evaluationId: null,
-                messageId: null,
-                appealId: null,
-              })
-            }
-          />
-          {current ? (
-            <>
-              <Transcript
-                key={'transcript-' + current.id}
-                conversation={current}
-                selectedMessageId={view.messageId}
-              />
-              <EvaluationPanel
-                key={'evaluation-' + current.id}
-                conversation={current}
+          </main>
+        ) : (
+          <>
+            {view.page === 'dialogs' && !view.conversationId && (
+              <DialogsPage
+                conversations={data.conversations}
                 checklists={data.checklists}
-                requestedId={view.evaluationId}
-                onSelect={(id) =>
+                onRefresh={refreshWorkspace}
+                onOpen={(id, evaluationId) =>
                   navigate({
-                    page: 'dialogs',
-                    conversationId: current.id,
-                    evaluationId: id,
-                    messageId: null,
-                    appealId: null,
+                    ...pageLocation('dialogs'),
+                    conversationId: id,
+                    evaluationId: evaluationId ?? null,
                   })
                 }
-                selectedAppealId={view.appealId}
-                onSelectAppeal={(evaluationId, appealId) =>
+              />
+            )}
+            {view.page === 'dialogs' && view.conversationId && (
+              <main id="main-content" className="page-content" tabIndex={-1}>
+                <header className="page-heading detail-heading">
+                  <div>
+                    <button
+                      className="text-button back-link"
+                      onClick={() => navigate(pageLocation('dialogs'))}
+                    >
+                      ← К диалогам
+                    </button>
+                    <h1>{conversation ? conversationTitle(conversation) : 'Диалог не найден'}</h1>
+                    {conversation && (
+                      <p className="page-description">
+                        {conversation.sourceConversationId} <span aria-hidden="true">·</span>{' '}
+                        {conversation.groupId} <span aria-hidden="true">·</span>{' '}
+                        {channelName[conversation.channel]} · {conversation.language}
+                      </p>
+                    )}
+                  </div>
+                </header>
+                {conversation ? (
+                  <div className="review-workspace">
+                    <EvaluationPanel
+                      key={'evaluation-' + conversation.id}
+                      conversation={conversation}
+                      checklists={data.checklists}
+                      requestedId={view.evaluationId}
+                      onSelect={(id) =>
+                        navigate({ ...view, evaluationId: id, appealId: null, messageId: null })
+                      }
+                      selectedAppealId={view.appealId}
+                      onSelectAppeal={(evaluationId, appealId) =>
+                        navigate({ ...view, evaluationId, appealId })
+                      }
+                      onEvidence={(id, evaluationId) => {
+                        navigate({ ...view, evaluationId, messageId: id }, true);
+                        const message = document.getElementById(id);
+                        message?.focus({ preventScroll: true });
+                        message?.scrollIntoView({ block: 'nearest' });
+                      }}
+                    />
+                    <Transcript
+                      key={'transcript-' + conversation.id}
+                      conversation={conversation}
+                      selectedMessageId={view.messageId}
+                    />
+                  </div>
+                ) : (
+                  <div className="panel empty-state">
+                    <h2>Диалог не найден</h2>
+                    <p>Вернитесь в список и выберите доступный диалог.</p>
+                    <button
+                      className="button secondary"
+                      onClick={() => navigate(pageLocation('dialogs'))}
+                    >
+                      Открыть список
+                    </button>
+                  </div>
+                )}
+              </main>
+            )}
+            {view.page === 'checklists' && (
+              <main id="main-content" className="page-content" tabIndex={-1}>
+                <header className="page-heading">
+                  <div>
+                    <p className="eyebrow">Правила проверки</p>
+                    <h1>Чек-листы</h1>
+                    <p className="page-description">
+                      Критерии, шкалы и версии для оценки диалогов.
+                    </p>
+                  </div>
+                </header>
+                <ChecklistEditor
+                  versions={data.checklists}
+                  loading={loading}
+                  loadError={loadError}
+                  onReload={refreshWorkspace}
+                  onSaveVersion={saveChecklistVersion}
+                  onDirtyChange={setEditorDirty}
+                />
+              </main>
+            )}
+            {view.page === 'appeals' && (
+              <AppealsPage
+                conversations={data.conversations}
+                checklists={data.checklists}
+                selectedId={view.appealId}
+                onSelect={(appealId) => navigate({ ...pageLocation('appeals'), appealId })}
+                onOpen={(evaluation, appealId) =>
                   navigate({
-                    ...view,
-                    page: 'dialogs',
-                    conversationId: current.id,
-                    evaluationId,
+                    ...pageLocation('dialogs'),
+                    conversationId: evaluation.conversationId,
+                    evaluationId: evaluation.id,
                     appealId,
                   })
                 }
-                onEvidence={(id, evaluationId) => {
-                  navigate(
-                    {
-                      ...view,
-                      page: 'dialogs',
-                      conversationId: current.id,
-                      evaluationId,
-                      messageId: id,
-                    },
-                    true,
-                  );
-                  const message = document.getElementById(id);
-                  message?.focus({ preventScroll: true });
-                  message?.scrollIntoView({ block: 'nearest' });
-                }}
               />
-            </>
-          ) : (
-            <section className="panel workspace-empty">
-              <h2>{view.conversationId ? 'Диалог не найден' : 'Пока нет диалогов'}</h2>
-              <p>
-                {view.conversationId
-                  ? 'Выберите диалог из списка.'
-                  : 'После импорта диалоги появятся в списке.'}
-              </p>
-              <button className="button secondary" onClick={refreshWorkspace}>
-                Обновить список
-              </button>
-            </section>
-          )}
-        </main>
-      )}
-    </>
-  );
-}
-
-function DialogList({
-  conversations,
-  activeId,
-  onSelect,
-}: {
-  conversations: Conversation[];
-  activeId?: string;
-  onSelect: (id: string) => void;
-}) {
-  const [query, setQuery] = useState('');
-  const needle = query.trim().toLocaleLowerCase();
-  const matches = conversations.filter((conversation) =>
-    [
-      conversation.sourceConversationId,
-      conversation.groupId,
-      conversation.language,
-      channelName[conversation.channel],
-    ].some((value) => value.toLocaleLowerCase().includes(needle)),
-  );
-
-  return (
-    <aside className="panel dialog-panel" aria-labelledby="dialog-list-heading">
-      <div className="panel-header">
-        <div className="title-row">
-          <h2 id="dialog-list-heading">Диалоги</h2>
-          <span className="count" aria-label={`Диалогов: ${conversations.length}`}>
-            {conversations.length}
-          </span>
-        </div>
-        <input
-          className="field dialog-search"
-          type="search"
-          aria-label="Поиск диалогов"
-          placeholder="Номер или группа"
-          value={query}
-          onChange={(event) => setQuery(event.currentTarget.value)}
-        />
-      </div>
-      <div className="panel-scroll dialog-scroll">
-        {matches.length > 0 ? (
-          <ul className="dialog-list">
-            {matches.map((conversation) => (
-              <li key={conversation.id}>
-                <button
-                  className="dialog-row"
-                  type="button"
-                  aria-current={activeId === conversation.id ? 'true' : undefined}
-                  onClick={() => onSelect(conversation.id)}
-                >
-                  <span className="dialog-name">{conversation.sourceConversationId}</span>
-                  <span className="dialog-meta">
-                    {channelName[conversation.channel]} · {conversation.language} ·{' '}
-                    {conversation.groupId}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="muted list-message">{needle ? 'Совпадений нет' : 'Список пуст'}</p>
+            )}
+            {view.page === 'not-found' && (
+              <main id="main-content" className="page-content">
+                <div className="panel empty-state">
+                  <h1>Страница не найдена</h1>
+                  <p>Выберите раздел в меню или откройте список диалогов.</p>
+                  <button
+                    className="button primary"
+                    onClick={() => navigate(pageLocation('dialogs'))}
+                  >
+                    К диалогам
+                  </button>
+                </div>
+              </main>
+            )}
+          </>
         )}
       </div>
-    </aside>
+    </div>
   );
 }

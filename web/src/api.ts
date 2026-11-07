@@ -17,7 +17,10 @@ import type {
 type Enqueued = { evaluationIds: string[] };
 
 export class RequestError extends Error {
-  constructor(readonly code: string, readonly status = 0) {
+  constructor(
+    readonly code: string,
+    readonly status = 0,
+  ) {
     super(code);
   }
 }
@@ -45,7 +48,11 @@ export const api = {
   conversations: (signal: AbortSignal) => request<Conversation[]>('/conversations', { signal }),
   checklists: (signal: AbortSignal) => request<ChecklistVersion[]>('/checklists', { signal }),
   createChecklistVersion: (checklistId: string, input: ChecklistInput, signal?: AbortSignal) =>
-    post<ChecklistVersion>(`/checklists/${encodeURIComponent(checklistId)}/versions`, input, signal),
+    post<ChecklistVersion>(
+      `/checklists/${encodeURIComponent(checklistId)}/versions`,
+      input,
+      signal,
+    ),
   evaluations: (conversationId: string | null, signal: AbortSignal) =>
     request<Evaluation[]>(
       conversationId ? `/evaluations?${new URLSearchParams({ conversationId })}` : '/evaluations',
@@ -65,14 +72,18 @@ export const api = {
   submitAppeal: (body: AppealInput, signal: AbortSignal) => post<Appeal>('/appeals', body, signal),
   resolveAppeal: (id: string, body: DecisionInput, signal: AbortSignal) =>
     post<Evaluation>(`/appeals/${encodeURIComponent(id)}/decision`, body, signal),
-  importRecords: (body: ImportRequest, signal: AbortSignal) => post<ImportResult>('/import', body, signal),
-  scorePreview: (body: ScoreRequest, signal: AbortSignal) => post<ScoreResponse>('/score', body, signal),
+  importRecords: (body: ImportRequest, signal: AbortSignal) =>
+    post<ImportResult>('/import', body, signal),
+  scorePreview: (body: ScoreRequest, signal: AbortSignal) =>
+    post<ScoreResponse>('/score', body, signal),
 };
 
 export function importErrorMessage(error: unknown): string {
   if (error instanceof RequestError) {
-    if (error.code === 'SOURCE_NOT_CONFIGURED') return 'Источник импорта не настроен. Выберите JSON-файл или настройте источник на сервере.';
-    if (error.code === 'INVALID_INPUT') return 'Не удалось импортировать: проверьте группу и формат записей.';
+    if (error.code === 'SOURCE_NOT_CONFIGURED')
+      return 'Источник импорта не настроен. Выберите JSON-файл или настройте источник на сервере.';
+    if (error.code === 'INVALID_INPUT')
+      return 'Не удалось импортировать: проверьте группу и формат записей.';
     if (error.status === 413) return 'Файл слишком большой. Максимальный размер импорта — 10 МБ.';
   }
   return 'Не удалось импортировать диалоги. Проверьте источник и повторите попытку.';

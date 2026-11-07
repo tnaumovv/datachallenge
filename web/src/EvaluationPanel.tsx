@@ -131,6 +131,28 @@ export function EvaluationPanel({
         )}
       </div>
       <div className="panel-scroll evaluation-scroll">
+        {evaluation && (
+          <p className="saved-evaluation-date">
+            Сохранено{' '}
+            {new Intl.DateTimeFormat('ru-RU', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              timeZone: 'Asia/Almaty',
+            }).format(new Date(evaluation.createdAt))}
+          </p>
+        )}
+        {completed && checklist && (
+          <button
+            className="button secondary rerun-button"
+            disabled={review.submitting}
+            onClick={() => void review.run(checklist.id, undefined, true)}
+          >
+            {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
+          </button>
+        )}
         {review.history === 'loading' && (
           <p className="muted panel-note" role="status">
             Загружаем оценку…
@@ -268,6 +290,7 @@ function CompletedReview({
           key={selected.id}
           appeal={selected}
           criterion={criterion}
+          evaluation={evaluation}
           onClose={() => {
             onSelectAppeal(null);
             document.getElementById(`appeal-entry-${selected.id}`)?.focus();
@@ -324,14 +347,14 @@ function ScoreCard({ evaluation, score }: { evaluation: Evaluation; score: Score
       {score.total !== null ? (
         <div className="score-number">
           {numbers.format(score.total)}
-          <span>%</span>
+          <span>/ 100</span>
         </div>
       ) : (
         <p className="score-empty">Нет применимых критериев</p>
       )}
       {revised && original !== undefined && (
         <p className="muted">
-          Исходный балл {original === null ? '—' : `${numbers.format(original)}%`}
+          Исходный балл {original === null ? '—' : `${numbers.format(original)} / 100`}
         </p>
       )}
       {score.grossViolation && (
@@ -435,15 +458,19 @@ function CriterionRow({
   return (
     <details className="criterion" open={open}>
       <summary className="criterion-summary">
-        <span className="criterion-name">{criterion.title}</span>
-        {answer ? (
+        <span className="criterion-name">
+          {criterion.title}
+          {criterion.scoringMode === 'weighted' && (
+            <small className="criterion-weight">
+              Вес: {numbers.format(criterion.weight)}
+              {answer?.value === 'NA' ? ' · исключён (N/A)' : ''}
+            </small>
+          )}
+        </span>
+        {answer && (
           <span className={`answer${isNegative ? ' answer-negative' : ''}`}>
             {answerLabel(criterion, answer.value)}
           </span>
-        ) : (
-          criterion.scoringMode === 'weighted' && (
-            <span className="weight">{numbers.format(criterion.weight)} б.</span>
-          )
         )}
       </summary>
       <div className="criterion-detail">
