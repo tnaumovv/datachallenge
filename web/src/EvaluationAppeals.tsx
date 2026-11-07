@@ -6,9 +6,11 @@ import type {
   CriterionAnswer,
   DecisionInput,
   Evaluation,
+  ScoreResponse,
 } from '../../shared/contracts.js';
 import { api, appealErrorMessage } from './api';
 import { answerLabel, appealStatusLabel, scoreLabel } from './review-format';
+import { buildDecision, buildPreviewRequest } from './appeal-preview';
 
 type History = { status: 'loading' | 'error' } | { status: 'ready'; items: Appeal[] };
 
@@ -223,14 +225,16 @@ export function AppealHistory({
 export function AppealReview({
   appeal,
   criterion,
+  evaluation,
   onResolved,
   onClose,
   onReload,
 }: {
   appeal: Appeal;
   criterion: Criterion;
+  evaluation?: Evaluation;
   onResolved: (evaluation: Evaluation) => void;
-  onClose: () => void;
+  onClose?: () => void;
   onReload: () => void;
 }) {
   const review = useRef<HTMLElement>(null);
@@ -249,9 +253,11 @@ export function AppealReview({
     >
       <div className="title-row">
         <h3 id="appeal-review-heading">Апелляция</h3>
-        <button type="button" className="button secondary" onClick={onClose}>
-          Свернуть
-        </button>
+        {onClose && (
+          <button type="button" className="button secondary" onClick={onClose}>
+            Свернуть
+          </button>
+        )}
       </div>
       <p className="appeal-criterion">{criterion.title}</p>
       <p className="appeal-comment">{appeal.comment}</p>
@@ -263,6 +269,7 @@ export function AppealReview({
           <DecisionForm
             appeal={appeal}
             criterion={criterion}
+            evaluation={evaluation}
             onResolved={onResolved}
             onReload={onReload}
           />
@@ -294,11 +301,13 @@ export function AppealReview({
 function DecisionForm({
   appeal,
   criterion,
+  evaluation,
   onResolved,
   onReload,
 }: {
   appeal: Appeal;
   criterion: Criterion;
+  evaluation?: Evaluation;
   onResolved: (evaluation: Evaluation) => void;
   onReload: () => void;
 }) {
@@ -310,17 +319,47 @@ function DecisionForm({
     criterion.answerType === 'binary' ? [true, false] : [...criterion.levels];
   if (criterion.allowNA) values.push('NA');
   const replacements = values.filter((value) => value !== appeal.beforeAnswer.value);
+  const body = buildDecision(criterion, decision, replacements[replacement], reason);
+  const previewKey = JSON.stringify([
+    evaluation?.id,
+    decision,
+    replacements[replacement],
+    reason.trim(),
+    evaluation?.effectiveAnswers,
+  ]);
+  const [preview, setPreview] = useState<{
+    key: string;
+    status: 'loading' | 'ready' | 'error';
+    score?: ScoreResponse;
+  } | null>(null);
+  useEffect(() => {
+    if (!evaluation || decision !== 'change' || !body) return;
+    const controller = new AbortController();
+    setPreview({ key: previewKey, status: 'loading' });
+    const timer = window.setTimeout(() => {
+      api
+        .scorePreview(buildPreviewRequest(evaluation, appeal.criterionId, body), controller.signal)
+        .then(
+          (score) => {
+            if (!controller.signal.aborted) setPreview({ key: previewKey, status: 'ready', score });
+          },
+          () => {
+            if (!controller.signal.aborted) setPreview({ key: previewKey, status: 'error' });
+          },
+        );
+    }, 250);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [previewKey]);
 
   return (
     <form
       className="decision-form"
       onSubmit={(event) => {
         event.preventDefault();
-        if (!reason.trim()) return;
-        const body: DecisionInput =
-          decision === 'confirm'
-            ? { decision, reason: reason.trim() }
-            : { decision, replacementValue: replacements[replacement], reason: reason.trim() };
+        if (!body) return;
         void action.run((signal) => api.resolveAppeal(appeal.id, body, signal), onResolved);
       }}
     >
@@ -386,8 +425,22 @@ function DecisionForm({
           </button>
         </div>
       )}
+      {decision === 'change' && body && evaluation && (
+        <div className="decision-preview" role="status">
+          <span>Предпросмотр итога · ещё не сохранён</span>
+          {preview?.key === previewKey && preview.status === 'ready' ? (
+            <strong>{scoreLabel(preview.score ?? null)}</strong>
+          ) : (
+            <p>
+              {preview?.key === previewKey && preview.status === 'error'
+                ? 'Не удалось рассчитать предпросмотр. Решение можно сохранить без него.'
+                : 'Рассчитываем итог…'}
+            </p>
+          )}
+        </div>
+      )}
       <div className="form-actions">
-        <button className="button primary" type="submit" disabled={action.busy || !reason.trim()}>
+        <button className="button primary" type="submit" disabled={action.busy || !body}>
           {action.busy ? 'Сохраняем…' : 'Сохранить решение'}
         </button>
       </div>
