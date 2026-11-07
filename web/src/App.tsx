@@ -7,6 +7,7 @@ import { DialogsPage, conversationTitle } from './DialogsPage';
 import { EvaluationPanel } from './EvaluationPanel';
 import { ActionButton } from './ActionButton';
 import { Icon } from './Icon';
+import { ReviewNavigation } from './ReviewNavigation';
 import { Transcript, channelName } from './Transcript';
 import { pageLocation, readLocation, reviewUrl, type ReviewLocation } from './navigation';
 
@@ -213,16 +214,16 @@ export function App() {
               />
             )}
             {view.page === 'dialogs' && view.conversationId && (
-              <main id="main-content" className="page-content" tabIndex={-1}>
+              <main id="main-content" className="page-content review-page" tabIndex={-1}>
                 <header className="page-heading detail-heading">
-                  <div>
-                    <ActionButton
-                      icon="back"
-                      className="back-link"
-                      onClick={() => navigate(pageLocation('dialogs'))}
-                    >
-                      К диалогам
-                    </ActionButton>
+                  <ActionButton
+                    icon="back"
+                    className="back-link"
+                    onClick={() => navigate(pageLocation('dialogs'))}
+                  >
+                    К диалогам
+                  </ActionButton>
+                  <div className="review-heading-copy">
                     <h1>{conversation ? conversationTitle(conversation) : 'Диалог не найден'}</h1>
                     {conversation && (
                       <p className="page-description">
@@ -233,6 +234,13 @@ export function App() {
                     )}
                   </div>
                 </header>
+                {conversation && (
+                  <ReviewNavigation
+                    conversations={data.conversations}
+                    selectedId={conversation.id}
+                    onOpen={(id) => navigate({ ...pageLocation('dialogs'), conversationId: id })}
+                  />
+                )}
                 {conversation ? (
                   <div className="review-workspace">
                     <EvaluationPanel
@@ -240,6 +248,7 @@ export function App() {
                       conversation={conversation}
                       checklists={data.checklists}
                       requestedId={view.evaluationId}
+                      selectedMessageId={view.messageId}
                       onSelect={(id) =>
                         navigate({ ...view, evaluationId: id, appealId: null, messageId: null })
                       }

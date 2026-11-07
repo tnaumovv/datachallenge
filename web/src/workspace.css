@@ -642,16 +642,72 @@ a {
   font-size: 30px;
   margin-bottom: 4px;
 }
+.review-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 86px);
+  min-height: 600px;
+}
+.review-page > .page-heading,
+.review-navigation {
+  flex: none;
+}
+.detail-heading {
+  justify-content: flex-start;
+}
+.detail-heading .back-link {
+  margin-bottom: 0;
+}
+.review-heading-copy {
+  min-width: 0;
+}
 .detail-heading h1 {
   max-width: 65ch;
   font-size: 26px;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.review-navigation {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.review-picker {
+  display: grid;
+  flex: 1 1 280px;
+  min-width: 0;
+  gap: 6px;
+}
+.review-picker-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.review-navigation-controls {
+  display: flex;
+  gap: 8px;
+}
+.review-navigation-controls .action-button {
+  padding-right: 12px;
+  gap: 8px;
+  font-size: 13px;
+}
+.review-navigation-controls .button-icon {
+  width: 28px;
+  height: 28px;
+  flex-basis: 28px;
 }
 .review-workspace {
   display: grid;
   grid-template-columns: minmax(310px, 0.85fr) minmax(0, 1.3fr);
   gap: 18px;
-  min-height: 550px;
-  height: calc(100dvh - 300px);
+  flex: 1;
+  min-height: 0;
 }
 .review-workspace > .panel {
   min-width: 0;
@@ -706,9 +762,38 @@ a {
   border-radius: 10px;
 }
 .criterion-summary {
+  display: grid;
+  grid-template-columns: 10px 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
   padding: 12px;
   font-size: 14px;
   font-weight: 500;
+}
+.criterion-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.criterion-indicator {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: var(--muted);
+  background: #edf0ee;
+}
+.criterion-positive .criterion-indicator {
+  color: #fff;
+  background: var(--green);
+}
+.criterion-attention .criterion-indicator {
+  color: #805817;
+  background: #fff0d0;
+}
+.criterion-violation .criterion-indicator {
+  color: #fff;
+  background: var(--red);
 }
 .criterion[open] {
   border-color: #c8dfd0;
@@ -724,6 +809,19 @@ a {
   background: #e9f5ed;
   color: #286747;
 }
+.answer-attention {
+  color: #805817;
+  background: #fff0d0;
+}
+.answer-neutral,
+.answer-pending {
+  color: #53655c;
+  background: #edf0ee;
+}
+.answer-violation {
+  color: var(--red);
+  background: var(--red-soft);
+}
 .criterion-points {
   font-size: 13px;
 }
@@ -732,6 +830,14 @@ a {
   border-color: #d6e9dd;
   font-size: 13px;
   border-radius: 7px;
+}
+.quote-button[aria-current='true'] {
+  border-color: var(--green);
+  background: var(--freedom-mint);
+  box-shadow: inset 3px 0 var(--green);
+}
+.criterion-evidence-active {
+  box-shadow: inset 3px 0 var(--green);
 }
 .quote-text {
   white-space: normal;
@@ -765,6 +871,16 @@ a {
   border-color: #7db899;
   background: #eaf7ef;
   box-shadow: 0 0 0 2px #5eaa7f18;
+}
+.message-selection-label {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 8px;
+  border-radius: var(--control-radius);
+  color: var(--green-dark);
+  background: var(--freedom-mint);
+  font-size: 12px;
+  font-weight: 600;
 }
 .timestamp {
   color: var(--muted);
@@ -1120,6 +1236,13 @@ a {
   }
 }
 @media (max-width: 1200px) {
+  .criterion-summary {
+    grid-template-columns: 10px 22px minmax(0, 1fr);
+  }
+  .criterion-summary > .answer {
+    grid-column: 3;
+    justify-self: start;
+  }
   .app-shell {
     grid-template-columns: 190px minmax(0, 1fr);
   }
@@ -1155,6 +1278,11 @@ a {
   }
 }
 @media (max-width: 940px) {
+  .review-page {
+    display: block;
+    height: auto;
+    min-height: 0;
+  }
   .app-shell {
     grid-template-columns: 155px minmax(0, 1fr);
     gap: 8px;
@@ -1261,6 +1389,17 @@ a {
   }
 }
 @media (max-width: 650px) {
+  .review-navigation {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .review-navigation-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .review-navigation-controls .action-button {
+    min-width: 0;
+  }
   .app-shell {
     display: block;
     padding: 0;
