@@ -677,11 +677,17 @@ a {
   gap: 12px;
   margin-bottom: 18px;
 }
-.review-picker {
+.review-picker,
+.review-search {
   display: grid;
-  flex: 1 1 280px;
   min-width: 0;
   gap: 6px;
+}
+.review-picker {
+  flex: 2 1 260px;
+}
+.review-search {
+  flex: 1 1 155px;
 }
 .review-picker-label {
   display: flex;

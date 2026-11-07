@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Conversation } from '../../shared/contracts.js';
 import { ActionButton } from './ActionButton';
 import { conversationTitle } from './DialogsPage';
@@ -12,12 +13,39 @@ export function ReviewNavigation({
   selectedId: string;
   onOpen: (id: string) => void;
 }) {
+  const [query, setQuery] = useState('');
+  const term = query.trim().toLocaleLowerCase('ru');
+  const matches = term
+    ? conversations.filter((conversation) =>
+        [
+          conversation.sourceConversationId,
+          conversation.groupId,
+          conversation.language,
+          ...conversation.messages.map((message) => message.text),
+        ]
+          .join(' ')
+          .toLocaleLowerCase('ru')
+          .includes(term),
+      )
+    : conversations;
+  const pickerValue = matches.some((conversation) => conversation.id === selectedId)
+    ? selectedId
+    : '';
   const index = conversations.findIndex((conversation) => conversation.id === selectedId);
   const previous = index > 0 ? conversations[index - 1] : undefined;
   const next = index >= 0 ? conversations[index + 1] : undefined;
 
   return (
     <nav className="review-navigation" aria-label="Переключение диалогов">
+      <label className="review-search field-label">
+        <span>Поиск по диалогам</span>
+        <input
+          className="field"
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </label>
       <label className="review-picker field-label">
         <span className="review-picker-label">
           <span>Выбрать диалог</span>
@@ -26,10 +54,16 @@ export function ReviewNavigation({
         <select
           className="field"
           aria-label="Выбрать диалог"
-          value={selectedId}
+          value={pickerValue}
+          disabled={!matches.length}
           onChange={(event) => onOpen(event.target.value)}
         >
-          {conversations.map((conversation) => (
+          {!pickerValue && (
+            <option value="" disabled>
+              {matches.length ? 'Выбрать диалог' : 'Ничего не найдено'}
+            </option>
+          )}
+          {matches.map((conversation) => (
             <option key={conversation.id} value={conversation.id}>
               {conversation.sourceConversationId} · {conversation.language} ·{' '}
               {conversationTitle(conversation).slice(0, 100)}
@@ -37,6 +71,9 @@ export function ReviewNavigation({
           ))}
         </select>
       </label>
+      <span className="sr-only" role="status">
+        {term && !matches.length ? 'Ничего не найдено. Измените запрос.' : ''}
+      </span>
       <div className="review-navigation-controls">
         <ActionButton
           icon="back"
