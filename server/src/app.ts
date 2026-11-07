@@ -1,5 +1,7 @@
 import express, { type ErrorRequestHandler } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { z } from 'zod';
 import {
   ConversationFiltersSchema,
@@ -18,7 +20,12 @@ import { AppealService } from './appeals/service.js';
 
 export function createApp(
   db: DatabaseSync,
-  options: { organizerUrl?: string; fetcher?: Fetcher; evaluations?: EvaluationService } = {},
+  options: {
+    organizerUrl?: string;
+    fetcher?: Fetcher;
+    evaluations?: EvaluationService;
+    webRoot?: string;
+  } = {},
 ) {
   const app = express();
   app.disable('x-powered-by');
@@ -104,6 +111,15 @@ export function createApp(
   app.post('/api/appeals/:id/decision', (req, res) =>
     res.json(appeals.resolve(req.params.id, req.body)),
   );
+  // Keep API misses separate from the UI, even if an asset has the same path.
+  app.use('/api', (_req, _res, next) => next(new HttpError(404, 'NOT_FOUND', 'Route not found')));
+  if (options.webRoot && existsSync(join(options.webRoot, 'index.html'))) {
+    const webRoot = options.webRoot;
+    app.use(express.static(webRoot, { index: false }));
+    app.get(['/', '/dialogs', '/dialogs/:id', '/checklists', '/appeals'], (_req, res) =>
+      res.sendFile(join(webRoot, 'index.html')),
+    );
+  }
   app.use((_req, _res, next) => next(new HttpError(404, 'NOT_FOUND', 'Route not found')));
   const errors: ErrorRequestHandler = (error, _req, res, _next) => {
     if (error instanceof HttpError) {
