@@ -29,7 +29,57 @@ describe('diagnostics API', () => {
       reviewRequired: 1,
     });
     expect(result.body.original.denominator).toBe(9);
+    expect(result.body.channels.chats + result.body.channels.calls).toBe(10);
+    expect(result.body.trend).toHaveLength(9);
+    expect(result.body.trend.at(-1).average).toBeCloseTo(result.body.effective.average, 8);
+    expect(result.body.trend.map((point: { count: number }) => point.count)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9,
+    ]);
+    expect(
+      result.body.trend.every((point: { average: number }) => Number.isFinite(point.average)),
+    ).toBe(true);
+    const empty = await request(app).get('/api/overview?groupId=EMPTY').expect(200);
+    expect(empty.body.channels).toEqual({ chats: 0, calls: 0 });
+    expect(empty.body.trend).toEqual([]);
+    expect(empty.body.effective.average).toBeNull();
     expect(result.body.selection.evaluationIds).toContain(failed.id);
+    db.close();
+  });
+  it('builds cumulative means in insertion order, including a genuine zero score', async () => {
+    const db = createDatabase(':memory:');
+    const seed = seedResults(db);
+    const newest = {
+      ...seed.evaluations[1],
+      finalScore: { ...seed.evaluations[1].finalScore!, total: 100 },
+    };
+    const oldest = {
+      ...seed.evaluations[0],
+      finalScore: { ...seed.evaluations[0].finalScore!, total: 0 },
+    };
+    const app = express();
+    installDiagnosticsRoutes(app, db, { get: () => newest, list: () => [newest, oldest] });
+    const result = await request(app).get('/api/overview').expect(200);
+    expect(result.body.trend).toEqual([
+      { count: 1, average: 0 },
+      { count: 2, average: 50 },
+    ]);
+    expect(result.body.effective.average).toBe(50);
+    db.close();
+  });
+  it('counts all 60 chats and 5 calls, respecting channel filters in the graph', async () => {
+    const db = createDatabase(':memory:');
+    seedResults(db, 'DEV');
+    const app = express();
+    installDiagnosticsRoutes(app, db, new EvaluationService(db));
+    const all = await request(app).get('/api/overview').expect(200);
+    expect(all.body.channels).toEqual({ chats: 60, calls: 5 });
+    expect(all.body.trend).toHaveLength(65);
+    const calls = await request(app)
+      .get('/api/overview')
+      .query({ channel: 'voice call' })
+      .expect(200);
+    expect(calls.body.channels).toEqual({ chats: 0, calls: 5 });
+    expect(calls.body.trend).toHaveLength(5);
     db.close();
   });
   it('separates original/effective diffs and rejects different transcript hashes', async () => {

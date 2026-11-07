@@ -1,7 +1,7 @@
 .checklist-editor {
-  color: #192820;
-  background: var(--surface, #fff);
-  border: 1px solid var(--line, #dce5de);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 24px;
   min-width: 0;
@@ -44,31 +44,31 @@
   margin-top: 5px;
 }
 .checklist-editor .ce-muted {
-  color: var(--muted, #53635a);
+  color: var(--muted);
   font-size: 13px;
 }
 .checklist-editor .ce-button {
   flex: none;
   min-height: var(--control-height, 44px);
   padding: 9px 14px;
-  border: 1px solid var(--line, #dce5de);
+  border: 1px solid var(--line);
   border-radius: var(--control-radius, 999px);
-  color: #192820;
-  background: #fff;
+  color: var(--text);
+  background: var(--surface);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
 }
 .checklist-editor .ce-button:hover:not(:disabled) {
-  background: var(--canvas, #f3f6f3);
+  background: var(--canvas);
 }
 .checklist-editor .ce-primary {
-  color: #fff;
-  background: var(--green, #087746);
-  border-color: var(--green, #087746);
+  color: var(--on-accent);
+  background: var(--green);
+  border-color: var(--green);
 }
 .checklist-editor .ce-primary:hover:not(:disabled) {
-  background: var(--green-dark, #065c37);
+  background: var(--green-dark);
 }
 .checklist-editor button:disabled,
 .checklist-editor input:disabled,
@@ -77,14 +77,14 @@
   cursor: default;
 }
 .checklist-editor :focus-visible {
-  outline: 2px solid var(--green, #087746);
+  outline: 2px solid var(--green);
   outline-offset: 3px;
 }
 .checklist-editor .ce-version-picker {
   display: grid;
   gap: 7px;
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--line, #dce5de);
+  border-bottom: 1px solid var(--line);
 }
 .checklist-editor .ce-version-picker > label,
 .checklist-editor .ce-field > label {
@@ -98,10 +98,10 @@
   min-width: 0;
   min-height: var(--control-height, 44px);
   padding: 9px 11px;
-  border: 1px solid #a9b9af;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: #f9fbf7;
-  color: #192820;
+  background: var(--surface-subtle);
+  color: var(--text);
   font: inherit;
 }
 .checklist-editor textarea {
@@ -109,7 +109,7 @@
   line-height: 1.5;
 }
 .checklist-editor [aria-invalid='true'] {
-  border-color: var(--red, #92372b) !important;
+  border-color: var(--red) !important;
 }
 .checklist-editor .ce-version-view {
   display: grid;
@@ -118,11 +118,11 @@
 }
 .checklist-editor .ce-section > h3 {
   padding-bottom: 6px;
-  color: var(--green-dark, #065c37);
+  color: var(--green-dark);
 }
 .checklist-editor .ce-criterion-view {
   padding: 16px 0;
-  border-bottom: 1px solid var(--line, #dce5de);
+  border-bottom: 1px solid var(--line);
 }
 .checklist-editor .ce-criterion-view > p {
   margin-top: 8px;
@@ -134,8 +134,8 @@
 }
 .checklist-editor .ce-badge {
   display: inline-block;
-  background: var(--green-soft, #e9f5ee);
-  color: var(--green-dark, #065c37);
+  background: var(--green-soft);
+  color: var(--green-dark);
   padding: 3px 9px;
   border-radius: 6px;
   font-size: 12px;
@@ -186,7 +186,7 @@
   display: grid;
   gap: 16px;
   min-width: 0;
-  border: 1px solid var(--line, #dce5de);
+  border: 1px solid var(--line);
   border-radius: 9px;
   padding: 18px;
   margin: 24px 0;
@@ -200,9 +200,9 @@
   min-width: 0;
   padding: 14px;
   margin: 0;
-  border: 1px solid var(--line, #dce5de);
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: var(--canvas, #f3f6f3);
+  background: var(--canvas);
 }
 .checklist-editor .ce-levels > legend {
   padding: 0 6px;
@@ -229,43 +229,43 @@
   width: 18px;
   height: 18px;
   margin: 2px 0 0;
-  accent-color: var(--green, #087746);
+  accent-color: var(--green);
 }
 .checklist-editor .ce-actions {
   justify-content: flex-start;
 }
 .checklist-editor .ce-save-bar {
-  border-top: 1px solid var(--line, #dce5de);
+  border-top: 1px solid var(--line);
   margin-top: 24px;
   padding-top: 18px;
 }
 .checklist-editor .ce-notice {
   margin: 16px 0;
   padding: 14px;
-  border: 1px solid var(--line, #dce5de);
+  border: 1px solid var(--line);
   border-radius: 7px;
-  background: var(--canvas, #f3f6f3);
+  background: var(--canvas);
 }
 .checklist-editor .ce-notice .ce-actions,
 .checklist-editor .ce-notice > button {
   margin-top: 10px;
 }
 .checklist-editor .ce-error {
-  color: var(--red, #92372b);
-  background: var(--red-soft, #fcf1ef);
-  border-color: #e9c4bd;
+  color: var(--red);
+  background: var(--red-soft);
+  border-color: var(--red-soft);
 }
 .checklist-editor .ce-error a {
   color: inherit;
   text-decoration: underline;
 }
 .checklist-editor .ce-field-error {
-  color: var(--red, #92372b);
+  color: var(--red);
   font-size: 12px;
 }
 .checklist-editor .ce-success {
-  color: var(--green-dark, #065c37);
-  background: var(--green-soft, #e9f5ee);
+  color: var(--green-dark);
+  background: var(--green-soft);
 }
 .checklist-editor .ce-sr-only {
   position: absolute;

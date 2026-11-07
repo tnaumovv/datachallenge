@@ -156,6 +156,11 @@ export function DialogsPage({
       <header className="page-heading">
         <div>
           <h1>Диалоги</h1>
+          <p className="page-description">
+            Всего {conversations.length} · Чаты:{' '}
+            {conversations.filter((c) => c.channel === 'agent chat').length} · Звонки:{' '}
+            {conversations.filter((c) => c.channel === 'voice call').length}
+          </p>
         </div>
         <div className="heading-actions">
           <ActionButton

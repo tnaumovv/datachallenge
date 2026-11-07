@@ -1,22 +1,3 @@
-:root {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  color: #192820;
-  background: #f3f6f3;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  font-size: 14px;
-  line-height: 1.5;
-  --surface: #fff;
-  --canvas: #f3f6f3;
-  --line: #dce5de;
-  --muted: #53635a;
-  --green: #087746;
-  --green-dark: #065c37;
-  --green-soft: #e9f5ee;
-  --red: #92372b;
-  --red-soft: #fcf1ef;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -169,7 +150,7 @@ h2 {
   padding: 7px 9px;
   color: inherit;
   background: var(--surface);
-  border: 1px solid #cad8ce;
+  border: 1px solid var(--line);
   border-radius: 6px;
 }
 
@@ -213,7 +194,7 @@ h2 {
 }
 
 .dialog-row[aria-current='true'] {
-  border-color: #bedcc9;
+  border-color: var(--line);
   background: var(--green-soft);
   color: var(--green-dark);
 }
@@ -286,15 +267,15 @@ h2 {
 .message {
   position: relative;
   padding: 9px 12px 10px;
-  border: 1px solid #e3eae4;
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: #f7f9f7;
+  background: var(--surface-subtle);
   overflow-wrap: anywhere;
   scroll-margin-block: 12px;
 }
 
 .message-operator {
-  background: #fff;
+  background: var(--surface);
 }
 
 .message-selected,
@@ -314,7 +295,7 @@ h2 {
 }
 
 .speaker {
-  color: #2e4a3a;
+  color: var(--text);
   font-size: 12px;
   font-weight: 650;
 }
@@ -340,7 +321,7 @@ h2 {
 }
 
 .field-label .field {
-  color: #192820;
+  color: var(--text);
   font-size: 13px;
   font-weight: 400;
 }
@@ -384,7 +365,7 @@ h2 {
 
 .run-card,
 .score-card {
-  background: #f7faf7;
+  background: var(--surface-subtle);
 }
 
 .notice .button,
@@ -403,7 +384,7 @@ h2 {
 
 .button.primary {
   background: var(--green);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .button.primary:hover:not(:disabled) {
@@ -411,8 +392,8 @@ h2 {
 }
 
 .button.secondary {
-  border-color: #cad8ce;
-  background: #fff;
+  border-color: var(--line);
+  background: var(--surface);
   color: var(--green-dark);
 }
 
@@ -431,7 +412,7 @@ h2 {
 }
 
 .score-number {
-  color: #153225;
+  color: var(--text);
   font-size: 36px;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
@@ -570,7 +551,7 @@ h2 {
   gap: 6px;
   width: 100%;
   padding: 6px;
-  border: 1px solid #bedcc9;
+  border: 1px solid var(--line);
   border-radius: 5px;
   color: var(--green-dark);
   background: var(--green-soft);
@@ -724,7 +705,7 @@ h2 {
 }
 
 .queue-filters button[aria-pressed='true'] {
-  border-color: #a7cbb5;
+  border-color: var(--line);
   background: var(--green-soft);
 }
 
@@ -816,7 +797,7 @@ h2 {
 
 .appeal-history-row:hover,
 .appeal-history-row[aria-pressed='true'] {
-  border-color: #bedcc9;
+  border-color: var(--line);
   background: var(--green-soft);
 }
 
@@ -826,7 +807,7 @@ h2 {
 
 .appeal-review {
   padding: 10px;
-  background: #f7faf7;
+  background: var(--surface-subtle);
   font-size: 13px;
 }
 
@@ -858,7 +839,7 @@ h2 {
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: 5px;
-  background: #fff;
+  background: var(--surface);
 }
 
 .appeal-result dt {
@@ -1000,7 +981,7 @@ textarea.field {
 .diagnostics {
   margin-top: 16px;
   padding: 12px 0;
-  border-top: 1px solid var(--border, #ddd);
+  border-top: 1px solid var(--line);
   overflow-wrap: anywhere;
 }
 .diagnostics summary {
@@ -1019,7 +1000,7 @@ textarea.field {
 }
 .profile-row {
   padding: 16px 0;
-  border-top: 1px solid var(--border, #ddd);
+  border-top: 1px solid var(--line);
 }
 .profile-row li {
   overflow-wrap: anywhere;
@@ -1037,14 +1018,14 @@ textarea.field {
   display: block;
   min-width: 42px;
   padding: 8px 4px;
-  border-bottom: 5px solid #777;
+  border-bottom: 5px solid var(--muted);
   font-size: 11px;
 }
 .message-timeline .timeline-operator {
-  border-color: #4b8530;
+  border-color: var(--green-dark);
 }
 .message-timeline .timeline-client {
-  border-color: #737bb8;
+  border-color: var(--blue);
 }
 .button-row {
   display: flex;

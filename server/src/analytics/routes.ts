@@ -155,8 +155,23 @@ export function installDiagnosticsRoutes(
           new Set(rows.map((e) => e.conversationId)).size < conversations.length,
       };
     };
+    // Cumulative means of the selected, completed results in insertion order.
+    // This describes the current sample, not historical quality or previous revisions.
+    let runningTotal = 0;
+    const trend = [...completed]
+      .reverse()
+      .filter((e) => e.finalScore?.total != null)
+      .map((e, index) => {
+        runningTotal += e.finalScore!.total!;
+        return { count: index + 1, average: runningTotal / (index + 1) };
+      });
     res.json({
       schemaVersion: 1,
+      channels: {
+        chats: conversations.filter((c) => c.channel === 'agent chat').length,
+        calls: conversations.filter((c) => c.channel === 'voice call').length,
+      },
+      trend,
       filters: f,
       selection: {
         policy: 'latest_per_conversation_and_checklist_version',

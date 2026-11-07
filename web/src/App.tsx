@@ -142,12 +142,9 @@ export function App() {
           onClick={(e) => navClick(e, 'dialogs')}
           aria-label="Freedom CQA — Диалоги"
         >
-          <span>
-            freedom
-            <span className="brand-dot" aria-hidden="true">
-              .
-            </span>
-            <small>CQA · Контроль качества</small>
+          <span className="brand-identity">
+            <span className="freedom-logo" aria-hidden="true" />
+            <small>Контроль качества</small>
           </span>
         </a>
         <div className="sidebar-divider" />
@@ -164,11 +161,11 @@ export function App() {
                   <Icon
                     name={
                       page === 'overview'
-                        ? 'checklists'
+                        ? 'overview'
                         : page === 'review'
-                          ? 'warning'
+                          ? 'shield'
                           : page === 'operations'
-                            ? 'refresh'
+                            ? 'layers'
                             : page
                     }
                   />
@@ -178,6 +175,7 @@ export function App() {
             ),
           )}
         </nav>
+        <DisplaySettings />
       </aside>
       <div className="app-main">
         <div className="app-topline">
@@ -188,7 +186,6 @@ export function App() {
             </span>{' '}
             {titles[view.page]}
           </span>
-          <DisplaySettings />
           {demo && <strong className="topline-demo">Демо · данные и оценки вымышлены</strong>}
         </div>
         {loadError && data && (
