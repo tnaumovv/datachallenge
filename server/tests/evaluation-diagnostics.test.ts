@@ -358,6 +358,7 @@ describe('attempt validation diagnostics', () => {
     for (const attempt of legacy.attempts) {
       delete attempt.failureStage;
       delete attempt.finishReason;
+      delete attempt.blockReason;
       delete attempt.validationErrors;
     }
     const originalPayload = JSON.stringify(legacy);
@@ -366,6 +367,7 @@ describe('attempt validation diagnostics', () => {
       expect(result.attempts[0]).toMatchObject({
         failureStage: null,
         finishReason: null,
+        blockReason: null,
         validationErrors: [],
       });
     }

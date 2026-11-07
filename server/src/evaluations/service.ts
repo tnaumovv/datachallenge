@@ -12,7 +12,12 @@ import { ConversationService } from '../conversations/service.js';
 import { HttpError } from '../errors.js';
 import { validateEvidence } from './evidence.js';
 import { ModelOutputSchema, PROMPT_VERSION } from './prompt.js';
-import { ProviderError, type EvaluationProvider, type ProviderResult } from './provider.js';
+import {
+  ProviderError,
+  type EvaluationProvider,
+  type ProviderResult,
+  type RepairContext,
+} from './provider.js';
 import { scoreEvaluation } from './scoring.js';
 import { OutputValidationError, validationIssues } from './validation.js';
 
@@ -22,6 +27,7 @@ function readEvaluation(payload: string): Evaluation {
     // Old records did not store these fields; do not infer lost diagnostics.
     attempt.failureStage ??= null;
     attempt.finishReason ??= null;
+    attempt.blockReason ??= null;
     attempt.validationErrors ??= [];
   }
   return evaluation;
@@ -63,6 +69,7 @@ const errorMessage = (code: string) =>
     AUTH_FAILED: 'Model authentication failed',
     RATE_LIMIT: 'Model rate limit exceeded',
     MODEL_UNAVAILABLE: 'Model is unavailable',
+    MODEL_BLOCKED: 'Model request or response was blocked by the provider',
     PROVIDER_FAILED: 'Model request failed',
   })[code] ?? 'Evaluation failed';
 
@@ -269,10 +276,7 @@ export class EvaluationService {
       else signal.addEventListener('abort', abort, { once: true });
     });
   }
-  private async generate(
-    evaluation: Evaluation,
-    repairInstruction?: string,
-  ): Promise<ProviderResult> {
+  private async generate(evaluation: Evaluation, repair?: RepairContext): Promise<ProviderResult> {
     const conversation = new ConversationService(this.db).get(evaluation.conversationId)!;
     const checklist = new ChecklistService(this.db).get(evaluation.checklistVersionId)!;
     const controller = new AbortController();
@@ -294,7 +298,7 @@ export class EvaluationService {
           conversation,
           checklist,
           signal: controller.signal,
-          repairInstruction,
+          repair,
         }),
         aborted,
       ]);
@@ -305,7 +309,7 @@ export class EvaluationService {
   }
   private async run(evaluation: Evaluation) {
     let transientRetries = 0;
-    let repaired = false;
+    let repair: RepairContext | undefined;
     for (;;) {
       if (this.stopController.signal.aborted) {
         this.fail(evaluation, 'INTERRUPTED');
@@ -320,6 +324,7 @@ export class EvaluationService {
         errorCode: null,
         failureStage: null,
         finishReason: null,
+        blockReason: null,
         validationErrors: [],
         usage: unknownUsage(),
         modelVersion: null,
@@ -328,15 +333,12 @@ export class EvaluationService {
       this.save(evaluation);
       let failure: ProviderError | undefined;
       try {
-        const response = await this.generate(
-          evaluation,
-          repaired
-            ? 'Исправь формат, проверь покрытие всех критериев, допустимые значения и реальные ID реплик.'
-            : undefined,
-        );
+        const response = await this.generate(evaluation, repair);
         attempt.usage = safeUsage(response.usage);
         attempt.modelVersion = response.modelVersion ?? null;
         attempt.finishReason = response.finishReason ?? null;
+        attempt.blockReason = response.blockReason ?? null;
+        if (attempt.blockReason) throw new ProviderError('MODEL_BLOCKED', false);
         let stage: EvaluationFailureStage = 'finish_reason';
         try {
           if (response.finishReason && response.finishReason !== 'STOP')
@@ -386,8 +388,12 @@ export class EvaluationService {
       attempt.status = 'failed';
       attempt.errorCode = failure.code;
       this.save(evaluation);
-      if (failure.code === 'INVALID_MODEL_OUTPUT' && !repaired) {
-        repaired = true;
+      if (failure.code === 'INVALID_MODEL_OUTPUT' && !repair) {
+        repair = structuredClone({
+          failureStage: attempt.failureStage,
+          finishReason: attempt.finishReason,
+          validationErrors: attempt.validationErrors,
+        });
         continue;
       }
       if (failure.retryable && transientRetries < 2) {

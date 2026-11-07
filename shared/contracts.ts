@@ -166,6 +166,7 @@ export type EvaluationAttempt = {
   errorCode: string | null;
   failureStage: EvaluationFailureStage | null;
   finishReason: string | null;
+  blockReason: string | null;
   validationErrors: EvaluationValidationIssue[];
   usage: TokenUsage;
   modelVersion: string | null;
