@@ -38,8 +38,12 @@ questions. No frontend changes or actual submission datasets belong in this work
   scorer and export the critical answer separately without zeroing the total.
 - Derive model names from each attempted call's modelVersion, falling back to its
   persisted modelId if the provider returned no version. List distinct names in
-  sorted order. Gemini is the only installed production adapter and maps to
-  external_api; unknown provider IDs are rejected instead of guessing their mode.
+  sorted order. Explicit production provider IDs gemini/groq/openai/deepseek map
+  to external_api; ollama maps to local (the owning production adapter requires
+  a loopback endpoint and disallows cloud models). Actual calls spanning local
+  and external models produce hybrid. Unknown provider IDs are rejected instead
+  of guessing their mode. This mapping follows the coordinating task's provider
+  integration at release commit `8c39d32`; no provider module is imported here.
   Records failed before any call contribute no model name; if no call was made
   anywhere in the set, fail rather than invent an actually used model.
 - Validate everything before creating an output. Publish UTF-8 JSON atomically

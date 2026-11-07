@@ -16,6 +16,16 @@ const OptionsSchema = z.strictObject({
 });
 export type ExportOptions = z.input<typeof OptionsSchema>;
 
+// Explicit production adapters only. CompatibleProvider fixes cloud endpoints
+// and constrains Ollama to a loopback endpoint and local model names.
+const providerModes = new Map<string, 'local' | 'external_api'>([
+  ['gemini', 'external_api'],
+  ['groq', 'external_api'],
+  ['openai', 'external_api'],
+  ['deepseek', 'external_api'],
+  ['ollama', 'local'],
+]);
+
 const ConversationSchema = z.object({
   id: z.string().min(1),
   sourceConversationId: z.string().min(1),
@@ -112,6 +122,7 @@ export function exportResults(db: DatabaseSync, input: ExportOptions): ResultsDo
         latest.set(row.conversation_id as string, row);
 
     const models = new Set<string>();
+    const modes = new Set<'local' | 'external_api'>();
     const results = conversations.map((conversation): ResultsDocument['results'][number] => {
       const row = latest.get(conversation.id);
       if (!row)
@@ -128,10 +139,12 @@ export function exportResults(db: DatabaseSync, input: ExportOptions): ResultsDo
         throw new Error(
           `Latest evaluation is ${e.status}, not terminal: ${conversation.sourceConversationId}`,
         );
-      // Gemini is the sole installed production adapter. A test/unknown provider
-      // must not be relabeled as real local inference or an external API call.
-      if (e.providerId !== 'gemini') throw new Error(`Unsupported provider mode: ${e.providerId}`);
-      for (const attempt of e.attempts) models.add(attempt.modelVersion ?? e.modelId);
+      const mode = providerModes.get(e.providerId);
+      if (!mode) throw new Error(`Unsupported provider mode: ${e.providerId}`);
+      for (const attempt of e.attempts) {
+        models.add(attempt.modelVersion ?? e.modelId);
+        modes.add(mode);
+      }
       if (e.status === 'failed') {
         if (!e.error)
           throw new Error(
@@ -155,7 +168,10 @@ export function exportResults(db: DatabaseSync, input: ExportOptions): ResultsDo
     const document: ResultsDocument = {
       schema_version: '1.0',
       team_name: options.teamName,
-      model: { mode: 'external_api', name: [...models].sort().join(', ') },
+      model: {
+        mode: modes.size > 1 ? 'hybrid' : modes.values().next().value!,
+        name: [...models].sort().join(', '),
+      },
       results,
     };
     db.exec('COMMIT');

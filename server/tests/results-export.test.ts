@@ -385,12 +385,70 @@ it('uses actual model versions across calls and falls back to the persisted requ
   });
 });
 
-it('rejects an unknown provider instead of claiming a guessed mode', () => {
+it.each(['test-fake', 'test', 'demo'])(
+  'rejects provider %s instead of claiming a guessed mode',
+  (provider) => {
+    const f = setup();
+    editFirst(f, (e) => {
+      e.providerId = provider;
+    });
+    expect(() => exportResults(f.db, f.options)).toThrow(/provider/i);
+  },
+);
+
+it.each(['groq', 'openai', 'deepseek'])(
+  'classifies production provider %s as external_api',
+  (provider) => {
+    const f = setup();
+    editFirst(f, (e) => {
+      e.providerId = provider;
+    });
+    expect(exportResults(f.db, f.options).model).toEqual({
+      mode: 'external_api',
+      name: 'fixture-model-001',
+    });
+  },
+);
+
+it('classifies an Ollama-only dataset as local', () => {
+  const f = setup();
+  for (const e of f.evaluations) {
+    e.providerId = 'ollama';
+    e.attempts[0].modelVersion = 'fixture-local-model';
+    updateEvaluation(f.db, e);
+  }
+  expect(exportResults(f.db, f.options).model).toEqual({
+    mode: 'local',
+    name: 'fixture-local-model',
+  });
+});
+
+it('uses hybrid when selected evaluations actually used local and external models', () => {
   const f = setup();
   editFirst(f, (e) => {
-    e.providerId = 'test-fake';
+    e.providerId = 'ollama';
+    e.attempts[0].modelVersion = 'fixture-local-model';
   });
-  expect(() => exportResults(f.db, f.options)).toThrow(/provider/i);
+  expect(exportResults(f.db, f.options).model).toEqual({
+    mode: 'hybrid',
+    name: 'fixture-local-model, fixture-model-001',
+  });
+});
+
+it('does not claim hybrid when a local task failed before any actual model call', () => {
+  const f = setup();
+  editFirst(f, (e) => {
+    e.providerId = 'ollama';
+    e.status = 'failed';
+    e.attempts = [];
+    e.error = {
+      code: 'PROVIDER_CHANGED',
+      message: 'Configured provider differs from this queued evaluation',
+    };
+  });
+  const document = exportResults(f.db, f.options);
+  expect(document.results[0].status).toBe('error');
+  expect(document.model).toEqual({ mode: 'external_api', name: 'fixture-model-001' });
 });
 
 it('rejects completed records without an actual completed model attempt', () => {
