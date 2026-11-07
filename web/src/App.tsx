@@ -248,6 +248,7 @@ export function App() {
                       conversation={conversation}
                       checklists={data.checklists}
                       requestedId={view.evaluationId}
+                      selectedMessageId={view.messageId}
                       onSelect={(id) =>
                         navigate({ ...view, evaluationId: id, appealId: null, messageId: null })
                       }

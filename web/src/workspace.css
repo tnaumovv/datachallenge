@@ -973,7 +973,16 @@ a {
   background: #edf7f1;
   border-color: #d6e9dd;
   font-size: 13px;
-  border-radius: 7px;
+  border-radius: 12px;
+  padding: 10px;
+}
+.quote-button[aria-current='true'] {
+  background: #d7f5e6;
+  border-color: #20a774;
+  box-shadow: inset 3px 0 #20a774;
+}
+.criterion-evidence-active {
+  box-shadow: inset 3px 0 #20a774;
 }
 .quote-text {
   white-space: normal;
