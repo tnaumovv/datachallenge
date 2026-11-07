@@ -161,9 +161,6 @@ export function App() {
           onClick={(e) => navClick(e, 'dialogs')}
           aria-label="CQA — Диалоги"
         >
-          <span className="brand-symbol" aria-hidden="true">
-            c.
-          </span>
           <span>
             CQA<small>Контроль качества</small>
           </span>
@@ -171,7 +168,7 @@ export function App() {
         <div className="sidebar-divider" />
         <p className="nav-caption">Рабочая область</p>
         <nav className="sidebar-nav" aria-label="Разделы">
-          {(['dialogs', 'checklists', 'appeals'] as const).map((page) => (
+          {(['dialogs', 'appeals', 'checklists'] as const).map((page) => (
             <a
               key={page}
               href={'/' + page}
@@ -180,18 +177,11 @@ export function App() {
             >
               <NavIcon name={page} />
               <span>{titles[page]}</span>
-              <span className="nav-arrow" aria-hidden="true">
-                ↗
-              </span>
             </a>
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="sidebar-orbit" aria-hidden="true" />
-          <span>
-            Качество начинается
-            <br />с внимания к диалогу.
-          </span>
+          <span className="sidebar-signature">Freedom Bank</span>
           {demo && <strong className="demo-label">Демо · вымышленные данные и оценки</strong>}
         </div>
       </aside>

@@ -7,7 +7,7 @@
     sans-serif;
   color: #182a24;
   background: #043d2e;
-  --canvas: #f3f6f4;
+  --canvas: #f5f8f6;
   --surface: #fff;
   --line: #e4ebe7;
   --muted: #66766e;
@@ -72,21 +72,23 @@ a {
 .app-shell {
   display: grid;
   grid-template-columns: 218px minmax(0, 1fr);
-  gap: 12px;
-  padding: 12px;
+  gap: 16px;
+  padding: 16px;
   min-height: 100dvh;
   background:
-    radial-gradient(ellipse at 4% 95%, #1b8c72aa 0, transparent 32%),
-    linear-gradient(160deg, #043c2d, #02372a 70%);
+    radial-gradient(ellipse at 48% 115%, #d2eee1c9 0, transparent 48%),
+    radial-gradient(ellipse at 4% 100%, #0c997aa6 0, transparent 44%),
+    linear-gradient(145deg, #003c2e, #004536 65%, #07694f);
+  background-attachment: fixed;
 }
 .app-sidebar {
   display: flex;
   flex-direction: column;
-  padding: 25px 12px 18px;
+  padding: 24px 4px 20px;
   min-width: 0;
   position: sticky;
-  top: 12px;
-  height: calc(100dvh - 24px);
+  top: 16px;
+  height: calc(100dvh - 32px);
   color: #e5f3ec;
 }
 .app-brand {
@@ -96,32 +98,18 @@ a {
   padding: 0 10px;
   text-decoration: none;
   color: white;
-  font-size: 27px;
+  font-size: 42px;
   line-height: 1.1;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.055em;
 }
 .app-brand small {
   display: block;
   margin-top: 8px;
   color: #a9c9bc;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 450;
   letter-spacing: 0.02em;
-}
-.brand-symbol {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: linear-gradient(150deg, #4c9e80, #175e48);
-  border: 1px solid #8ac8ac33;
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.12em;
-  padding-right: 3px;
-  box-shadow: inset 0 1px 1px #ffffff30;
 }
 .sidebar-divider {
   height: 1px;
@@ -146,11 +134,11 @@ a {
   gap: 12px;
   text-decoration: none;
   color: #c8dfd3;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
-  padding: 13px 14px;
+  padding: 15px 16px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 18px;
   transition:
     background 0.15s,
     color 0.15s;
@@ -160,8 +148,8 @@ a {
   color: white;
 }
 .sidebar-nav a[aria-current='page'] {
-  background: linear-gradient(100deg, #ffffff18, #ffffff0a);
-  border-color: #aadac522;
+  background: linear-gradient(110deg, #17aa788c, #a4ddc72e);
+  border-color: #aadac538;
   color: white;
   box-shadow: inset 0 1px 0 #ffffff12;
 }
@@ -169,12 +157,8 @@ a {
   flex: 0 0 20px;
   opacity: 0.85;
 }
-.nav-arrow {
-  margin-left: auto;
-  opacity: 0;
-}
-.sidebar-nav a[aria-current='page'] .nav-arrow {
-  opacity: 0.7;
+.app-sidebar a:focus-visible {
+  outline-color: #bcebd8;
 }
 .sidebar-bottom {
   margin-top: auto;
@@ -183,30 +167,9 @@ a {
   font-size: 11px;
   line-height: 1.6;
 }
-.sidebar-orbit {
-  width: 38px;
-  height: 38px;
-  border: 1px solid #c8e6d15c;
-  border-radius: 50%;
-  position: relative;
-  margin-bottom: 18px;
-}
-.sidebar-orbit:before {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 1px solid #c8e6d155;
-  border-radius: 50%;
-}
-.sidebar-orbit:after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 6px;
-  width: 5px;
-  height: 5px;
-  background: #b0e8ce;
-  border-radius: 50%;
+.sidebar-signature {
+  font-size: 14px;
+  color: #e7f5ee;
 }
 .sidebar-bottom .demo-label {
   font-size: 10px;
@@ -218,9 +181,10 @@ a {
 }
 .app-main {
   min-width: 0;
-  background: var(--canvas);
-  border-radius: 24px;
-  min-height: calc(100dvh - 24px);
+  background: linear-gradient(150deg, #ffffffee, #f5f8f6fa);
+  border-radius: 28px;
+  min-height: calc(100dvh - 32px);
+  box-shadow: 0 12px 48px #002c2412;
   overflow: clip;
 }
 .app-topline {
