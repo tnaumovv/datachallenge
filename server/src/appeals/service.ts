@@ -1,3 +1,5 @@
+import { DecisionService } from '../review/service.js';
+import { ConversationService } from '../conversations/service.js';
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import {
@@ -96,6 +98,29 @@ export class AppealService {
       if (appeal.status !== 'pending')
         throw new HttpError(409, 'APPEAL_RESOLVED', 'Appeal is already resolved');
       const evaluation = this.completed(appeal.evaluationId);
+      if (evaluation.policyVersion && decision.expectedRevision === undefined)
+        throw new HttpError(
+          400,
+          'REVISION_REQUIRED',
+          'Candidate decisions require expectedRevision',
+        );
+      if (evaluation.policyVersion && decision.decision === 'change' && !decision.replacementAnswer)
+        throw new HttpError(
+          400,
+          'ANSWER_REQUIRED',
+          'Candidate corrections require a complete replacementAnswer with evidence',
+        );
+      if (
+        decision.decision === 'change' &&
+        decision.replacementAnswer &&
+        (decision.replacementAnswer.criterionId !== appeal.criterionId ||
+          decision.replacementAnswer.value !== decision.replacementValue)
+      )
+        throw new HttpError(
+          400,
+          'ANSWER_MISMATCH',
+          'Replacement answer must match criterion and value',
+        );
       const index = evaluation.effectiveAnswers.findIndex(
         (a) => a.criterionId === appeal.criterionId,
       );
@@ -110,7 +135,7 @@ export class AppealService {
       appeal.scoreBefore = structuredClone(evaluation.finalScore);
       if (decision.decision === 'change') {
         // AI evidence belongs to the original answer. A human correction carries its own reason.
-        evaluation.effectiveAnswers[index] = {
+        evaluation.effectiveAnswers[index] = decision.replacementAnswer ?? {
           ...before,
           value: decision.replacementValue,
           explanation: decision.reason,
@@ -127,14 +152,23 @@ export class AppealService {
       appeal.resolvedAt = new Date().toISOString();
       appeal.afterAnswer = structuredClone(evaluation.effectiveAnswers[index]);
       appeal.scoreAfter = structuredClone(evaluation.finalScore);
-      this.db
-        .prepare('UPDATE evaluations SET payload=? WHERE id=?')
-        .run(JSON.stringify(evaluation), evaluation.id);
+      const updated = new DecisionService(this.db).apply(
+        evaluation.id,
+        {
+          expectedRevision: decision.expectedRevision ?? evaluation.revision ?? 0,
+          idempotencyKey: 'appeal:' + appeal.id,
+          action: 'resolve',
+          reason: decision.reason,
+          answers: evaluation.effectiveAnswers,
+        },
+        true,
+        true,
+      );
       this.db
         .prepare('UPDATE appeals SET status=?,payload=? WHERE id=?')
         .run(appeal.status, JSON.stringify(appeal), id);
       this.db.exec('COMMIT');
-      return evaluation;
+      return updated;
     } catch (error) {
       this.db.exec('ROLLBACK');
       throw error;

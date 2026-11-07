@@ -73,6 +73,25 @@ export function Transcript({
           </a>
         )}
       </div>
+      {conversation.channel === 'voice call' && (
+        <div className="message-timeline">
+          <p className="muted">Реплики по порядку · время в записи не сопоставлено</p>
+          <nav aria-label="Временная шкала реплик">
+            {conversation.messages.map((m) => (
+              <a
+                key={m.id}
+                href={'#' + encodeURIComponent(m.id)}
+                title={`${speakerName[m.speaker]} · ${m.timestamp}`}
+                aria-label={`${speakerName[m.speaker]} · ${m.timestamp}`}
+                onClick={() => document.getElementById(m.id)?.focus()}
+                className={'timeline-' + m.speaker}
+              >
+                {m.timestamp}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )}
       <div className="panel-scroll transcript-scroll" tabIndex={0} aria-label="Реплики диалога">
         <ol className="messages">
           {conversation.messages.map((message) => (
@@ -85,7 +104,9 @@ export function Transcript({
               >
                 <div className="message-meta">
                   <span className="speaker">{speakerName[message.speaker]}</span>
-                  <span className="timestamp">{message.timestamp}</span>
+                  <span className="timestamp">
+                    {message.timestamp} · {message.id}
+                  </span>
                 </div>
                 <p className="message-text" lang={languageTag[conversation.language]}>
                   {message.text}

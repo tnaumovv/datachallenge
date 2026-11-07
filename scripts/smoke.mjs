@@ -96,6 +96,9 @@ async function checkWeb() {
     '/dialogs/saved?evaluation=stored',
     '/checklists',
     '/appeals',
+    '/overview',
+    '/review',
+    '/operations',
   ]) {
     const response = await fetch(base + path, { signal: AbortSignal.timeout(5000) });
     assert.equal(response.status, 200, path);

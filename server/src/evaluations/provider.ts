@@ -15,6 +15,13 @@ export type ProviderInput = {
   checklist: ChecklistVersion;
   signal: AbortSignal;
   repair?: RepairContext;
+  policyVersion?: string;
+  precedents?: {
+    id: string;
+    criterionId: string;
+    example: string;
+    value: import('../../../shared/contracts.js').CriterionAnswer['value'];
+  }[];
 };
 export type ProviderResult = {
   text: string;

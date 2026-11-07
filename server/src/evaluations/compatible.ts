@@ -1,3 +1,4 @@
+import { candidatePrompt, candidateJsonSchema } from './candidate.js';
 import { createHash } from 'node:crypto';
 import { buildEvaluationPrompt } from './prompt.js';
 import { buildModelJsonSchema } from './generation-schema.js';
@@ -20,7 +21,7 @@ type Config = {
   apiKey?: string;
   baseUrl?: string;
   maxOutputTokens?: number;
-  reasoningEffort?: 'low' | 'medium' | 'high';
+  reasoningEffort?: 'none' | 'low' | 'medium' | 'high';
 };
 const tokens = (value: unknown): number | null =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -78,8 +79,12 @@ export class CompatibleProvider implements EvaluationProvider {
   }
 
   async generate(input: ProviderInput): Promise<ProviderResult> {
-    const prompt = buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
-    const schema = buildModelJsonSchema(input.conversation, input.checklist);
+    const prompt = input.policyVersion
+      ? candidatePrompt(input)
+      : buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
+    const schema = input.policyVersion
+      ? candidateJsonSchema()
+      : buildModelJsonSchema(input.conversation, input.checklist);
     const jsonMode = this.id === 'deepseek';
     const body = {
       model: this.modelId,
@@ -123,6 +128,19 @@ export class CompatibleProvider implements EvaluationProvider {
               ? Number(header) * 1000
               : Date.parse(header) - Date.now();
         const retryAfterMs = Number.isFinite(delay) ? Math.max(0, delay) : undefined;
+        if (response.status === 429) {
+          let quota = false;
+          try {
+            const data = await response.json();
+            quota =
+              data?.error?.type === 'insufficient_quota' ||
+              data?.error?.code === 'insufficient_quota';
+          } catch {
+            /* fixed safe classification only */
+          }
+          if (quota) throw new ProviderError('BILLING_REQUIRED', false);
+          throw new ProviderError('RATE_LIMIT', true, retryAfterMs);
+        }
         await response.body?.cancel();
         if (response.status === 401 || response.status === 403)
           throw new ProviderError('AUTH_FAILED', false);

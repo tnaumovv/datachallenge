@@ -1,3 +1,4 @@
+import { criterionFingerprint } from '../checklists/profiles.js';
 import type {
   Conversation,
   CriterionAnswer,
@@ -30,7 +31,13 @@ const operatorInstructions = new Map(
 );
 
 export function isStandardOperatorCriterion(criterion: CriterionConfig): boolean {
-  return operatorInstructions.get(criterion.id)?.has(criterion.instruction) === true;
+  const original = defaultChecklist.criteria.find((c) => c.id === criterion.id);
+  return (
+    !!original &&
+    operatorInstructions.get(criterion.id)?.has(criterion.instruction) === true &&
+    criterionFingerprint({ ...criterion, instruction: original.instruction }) ===
+      criterionFingerprint(original)
+  );
 }
 
 export function validateEvidence(

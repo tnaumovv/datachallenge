@@ -1,3 +1,4 @@
+import { useProfiles } from './use-profiles';
 import { useEffect, useRef, useState } from 'react';
 import type { ChecklistVersion, Conversation, Evaluation } from '../../shared/contracts.js';
 import { api, startErrorMessage } from './api';
@@ -40,6 +41,7 @@ export function DialogsPage({
   onOpen: (id: string, evaluationId?: string) => void;
   onRefresh: () => void;
 }) {
+  const profiles = useProfiles();
   const [query, setQuery] = useState('');
   const [group, setGroup] = useState('');
   const [language, setLanguage] = useState('');
@@ -85,7 +87,13 @@ export function DialogsPage({
   const versions = [...checklists].sort(
     (a, b) => a.checklistId.localeCompare(b.checklistId) || b.version - a.version,
   );
-  const versionId = versions.some((item) => item.id === version) ? version : versions[0]?.id;
+  const versionId = versions.some((item) => item.id === version)
+    ? version
+    : profiles.status === 'ready'
+      ? versions.find(
+          (item) => item.id === profiles.profiles.find((p) => p.id === 'legacy')?.activeVersionId,
+        )?.id
+      : undefined;
   const needle = query.trim().toLocaleLowerCase();
   const matches = conversations.filter(
     (item) =>
@@ -115,7 +123,7 @@ export function DialogsPage({
     });
   }
   async function run(retry?: Evaluation) {
-    if (mutation.current || !versionId) return;
+    if (mutation.current || (!retry && !versionId)) return;
     const controller = new AbortController();
     mutation.current = controller;
     setBusy(true);
@@ -125,7 +133,7 @@ export function DialogsPage({
       const result = retry
         ? await api.retry(retry.id, controller.signal)
         : await api.start(
-            { conversationIds: [...selected], checklistVersionId: versionId },
+            { conversationIds: [...selected], checklistVersionId: versionId! },
             controller.signal,
           );
       if (controller.signal.aborted) return;
@@ -219,7 +227,7 @@ export function DialogsPage({
               onChange={(e) => setVersion(e.target.value)}
               disabled={busy || !versions.length}
             >
-              {!versions.length && <option value="">Нет доступных версий</option>}
+              {!versionId && <option value="">Выберите версию явно</option>}
               {versions.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.title} · v{item.version}
@@ -237,6 +245,20 @@ export function DialogsPage({
           </ActionButton>
           <span className="muted small">До 100 диалогов за запуск</span>
         </div>
+        {profiles.status === 'loading' && <p role="status">Загружаем активный чек-лист…</p>}
+        {profiles.status === 'error' && (
+          <div className="notice notice-error" role="alert">
+            Не удалось загрузить активный чек-лист. Выберите версию явно или повторите загрузку.{' '}
+            <button className="button secondary" onClick={profiles.reload}>
+              Повторить загрузку профилей
+            </button>
+          </div>
+        )}
+        {profiles.status === 'ready' && !versionId && (
+          <p className="notice" role="alert">
+            Активная версия недоступна. Выберите версию явно.
+          </p>
+        )}
         {error && (
           <p className="notice notice-error" role="alert">
             {error}
@@ -368,14 +390,27 @@ export function DialogsPage({
                           {status === 'error'
                             ? 'Недоступно'
                             : evaluation
-                              ? evaluationLabel[evaluation.status]
+                              ? evaluation.error?.code === 'REVIEW_REQUIRED'
+                                ? 'Нужна проверка'
+                                : evaluationLabel[evaluation.status]
                               : status === 'loading'
                                 ? 'Загрузка…'
                                 : 'Не оценён'}
                         </span>
+                        {evaluation &&
+                          profiles.status === 'ready' &&
+                          profiles.profiles.some(
+                            (p) =>
+                              p.checklistId ===
+                                versions.find((v) => v.id === evaluation.checklistVersionId)
+                                  ?.checklistId &&
+                              p.channels.includes(item.channel) &&
+                              p.activeVersionId !== evaluation.checklistVersionId,
+                          ) && <small className="muted">Предыдущая версия</small>}
                       </td>
                       <td className="row-action">
-                        {evaluation?.status === 'failed' ? (
+                        {evaluation?.status === 'failed' &&
+                        evaluation.error?.code !== 'REVIEW_REQUIRED' ? (
                           <button
                             className="button secondary small-button"
                             disabled={busy}

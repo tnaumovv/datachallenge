@@ -20,7 +20,11 @@
     "demo:web": "tsx web/demo.ts",
     "smoke": "node scripts/smoke.mjs",
     "qa:benchmark": "tsx qa/gemini/benchmark-run.ts",
-    "export:results": "tsx server/src/results/cli.ts"
+    "export:results": "tsx server/src/results/cli.ts",
+    "qa:prompt-ab": "tsx qa/gemini/prompt-ab.ts",
+    "qa:prompt-report": "tsx qa/gemini/prompt-report.ts",
+    "qa:provider-ab": "tsx qa/gemini/provider-ab.ts",
+    "qa:openai-smoke": "tsx qa/gemini/openai-smoke.ts"
   },
   "dependencies": {
     "@google/genai": "^3.0.0",

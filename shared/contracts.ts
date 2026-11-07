@@ -184,6 +184,19 @@ export type CriterionEvidence = {
   checkedSpan: Message[];
 };
 export type Evaluation = {
+  policyVersion?: string;
+  policySnapshot?: string;
+  priceSnapshot?: import('./diagnostics.js').PriceSnapshot;
+  precedentExamples?: {
+    id: string;
+    criterionId: string;
+    example: string;
+    value: CriterionAnswer['value'];
+  }[];
+  evaluationSource?: 'ai' | 'human_review';
+  reviewState?: 'required' | 'resolved';
+  reviewReasons?: string[];
+  revision?: number;
   id: string;
   conversationId: string;
   checklistVersionId: string;
@@ -216,11 +229,17 @@ export const AppealInputSchema = z
 export type AppealInput = z.infer<typeof AppealInputSchema>;
 export const DecisionInputSchema = z.discriminatedUnion('decision', [
   z
-    .object({ decision: z.literal('confirm'), reason: z.string().trim().min(1).max(10000) })
+    .object({
+      decision: z.literal('confirm'),
+      reason: z.string().trim().min(1).max(10000),
+      expectedRevision: z.number().int().min(0).optional(),
+    })
     .strict(),
   z
     .object({
       decision: z.literal('change'),
+      replacementAnswer: CriterionAnswerSchema.optional(),
+      expectedRevision: z.number().int().min(0).optional(),
       replacementValue: z.union([z.boolean(), z.number(), z.literal('NA')]),
       reason: z.string().trim().min(1).max(10000),
     })

@@ -125,7 +125,7 @@ it('confirms without changing the effective answer', async () => {
   const before = c.evaluations.get(c.id);
   const a = c.appeals.submit({ evaluationId: c.id, criterionId: 'dialogue', comment: 'Проверить' });
   expect(c.appeals.resolve(a.id, { decision: 'confirm', reason: 'Исходная оценка верна' })).toEqual(
-    before,
+    { ...before, revision: 1 },
   );
   expect(c.appeals.get(a.id)?.decision).toBe('confirm');
 });

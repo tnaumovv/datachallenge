@@ -258,8 +258,8 @@ describe('environment request timeout', () => {
 
   it('keeps a 90-second default and accepts an explicit longer deadline', () => {
     expect(config.evaluationOptionsFromEnv).toBeTypeOf('function');
-    expect(config.evaluationOptionsFromEnv({})).toEqual({ requestTimeoutMs: 90_000 });
-    expect(config.evaluationOptionsFromEnv({ AI_REQUEST_TIMEOUT_MS: '180000' })).toEqual({
+    expect(config.evaluationOptionsFromEnv({})).toMatchObject({ requestTimeoutMs: 90_000 });
+    expect(config.evaluationOptionsFromEnv({ AI_REQUEST_TIMEOUT_MS: '180000' })).toMatchObject({
       requestTimeoutMs: 180_000,
     });
   });

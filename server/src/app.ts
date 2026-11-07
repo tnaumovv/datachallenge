@@ -1,3 +1,7 @@
+import { installReviewRoutes } from './review/routes.js';
+import { installPrecedentRoutes } from './precedents/service.js';
+import { installProfileRoutes } from './checklists/profiles.js';
+import { installDiagnosticsRoutes } from './analytics/routes.js';
 import express, { type ErrorRequestHandler } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
 import { existsSync } from 'node:fs';
@@ -35,6 +39,10 @@ export function createApp(
   checklists.seed();
   const evaluations = options.evaluations ?? new EvaluationService(db);
   const appeals = new AppealService(db);
+  installDiagnosticsRoutes(app, db, evaluations);
+  installProfileRoutes(app, db);
+  installReviewRoutes(app, db);
+  installPrecedentRoutes(app, db);
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.get('/api/ai/status', (_req, res) => res.json(evaluations.getConfiguration()));
   app.post('/api/import', async (req, res) => {
@@ -117,8 +125,18 @@ export function createApp(
   if (options.webRoot && existsSync(join(options.webRoot, 'index.html'))) {
     const webRoot = options.webRoot;
     app.use(express.static(webRoot, { index: false }));
-    app.get(['/', '/dialogs', '/dialogs/:id', '/checklists', '/appeals'], (_req, res) =>
-      res.sendFile('index.html', { root: webRoot }),
+    app.get(
+      [
+        '/',
+        '/dialogs',
+        '/dialogs/:id',
+        '/checklists',
+        '/appeals',
+        '/overview',
+        '/review',
+        '/operations',
+      ],
+      (_req, res) => res.sendFile('index.html', { root: webRoot }),
     );
   }
   app.use((_req, _res, next) => next(new HttpError(404, 'NOT_FOUND', 'Route not found')));
