@@ -1,0 +1,1 @@
+{"extends":"./tsconfig.json","include":["shared/**/*.ts","server/src/**/*.ts"],"exclude":["server/tests"]}
