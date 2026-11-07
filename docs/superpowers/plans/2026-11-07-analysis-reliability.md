@@ -46,7 +46,7 @@
 - [x] Clarify temporal needs assessment and review/escalation closing using general rules.
 - [x] Correct EN-006 local expectations to needs=false and total=85; keep it in regression/calibration.
 - [x] Create a new local default checklist version without replacing earlier versions.
-- [ ] Configure the user-supplied key and an accessible explicit model; calibrate the selected thinking level with bounded requests. Include the thinking setting in the cache identity.
+- [x] Configure the user-supplied key and an accessible explicit model; calibrate the selected thinking level with bounded requests. Include the thinking setting in the cache identity.
 
 ### Task 3: Frozen unseen-dialogue evaluation
 
@@ -54,8 +54,8 @@
 
 **Interfaces:** A reference bundle records source IDs, transcript/checklist hashes, split and expected values. The runner uses `/api/evaluations`, reads `originalAnswers` and `originalScore`, never passes reference values to the model, and bounds new calls.
 
-- [ ] Test exact comparisons, separate failure denominators, score error, N/A/gross counts and rejection of changed transcripts/checklists.
-- [ ] Freeze nine new DEV cases and two regressions before any live predictions.
-- [ ] Run selected real evaluations through the isolated application API on port 3013 and a read-only backup of the original database, stopping after provider failure or budget exhaustion. Unit tests and production smoke also retain isolated databases.
-- [ ] Run tests, typecheck, QA typecheck, formatting for changed files, production build and smoke; request one fresh code review.
-- [ ] Report actual live completion and measured reference agreement, including label and sample limitations.
+- [x] Test exact comparisons, separate failure denominators, score error, N/A/gross counts and rejection of changed transcripts/checklists.
+- [x] Freeze new DEV expectations before predictions. Reuse and independently validate the parallel experiment's frozen snapshots; labels match the earlier draft unchanged.
+- [x] Run real regressions through the isolated API on port 3013 and a read-only backup. Reuse completed parallel new-dialogue experiments without additional model calls, preserving separate generation-schema configurations and incomplete coverage.
+- [x] Run tests, typecheck, QA typecheck, formatting, production build and smoke; request fresh code review.
+- [x] Report actual completion and reference agreement in `qa/gemini/reports/2026-11-07-reliability.json`, including the missing full nine-case final-profile run and lack of independent human labels.
