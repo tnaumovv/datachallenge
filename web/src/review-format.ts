@@ -2,6 +2,16 @@ import type { Appeal, Criterion, CriterionAnswer, ScoreSummary } from '../../sha
 
 export const numbers = new Intl.NumberFormat('ru', { maximumFractionDigits: 2 });
 
+/** Presentation only: points and totals remain owned by the server. */
+export function answerTone(criterion: Criterion, value?: CriterionAnswer['value']) {
+  if (value === undefined) return 'pending';
+  if (value === 'NA') return 'neutral';
+  if (criterion.scoringMode === 'flag') return value ? 'violation' : 'positive';
+  if (typeof value === 'boolean') return value ? 'positive' : 'attention';
+  if (criterion.levels.length === 0) return 'neutral';
+  return value === Math.max(...criterion.levels) ? 'positive' : 'attention';
+}
+
 export function answerLabel(criterion: Criterion, value: CriterionAnswer['value']) {
   if (value === 'NA') return 'Не применимо';
   if (criterion.scoringMode === 'flag') return value ? 'Нарушение' : 'Без нарушения';

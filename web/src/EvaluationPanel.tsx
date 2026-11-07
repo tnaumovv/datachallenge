@@ -11,8 +11,9 @@ import type {
 } from '../../shared/contracts.js';
 import { useEvaluation } from './use-evaluation';
 import { AppealForm, AppealHistory, AppealReview, useEvaluationAppeals } from './EvaluationAppeals';
-import { answerLabel, numbers } from './review-format';
+import { answerLabel, answerTone, numbers } from './review-format';
 import { ActionButton } from './ActionButton';
+import { Icon } from './Icon';
 
 const evaluationLabel: Record<Evaluation['status'], string> = {
   queued: 'В очереди',
@@ -41,6 +42,7 @@ export function EvaluationPanel({
   conversation,
   checklists,
   requestedId,
+  selectedMessageId = null,
   selectedAppealId,
   onSelectAppeal,
   onSelect,
@@ -49,6 +51,7 @@ export function EvaluationPanel({
   conversation: Conversation;
   checklists: ChecklistVersion[];
   requestedId: string | null;
+  selectedMessageId?: string | null;
   selectedAppealId: string | null;
   onSelectAppeal: (evaluationId: string, appealId: string | null) => void;
   onSelect: (id: string | null) => void;
@@ -132,29 +135,6 @@ export function EvaluationPanel({
         )}
       </div>
       <div className="panel-scroll evaluation-scroll">
-        {evaluation && (
-          <p className="saved-evaluation-date">
-            Сохранено{' '}
-            {new Intl.DateTimeFormat('ru-RU', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'Asia/Almaty',
-            }).format(new Date(evaluation.createdAt))}
-          </p>
-        )}
-        {completed && checklist && (
-          <ActionButton
-            icon="refresh"
-            className="rerun-button"
-            disabled={review.submitting}
-            onClick={() => void review.run(checklist.id, undefined, true)}
-          >
-            {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
-          </ActionButton>
-        )}
         {review.history === 'loading' && (
           <p className="muted panel-note" role="status">
             Загружаем оценку…
@@ -230,6 +210,7 @@ export function EvaluationPanel({
                   key={evaluation.id}
                   evaluation={evaluation}
                   score={evaluation.finalScore}
+                  selectedMessageId={selectedMessageId}
                   checklist={checklist}
                   selectedAppealId={selectedAppealId}
                   onSelectAppeal={(id) => onSelectAppeal(evaluation.id, id)}
@@ -243,6 +224,31 @@ export function EvaluationPanel({
           </>
         )}
       </div>
+      {evaluation && (
+        <div className="evaluation-footer">
+          <p className="saved-evaluation-date">
+            Сохранено{' '}
+            {new Intl.DateTimeFormat('ru-RU', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              timeZone: 'Asia/Almaty',
+            }).format(new Date(evaluation.createdAt))}
+          </p>
+          {completed && checklist && (
+            <ActionButton
+              icon="refresh"
+              className="rerun-button"
+              disabled={review.submitting}
+              onClick={() => void review.run(checklist.id, undefined, true)}
+            >
+              {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
+            </ActionButton>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -252,6 +258,7 @@ function CompletedReview({
   score,
   checklist,
   selectedAppealId,
+  selectedMessageId,
   onSelectAppeal,
   onEvaluationChanged,
   onRefresh,
@@ -261,6 +268,7 @@ function CompletedReview({
   score: ScoreSummary;
   checklist: ChecklistVersion;
   selectedAppealId: string | null;
+  selectedMessageId: string | null;
   onSelectAppeal: (id: string | null) => void;
   onEvaluationChanged: (evaluation: Evaluation) => void;
   onRefresh: () => void;
@@ -301,6 +309,7 @@ function CompletedReview({
       <Criteria
         checklist={checklist}
         evaluation={evaluation}
+        selectedMessageId={selectedMessageId}
         onEvidence={onEvidence}
         pendingCriteria={new Set(pending.keys())}
         onAppeal={
@@ -372,12 +381,14 @@ function ScoreCard({ evaluation, score }: { evaluation: Evaluation; score: Score
 function Criteria({
   checklist,
   evaluation,
+  selectedMessageId = null,
   onEvidence,
   pendingCriteria,
   onAppeal,
 }: {
   checklist: ChecklistVersion;
   evaluation?: Evaluation;
+  selectedMessageId?: string | null;
   onEvidence: (id: string) => void;
   pendingCriteria?: Set<string>;
   onAppeal?: (criterion: Criterion) => void;
@@ -417,6 +428,7 @@ function Criteria({
                 )}
                 open={Boolean(evaluation) && sectionIndex === 0 && index === 0}
                 onEvidence={onEvidence}
+                selectedMessageId={selectedMessageId}
                 appealPending={pendingCriteria?.has(criterion.id)}
                 onAppeal={onAppeal ? () => onAppeal(criterion) : undefined}
               />
@@ -436,6 +448,7 @@ function CriterionRow({
   contribution,
   open,
   onEvidence,
+  selectedMessageId,
   appealPending,
   onAppeal,
 }: {
@@ -446,21 +459,43 @@ function CriterionRow({
   contribution?: ScoreSummary['contributions'][number];
   open: boolean;
   onEvidence: (id: string) => void;
+  selectedMessageId: string | null;
   appealPending?: boolean;
   onAppeal?: () => void;
 }) {
   const revised = isRevised(original, answer);
-  const awarded = contribution && points(contribution.points, contribution.maxPoints);
-  const isNegative = answer?.value === (criterion.scoringMode === 'flag' ? true : false);
+  const awarded =
+    criterion.scoringMode === 'weighted' && contribution
+      ? points(contribution.points, contribution.maxPoints)
+      : null;
+  const tone = answerTone(criterion, answer?.value);
   const directQuotes =
     evidence?.evidence.filter((message) => answer?.evidenceMessageIds.includes(message.id)) ?? [];
   const checked =
     evidence?.checkedSpan.filter((message) => answer?.checkedSpanMessageIds.includes(message.id)) ??
     [];
+  const hasSelectedEvidence = [...directQuotes, ...checked].some(
+    (message) => message.id === selectedMessageId,
+  );
 
   return (
-    <details className="criterion" open={open}>
+    <details
+      className={`criterion criterion-${tone}${hasSelectedEvidence ? ' criterion-evidence-active' : ''}`}
+      open={open}
+    >
       <summary className="criterion-summary">
+        <span className="criterion-indicator" aria-hidden="true">
+          <Icon
+            name={
+              tone === 'positive'
+                ? 'check'
+                : tone === 'attention' || tone === 'violation'
+                  ? 'warning'
+                  : 'minus'
+            }
+            size={14}
+          />
+        </span>
         <span className="criterion-name">
           {criterion.title}
           {criterion.scoringMode === 'weighted' && (
@@ -471,8 +506,14 @@ function CriterionRow({
           )}
         </span>
         {answer && (
-          <span className={`answer${isNegative ? ' answer-negative' : ''}`}>
-            {answerLabel(criterion, answer.value)}
+          <span className="criterion-result">
+            {awarded && answer.value !== 'NA' && (
+              <span className="criterion-awarded">
+                {awarded}
+                <span className="sr-only"> баллов</span>
+              </span>
+            )}
+            <span className={`answer answer-${tone}`}>{answerLabel(criterion, answer.value)}</span>
           </span>
         )}
       </summary>
@@ -487,8 +528,18 @@ function CriterionRow({
             {answer.naReason && answer.naReason !== answer.explanation && (
               <p className="muted">{answer.naReason}</p>
             )}
-            <Quotes title="Цитата из диалога" messages={directQuotes} onSelect={onEvidence} />
-            <Quotes title="Проверенный фрагмент" messages={checked} onSelect={onEvidence} />
+            <Quotes
+              title="Цитата из диалога"
+              messages={directQuotes}
+              onSelect={onEvidence}
+              selectedMessageId={selectedMessageId}
+            />
+            <Quotes
+              title="Проверенный фрагмент"
+              messages={checked}
+              onSelect={onEvidence}
+              selectedMessageId={selectedMessageId}
+            />
             {onAppeal && (
               <button
                 className="button secondary criterion-appeal"
@@ -510,6 +561,7 @@ function CriterionRow({
                   ).values(),
                 ]}
                 onSelect={onEvidence}
+                selectedMessageId={selectedMessageId}
               />
             )}
           </>
@@ -528,10 +580,12 @@ function Quotes({
   title,
   messages,
   onSelect,
+  selectedMessageId,
 }: {
   title: string;
   messages: Message[];
   onSelect: (id: string) => void;
+  selectedMessageId: string | null;
 }) {
   if (messages.length === 0) return null;
 
@@ -539,7 +593,13 @@ function Quotes({
     <div className="quotes">
       <p className="quote-heading">{title}</p>
       {messages.map((message) => (
-        <button key={message.id} className="quote-button" onClick={() => onSelect(message.id)}>
+        <button
+          key={message.id}
+          className="quote-button"
+          aria-current={selectedMessageId === message.id ? 'true' : undefined}
+          aria-controls={message.id}
+          onClick={() => onSelect(message.id)}
+        >
           <span className="quote-time">{message.timestamp}</span>
           <span className="quote-text">{message.text}</span>
           <span className="quote-arrow" aria-hidden="true">

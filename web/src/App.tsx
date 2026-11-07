@@ -3,10 +3,11 @@ import type { ChecklistInput, ChecklistVersion, Conversation } from '../../share
 import { api } from './api';
 import { AppealsPage } from './AppealsPage';
 import { ChecklistEditor } from './ChecklistEditor';
-import { DialogsPage, conversationTitle } from './DialogsPage';
+import { DialogsPage } from './DialogsPage';
 import { EvaluationPanel } from './EvaluationPanel';
 import { ActionButton } from './ActionButton';
 import { Icon } from './Icon';
+import { ReviewConversationList } from './ReviewConversationList';
 import { Transcript, channelName } from './Transcript';
 import { pageLocation, readLocation, reviewUrl, type ReviewLocation } from './navigation';
 
@@ -55,7 +56,7 @@ export function App() {
     return () => window.removeEventListener('popstate', sync);
   }, []);
   useEffect(() => {
-    document.title = titles[view.page] + ' — Freedom CQA';
+    document.title = titles[view.page] + ' — CQA';
   }, [view.page]);
   useEffect(() => {
     const controller = new AbortController();
@@ -131,32 +132,30 @@ export function App() {
           className="app-brand"
           href="/dialogs"
           onClick={(e) => navClick(e, 'dialogs')}
-          aria-label="Freedom CQA — Диалоги"
+          aria-label="CQA — Диалоги"
         >
           <span>
-            freedom
-            <span className="brand-dot" aria-hidden="true">
-              .
-            </span>
-            <small>CQA · Контроль качества</small>
+            CQA<small>Контроль качества</small>
           </span>
         </a>
         <div className="sidebar-divider" />
         <nav className="sidebar-nav" aria-label="Разделы">
-          {(['dialogs', 'checklists', 'appeals'] as const).map((page) => (
+          {(['dialogs', 'appeals', 'checklists'] as const).map((page) => (
             <a
               key={page}
               href={'/' + page}
               aria-current={view.page === page ? 'page' : undefined}
               onClick={(e) => navClick(e, page)}
             >
-              <span className="nav-icon">
-                <Icon name={page} />
-              </span>
+              <Icon name={page} />
               <span>{titles[page]}</span>
             </a>
           ))}
         </nav>
+        <div className="sidebar-bottom">
+          <span className="sidebar-signature">Freedom Bank</span>
+          {demo && <strong className="demo-label">Демо · вымышленные данные и оценки</strong>}
+        </div>
       </aside>
       <div className="app-main">
         <div className="app-topline">
@@ -213,20 +212,19 @@ export function App() {
               />
             )}
             {view.page === 'dialogs' && view.conversationId && (
-              <main id="main-content" className="page-content" tabIndex={-1}>
+              <main id="main-content" className="page-content review-page" tabIndex={-1}>
                 <header className="page-heading detail-heading">
-                  <div>
-                    <ActionButton
-                      icon="back"
-                      className="back-link"
-                      onClick={() => navigate(pageLocation('dialogs'))}
-                    >
-                      К диалогам
-                    </ActionButton>
-                    <h1>{conversation ? conversationTitle(conversation) : 'Диалог не найден'}</h1>
+                  <ActionButton
+                    icon="back"
+                    className="back-link"
+                    onClick={() => navigate(pageLocation('dialogs'))}
+                  >
+                    К диалогам
+                  </ActionButton>
+                  <div className="review-heading-copy">
+                    <h1>{conversation?.sourceConversationId ?? 'Диалог не найден'}</h1>
                     {conversation && (
                       <p className="page-description">
-                        {conversation.sourceConversationId} <span aria-hidden="true">·</span>{' '}
                         {conversation.groupId} <span aria-hidden="true">·</span>{' '}
                         {channelName[conversation.channel]} · {conversation.language}
                       </p>
@@ -235,11 +233,22 @@ export function App() {
                 </header>
                 {conversation ? (
                   <div className="review-workspace">
+                    <ReviewConversationList
+                      conversations={data.conversations}
+                      selectedId={conversation.id}
+                      onOpen={(id) => navigate({ ...pageLocation('dialogs'), conversationId: id })}
+                    />
+                    <Transcript
+                      key={'transcript-' + conversation.id}
+                      conversation={conversation}
+                      selectedMessageId={view.messageId}
+                    />
                     <EvaluationPanel
                       key={'evaluation-' + conversation.id}
                       conversation={conversation}
                       checklists={data.checklists}
                       requestedId={view.evaluationId}
+                      selectedMessageId={view.messageId}
                       onSelect={(id) =>
                         navigate({ ...view, evaluationId: id, appealId: null, messageId: null })
                       }
@@ -253,11 +262,6 @@ export function App() {
                         message?.focus({ preventScroll: true });
                         message?.scrollIntoView({ block: 'nearest' });
                       }}
-                    />
-                    <Transcript
-                      key={'transcript-' + conversation.id}
-                      conversation={conversation}
-                      selectedMessageId={view.messageId}
                     />
                   </div>
                 ) : (

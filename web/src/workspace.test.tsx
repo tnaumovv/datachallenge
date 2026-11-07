@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ScoreResponse } from '../../shared/contracts.js';
 import { demoImport } from '../../shared/fixtures.js';
@@ -41,6 +41,52 @@ afterEach(() => {
 });
 
 describe('working frontend flows', () => {
+  it('connects a quoted message to the transcript and restores selection from its deep link', async () => {
+    vi.mocked(api.evaluations).mockResolvedValue([structuredClone(evaluation)]);
+    const start = vi.spyOn(api, 'start');
+    window.history.replaceState(null, '', '/dialogs/' + conversation.id);
+    const { unmount } = render(<App />);
+    const criterion = (await screen.findByText('Установление контакта')).closest('details')!;
+    const quote = await within(criterion).findByRole('button', {
+      name: new RegExp(conversation.messages[1].text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    });
+    await userEvent.click(quote);
+    expect(window.location.hash).toBe('#m0002');
+    expect(window.location.search).toContain(evaluation.id);
+    const selected = screen.getByRole('article', { name: 'Выбранная реплика' });
+    expect(selected.id).toBe('m0002');
+    expect(document.activeElement).toBe(selected);
+    expect(quote.getAttribute('aria-current')).toBe('true');
+    expect(quote.getAttribute('aria-controls')).toBe(selected.id);
+    unmount();
+    render(<App />);
+    expect((await screen.findByRole('article', { name: 'Выбранная реплика' })).id).toBe('m0002');
+    expect(start).not.toHaveBeenCalled();
+  });
+
+  it('clears the previous review selection when switching to another conversation', async () => {
+    const next = {
+      ...conversation,
+      id: 'conversation-2',
+      sourceConversationId: 'KZ-002',
+      language: 'KZ' as const,
+    };
+    vi.mocked(api.conversations).mockResolvedValue([conversation, next]);
+    vi.mocked(api.evaluations).mockResolvedValue([structuredClone(evaluation)]);
+    window.history.replaceState(
+      null,
+      '',
+      `/dialogs/${conversation.id}?evaluation=${evaluation.id}#m0002`,
+    );
+    render(<App />);
+    const nav = await screen.findByRole('navigation', { name: 'Диалоги для проверки' });
+    await userEvent.click(within(nav).getByRole('link', { name: /KZ-002/ }));
+    expect(window.location.pathname).toBe('/dialogs/conversation-2');
+    expect(window.location.search).toBe('');
+    expect(window.location.hash).toBe('');
+    expect(screen.queryByRole('article', { name: 'Выбранная реплика' })).toBeNull();
+  });
+
   it('shows genuine API records, filters them and opens a separate review route', async () => {
     render(<App />);
     const user = userEvent.setup();
@@ -92,6 +138,9 @@ describe('working frontend flows', () => {
     const button = await screen.findByRole('button', { name: 'Оценить заново' });
     expect(screen.getByText('Вес: 10')).toBeTruthy();
     expect(screen.getByText('Вес: 20 · не учитывается')).toBeTruthy();
+    const violation = screen.getByText('Грубое нарушение').closest('summary')!;
+    expect(violation.textContent).toContain('Без нарушения');
+    expect(violation.textContent).not.toContain('баллов');
     expect(start).not.toHaveBeenCalled();
     expect(screen.getByText(/Сохранено/)).toBeTruthy();
     await userEvent.click(button);
