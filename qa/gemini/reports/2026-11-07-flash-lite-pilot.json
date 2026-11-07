@@ -1,0 +1,378 @@
+{
+  "generatedAt": "2026-11-07T14:59:23.096Z",
+  "kind": "bounded_live_readiness_pilot_not_hidden_accuracy",
+  "teamName": "Paradox",
+  "sourceCommit": "4f6cbe6adb36aadf1f33403956606a89a16f6234",
+  "profile": {
+    "modelId": "gemini-3.5-flash-lite",
+    "thinkingLevel": "low",
+    "maxOutputTokens": 8192,
+    "requestTimeoutMs": 120000,
+    "configurationId": "2f479593c030f84cf5a6024615ec0b995bd927173960a94884d04348ba728af2",
+    "promptVersion": "cqa-evaluator-v4",
+    "checklistSource": "qa/gemini/checklist.json",
+    "checklistVersionId": "0a89a3a1-a6c6-41cd-a65c-d8dadfae6ca8",
+    "checklistConfigSha256": "a8bd7b3b1bb13f1f26431ed62330e06a7c13aff2fb2369e3a73823103e3161d2",
+    "referenceSha256": "71042e816c8b6d67d9ca0b8a026b87e3bc5a354d68afabc9ebe95664bd1f786a",
+    "officialWeightsScalesAndNARulesPreserved": true
+  },
+  "scope": {
+    "languages": ["RU", "KZ", "EN"],
+    "syntheticChatsOnly": true,
+    "realAudioSent": false,
+    "isolatedDatabase": true,
+    "rootEnvOrDatabaseChanged": false,
+    "fullDevBatchStarted": false,
+    "remoteTimurRunStatus": "unknown; user could not confirm; no duplicate full batch started"
+  },
+  "budget": {
+    "maxNewCalls": 6,
+    "actualNewCalls": 3,
+    "remainingLocalCallAllowance": 3,
+    "automaticFurtherCalls": false,
+    "transportStatuses": [200, 200, 200]
+  },
+  "availability": {
+    "generationConfirmed": true,
+    "confirmedBetween": ["2026-11-07T14:57:25.877Z", "2026-11-07T14:57:41.712Z"],
+    "actualModelVersions": ["gemini-3.5-flash-lite"],
+    "rateLimitsObserved": 0,
+    "remainingProjectQuota": null,
+    "dailyLimitForThisModel": null,
+    "flashQuota20DoesNotDescribeFlashLite": true,
+    "freeTierPublishedByGoogle": true,
+    "billingChangesMade": false,
+    "modelMetadataGetHttp": 200
+  },
+  "results": [
+    {
+      "sourceId": "p1-ru-003",
+      "language": "RU",
+      "evaluationId": "2e51fa8e-ad33-48c8-937b-89d224202353",
+      "status": "completed",
+      "createdAt": "2026-11-07T14:57:25.832Z",
+      "finishedAt": "2026-11-07T14:57:30.189Z",
+      "modelId": "gemini-3.5-flash-lite",
+      "actualModelVersions": ["gemini-3.5-flash-lite"],
+      "originalValues": {
+        "contact": false,
+        "needs": true,
+        "identity": "NA",
+        "consultation": 10,
+        "empathy": true,
+        "dialogue": 7,
+        "closing": false,
+        "gross": false
+      },
+      "originalScore": 63.13,
+      "grossViolation": false,
+      "usage": {
+        "inputTokens": 3234,
+        "outputTokens": 1075,
+        "thinkingTokens": null,
+        "totalTokens": 4309,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "durationMs": 4341,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.5-flash-lite",
+          "errorCode": null,
+          "usage": {
+            "inputTokens": 3234,
+            "outputTokens": 1075,
+            "thinkingTokens": null,
+            "totalTokens": 4309
+          }
+        }
+      ],
+      "referenceRole": "edge_case",
+      "assertedValues": {
+        "contact": true,
+        "needs": true,
+        "identity": "NA",
+        "consultation": 10,
+        "gross": false
+      },
+      "expectedTotal": null,
+      "technicalErrors": [],
+      "semanticMismatches": [
+        {
+          "criterionId": "contact",
+          "expected": true,
+          "actual": false
+        }
+      ],
+      "reviewStatus": "mismatch",
+      "exactEvidenceIdsAndTextVerified": true,
+      "standardResultFormattingVerified": true,
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-kz-013",
+      "language": "KZ",
+      "evaluationId": "47ef9903-1ee9-4332-b72d-dab982cbfb1f",
+      "status": "completed",
+      "createdAt": "2026-11-07T14:57:32.017Z",
+      "finishedAt": "2026-11-07T14:57:36.629Z",
+      "modelId": "gemini-3.5-flash-lite",
+      "actualModelVersions": ["gemini-3.5-flash-lite"],
+      "originalValues": {
+        "contact": true,
+        "needs": "NA",
+        "identity": "NA",
+        "consultation": 15,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": false,
+        "gross": true
+      },
+      "originalScore": 84.62,
+      "grossViolation": true,
+      "usage": {
+        "inputTokens": 3330,
+        "outputTokens": 1791,
+        "thinkingTokens": null,
+        "totalTokens": 5121,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "durationMs": 4601,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.5-flash-lite",
+          "errorCode": null,
+          "usage": {
+            "inputTokens": 3330,
+            "outputTokens": 1791,
+            "thinkingTokens": null,
+            "totalTokens": 5121
+          }
+        }
+      ],
+      "referenceRole": "edge_case",
+      "assertedValues": {
+        "contact": true,
+        "identity": "NA",
+        "closing": false,
+        "gross": true
+      },
+      "expectedTotal": null,
+      "technicalErrors": [],
+      "semanticMismatches": [],
+      "reviewStatus": "passed",
+      "exactEvidenceIdsAndTextVerified": true,
+      "standardResultFormattingVerified": true,
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-en-006",
+      "language": "EN",
+      "evaluationId": "b305ad87-558c-431f-815e-fb3cf54ac2ac",
+      "status": "completed",
+      "createdAt": "2026-11-07T14:57:38.142Z",
+      "finishedAt": "2026-11-07T14:57:41.712Z",
+      "modelId": "gemini-3.5-flash-lite",
+      "actualModelVersions": ["gemini-3.5-flash-lite"],
+      "originalValues": {
+        "contact": false,
+        "needs": true,
+        "identity": true,
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": true,
+        "gross": false
+      },
+      "originalScore": 90,
+      "grossViolation": false,
+      "usage": {
+        "inputTokens": 3757,
+        "outputTokens": 940,
+        "thinkingTokens": null,
+        "totalTokens": 4697,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "durationMs": 3563,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.5-flash-lite",
+          "errorCode": null,
+          "usage": {
+            "inputTokens": 3757,
+            "outputTokens": 940,
+            "thinkingTokens": null,
+            "totalTokens": 4697
+          }
+        }
+      ],
+      "referenceRole": "calibration_user_adjudicated_needs",
+      "assertedValues": {
+        "contact": true,
+        "needs": false,
+        "identity": true,
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": true,
+        "gross": false
+      },
+      "expectedTotal": 85,
+      "technicalErrors": [],
+      "semanticMismatches": [
+        {
+          "criterionId": "contact",
+          "expected": true,
+          "actual": false
+        },
+        {
+          "criterionId": "needs",
+          "expected": false,
+          "actual": true
+        },
+        {
+          "criterionId": "identity",
+          "missingEvidence": ["m0013"]
+        },
+        {
+          "expectedTotal": 85,
+          "actualTotal": 90
+        }
+      ],
+      "reviewStatus": "mismatch",
+      "exactEvidenceIdsAndTextVerified": true,
+      "standardResultFormattingVerified": true,
+      "cacheVerified": true,
+      "persistenceVerified": true
+    }
+  ],
+  "referenceAgreement": {
+    "matchedCriterionValues": 14,
+    "assertedCriterionValues": 17,
+    "proportion": 0.8235294117647058,
+    "notAccuracy": true,
+    "hiddenControlAccuracy": null,
+    "labels": "Partial assistant/manual smoke expectations; EN-006 contains a user-adjudicated calibration decision; cases previously observed, not an independent test set",
+    "wholeDialogSemanticPassClaim": false
+  },
+  "manualAudit": {
+    "allEightAnswersReadForEachCase": true,
+    "findings": [
+      {
+        "sourceId": "p1-ru-003",
+        "criterionId": "contact",
+        "status": "confirmed_mismatch",
+        "messageIds": ["m0011"],
+        "finding": "Greeting and first name are present. Model invents a surname/company requirement absent from the official checklist."
+      },
+      {
+        "sourceId": "p1-ru-003",
+        "criterionId": "empathy",
+        "status": "rationale_needs_precision",
+        "messageIds": ["m0011", "m0013", "m0015"],
+        "finding": "Politeness supports true; claiming all questions were answered conflicts with consultation=10."
+      },
+      {
+        "sourceId": "p1-ru-003",
+        "criterionId": "dialogue",
+        "status": "manual_judgment_not_preasserted",
+        "messageIds": ["m0013", "m0014", "m0015"],
+        "finding": "Score 7 is plausible for a repeated irrelevant answer, but consultation completeness and dialogue clarity must remain separate."
+      },
+      {
+        "sourceId": "p1-kz-013",
+        "criterionId": "gross",
+        "status": "supported",
+        "messageIds": ["m0012"],
+        "finding": "Paid private advice is explicitly offered. Client refusal does not undo the flag; numeric score remains independent."
+      },
+      {
+        "sourceId": "p1-kz-013",
+        "criterionId": "consultation",
+        "status": "additional_manual_finding_not_prelabelled",
+        "messageIds": ["m0010", "m0011", "m0012"],
+        "finding": "Value 15 is justified only by the gross violation, with no omitted secondary detail identified. Review the unsupported deduction separately; frozen reference did not assert this value."
+      },
+      {
+        "sourceId": "p1-en-006",
+        "criterionId": "contact",
+        "status": "confirmed_mismatch",
+        "messageIds": ["m0011"],
+        "finding": "First operator message includes greeting and name; false contradicts the transcript."
+      },
+      {
+        "sourceId": "p1-en-006",
+        "criterionId": "needs",
+        "status": "mismatch_against_user_adjudicated_reference",
+        "messageIds": ["m0016", "m0019"],
+        "finding": "Case was already sent for review before transfer timing was requested; later clarification does not fix order."
+      },
+      {
+        "sourceId": "p1-en-006",
+        "criterionId": "identity",
+        "status": "correct_value_insufficient_selected_evidence",
+        "messageIds": ["m0013"],
+        "finding": "Explanation mentions the system verification, but selected evidence/checked span omits m0013; m0011 states a plan to verify, not completed verification."
+      }
+    ],
+    "otherCriteria": "Values and rationales were compared with source messages; no additional definite mismatch recorded. Product factual claims lack an independent product reference.",
+    "explanationLanguage": "Russian, with source-language quotations",
+    "originalAnswersEdited": false,
+    "referenceLabelsEdited": false
+  },
+  "performance": {
+    "providerDurationMs": [4341, 4601, 3563],
+    "providerMeanDurationMs": 4168.333333333333,
+    "knownTotalTokens": 14127,
+    "thinkingTokenCount": null,
+    "sampleSize": 3,
+    "scope": "Short synthetic chats; not a throughput or quota guarantee for all DEV or real-call transcripts"
+  },
+  "submission": {
+    "cutoffAt": "2026-11-08T06:00:00Z",
+    "controlReleaseExpectedAt": "2026-11-08T05:00:00Z",
+    "controlGroupId": null,
+    "currentIsolatedProfile": {
+      "completedDev": 3,
+      "missingDev": 62,
+      "missingControl": 10,
+      "minimumAdditionalCalls": 72,
+      "onlyIfProfileUnchanged": true
+    },
+    "newChecklistOrPromptRequiresCorrespondingEvaluations": true,
+    "rootDatabaseV2": {
+      "completedDev": 1,
+      "missingDev": 64,
+      "missingControl": 10,
+      "minimumAdditionalCalls": 74,
+      "oldConfigurationHasKnownSemanticErrors": true
+    },
+    "retryReserveSuggestion": 15,
+    "controlFreshCallsToReserve": 10,
+    "controlRetryCallsToReserve": 2,
+    "fullDevOrProdArtifactsProduced": false
+  },
+  "nextSteps": [
+    "Coordinate one owner for the full DEV run before spending the shared quota on a package",
+    "Check remaining Flash-Lite RPM/TPM/RPD in the active project; three successes do not prove capacity for the remaining 72+ retries",
+    "Review and explicitly freeze the submission checklist/prompt; preserve raw original model answers and all failed attempts",
+    "Minimal proposed clarifications: a first name suffices for contact; require the actual verification message for identity; assess timing before completed actions; do not deduct consultation points solely for an independent gross flag",
+    "Any changed instructions need a new version and new tests; do not relabel these examples to make the score match",
+    "Reserve the last hour for ten real control chats, export validation, commit and push"
+  ],
+  "sources": {
+    "rateLimits": "https://ai.google.dev/gemini-api/docs/rate-limits",
+    "pricing": "https://ai.google.dev/gemini-api/docs/pricing",
+    "model": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite"
+  }
+}
