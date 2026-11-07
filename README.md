@@ -140,12 +140,12 @@ const response = await fetch('/api/score', {
 
 Нужны API-ключ из [Google AI Studio](https://aistudio.google.com/apikey), точный ID доступной этому проекту модели с поддержкой structured output и рабочая квота. Сам факт наличия ключа не гарантирует доступ к конкретной модели. Если используется платный API, сначала согласуйте бюджет пробного запуска; стоимость зависит от модели и фактического количества токенов.
 
-В существующий `.env` добавьте следующие строки, сохранив `ORGANIZER_API_URL`:
+В своём `.env` задайте следующие значения. Подставьте свой API-ключ и сохраните существующий `ORGANIZER_API_URL`.
 
 ```dotenv
 AI_PROVIDER=gemini
 GEMINI_API_KEY=your_api_key
-GEMINI_MODEL=your_available_model_id
+GEMINI_MODEL=gemini-3.5-flash
 AI_MAX_OUTPUT_TOKENS=8192
 AI_REQUEST_TIMEOUT_MS=90000
 ```
