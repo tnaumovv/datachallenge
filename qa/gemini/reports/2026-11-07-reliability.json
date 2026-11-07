@@ -1147,5 +1147,477 @@
     "The generic-schema baseline also produced identity=NA instead of false on KZ-015; live results vary.",
     "Product-policy facts and call audio were not independently verified.",
     "Billing cost is not derived from token counters; incomplete usage stays unknown."
-  ]
+  ],
+  "calibrationAndTroubleshootingUsage": {
+    "scope": "This task calibration and troubleshooting only; excludes earlier project probes, metadata GETs and the separately listed parallel 18-call experiment.",
+    "evaluations": 11,
+    "completed": 6,
+    "failed": 5,
+    "modelCalls": 19,
+    "knownTokenSubtotal": 46466,
+    "unknownTokenAttempts": 11,
+    "billingCostUsd": null,
+    "errorCounts": {
+      "PROVIDER_FAILED": 6,
+      "RATE_LIMIT": 2,
+      "TIMEOUT": 2,
+      "INVALID_MODEL_OUTPUT": 2,
+      "MODEL_UNAVAILABLE": 1
+    },
+    "records": [
+      {
+        "evaluationId": "e95520db-9120-4af4-afa8-bdce50c5f9ab",
+        "modelId": "gemini-3.6-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3450,
+          "outputTokens": 977,
+          "thinkingTokens": 2133,
+          "totalTokens": 6560,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 15942,
+            "usage": {
+              "inputTokens": 3450,
+              "outputTokens": 977,
+              "thinkingTokens": 2133,
+              "totalTokens": 6560
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "2e496c95-72a3-44cb-844f-e755e40f2d7c",
+        "modelId": "gemini-3.6-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 2,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 2
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 3722,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "RATE_LIMIT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 486,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "e6b0c13a-69af-434d-a5b6-c2f51aa4c4c4",
+        "modelId": "gemini-3.8-flash",
+        "configurationId": "375c2a10886c65fba12f3ec75b40618f19149178bf5bf5ff2267c8a3b0fcc72d",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 3,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 3
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "TIMEOUT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 120014,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 6706,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 3,
+            "status": "failed",
+            "errorCode": "TIMEOUT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 120008,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "b532ba7d-8b46-4118-a76e-2e6ee1f3777c",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3450,
+          "outputTokens": 953,
+          "thinkingTokens": null,
+          "totalTokens": 4403,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 4214,
+            "usage": {
+              "inputTokens": 3450,
+              "outputTokens": 953,
+              "thinkingTokens": null,
+              "totalTokens": 4403
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "9198d1ff-5f18-4506-b382-74c4a31393c3",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 2,
+        "usage": {
+          "inputTokens": 6150,
+          "outputTokens": 1798,
+          "thinkingTokens": null,
+          "totalTokens": 7948,
+          "calls": 2
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "INVALID_MODEL_OUTPUT",
+            "failureStage": "evidence",
+            "finishReason": "STOP",
+            "durationMs": 4674,
+            "usage": {
+              "inputTokens": 3009,
+              "outputTokens": 863,
+              "thinkingTokens": null,
+              "totalTokens": 3872
+            }
+          },
+          {
+            "number": 2,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 3024,
+            "usage": {
+              "inputTokens": 3141,
+              "outputTokens": 935,
+              "thinkingTokens": null,
+              "totalTokens": 4076
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "b8834861-9426-4262-9cf6-6c7ba746789e",
+        "modelId": "gemini-3.8-flash",
+        "configurationId": "375c2a10886c65fba12f3ec75b40618f19149178bf5bf5ff2267c8a3b0fcc72d",
+        "promptVersion": "cqa-evaluator-v4",
+        "status": "failed",
+        "calls": 2,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 2
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 1998,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "RATE_LIMIT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 268,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "911bc56a-6491-4354-b683-82881b6c493c",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v4",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3753,
+          "outputTokens": 1198,
+          "thinkingTokens": null,
+          "totalTokens": 4951,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 9003,
+            "usage": {
+              "inputTokens": 3753,
+              "outputTokens": 1198,
+              "thinkingTokens": null,
+              "totalTokens": 4951
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "cf16cbc4-a20b-4a1d-a006-12bd4ebb76cb",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v4",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3312,
+          "outputTokens": 940,
+          "thinkingTokens": null,
+          "totalTokens": 4252,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 3812,
+            "usage": {
+              "inputTokens": 3312,
+              "outputTokens": 940,
+              "thinkingTokens": null,
+              "totalTokens": 4252
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "64a0d1ae-ba82-4bad-8c17-b433f46b9290",
+        "modelId": "gemini-3.7-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3451,
+          "outputTokens": 885,
+          "thinkingTokens": 2828,
+          "totalTokens": 7164,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 104414,
+            "usage": {
+              "inputTokens": 3451,
+              "outputTokens": 885,
+              "thinkingTokens": 2828,
+              "totalTokens": 7164
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "3f583414-88a0-4f45-ae03-dc909641ad73",
+        "modelId": "gemini-3.7-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 4,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 4
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "INVALID_MODEL_OUTPUT",
+            "failureStage": "finish_reason",
+            "finishReason": "MAX_TOKENS",
+            "durationMs": 108871,
+            "usage": {
+              "inputTokens": 3010,
+              "outputTokens": 316,
+              "thinkingTokens": 7862,
+              "totalTokens": 11188
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 792,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 3,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 7862,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 4,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 4037,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "d911fc9a-f6ae-4144-8a61-8c151d6f5e56",
+        "modelId": "gemini-2.5-flash",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "MODEL_UNAVAILABLE",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 692,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
