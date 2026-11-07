@@ -16,6 +16,7 @@
     "format:check": "prettier --check shared server"
   },
   "dependencies": {
+    "@google/genai": "^3.0.0",
     "express": "^5.3.0",
     "zod": "^4.6.7"
   },

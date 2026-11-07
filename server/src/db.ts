@@ -15,6 +15,18 @@ export function createDatabase(path: string) {
     CREATE TABLE IF NOT EXISTS checklist_versions (
       id TEXT PRIMARY KEY, checklist_id TEXT NOT NULL, version INTEGER NOT NULL,
       payload TEXT NOT NULL, UNIQUE(checklist_id, version)
-    );`);
+    );
+    CREATE TABLE IF NOT EXISTS evaluations (
+      id TEXT PRIMARY KEY,
+      conversation_id TEXT NOT NULL REFERENCES conversations(id),
+      checklist_version_id TEXT NOT NULL REFERENCES checklist_versions(id),
+      cache_key TEXT NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('queued','running','completed','failed')),
+      payload TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS evaluations_cache ON evaluations(cache_key, status);
+    CREATE INDEX IF NOT EXISTS evaluations_conversation ON evaluations(conversation_id);
+    CREATE INDEX IF NOT EXISTS evaluations_status ON evaluations(status);
+    `);
   return db;
 }

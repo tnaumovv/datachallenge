@@ -2,6 +2,8 @@ import { existsSync } from 'node:fs';
 import { z } from 'zod';
 import { createDatabase } from './db.js';
 import { createApp } from './app.js';
+import { EvaluationService } from './evaluations/service.js';
+import { providerFromEnv } from './evaluations/config.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 const env = z
@@ -13,20 +15,27 @@ const env = z
   })
   .parse(process.env);
 const db = createDatabase(env.DATABASE_PATH);
-const app = createApp(db, { organizerUrl: env.ORGANIZER_API_URL });
-const server = app.listen(env.PORT, env.HOST, () =>
-  console.log(`CQA API: http://${env.HOST}:${env.PORT}`),
-);
+const provider = providerFromEnv(process.env);
+const evaluations = new EvaluationService(db, provider);
+const app = createApp(db, { organizerUrl: env.ORGANIZER_API_URL, evaluations });
+const server = app.listen(env.PORT, env.HOST, () => {
+  evaluations.start();
+  console.log(
+    `CQA API: http://${env.HOST}:${env.PORT}; AI: ${provider ? 'configured' : 'not configured'}`,
+  );
+});
 server.on('error', (error: NodeJS.ErrnoException) => {
   console.error(`Server failed (${error.code ?? 'unknown'})`);
   db.close();
   process.exitCode = 1;
 });
-function shutdown() {
-  server.close(() => {
-    db.close();
-    process.exit(0);
-  });
+async function shutdown() {
+  await Promise.all([
+    evaluations.stop(),
+    new Promise<void>((resolve) => server.close(() => resolve())),
+  ]);
+  db.close();
+  process.exit(0);
 }
 process.once('SIGINT', shutdown);
 process.once('SIGTERM', shutdown);

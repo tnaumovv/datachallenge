@@ -5,16 +5,18 @@ import {
   ConversationFiltersSchema,
   ImportRequestSchema,
   ScoreRequestSchema,
+  EvaluationRequestSchema,
 } from '../../shared/contracts.js';
 import { ChecklistService } from './checklists/service.js';
 import { ConversationService } from './conversations/service.js';
 import { fetchOrganizerRecords, type Fetcher } from './conversations/organizer.js';
 import { scoreEvaluation } from './evaluations/scoring.js';
 import { HttpError } from './errors.js';
+import { EvaluationService } from './evaluations/service.js';
 
 export function createApp(
   db: DatabaseSync,
-  options: { organizerUrl?: string; fetcher?: Fetcher } = {},
+  options: { organizerUrl?: string; fetcher?: Fetcher; evaluations?: EvaluationService } = {},
 ) {
   const app = express();
   app.disable('x-powered-by');
@@ -22,6 +24,7 @@ export function createApp(
   const conversations = new ConversationService(db);
   const checklists = new ChecklistService(db);
   checklists.seed();
+  const evaluations = options.evaluations ?? new EvaluationService(db);
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.post('/api/import', async (req, res) => {
     const input = ImportRequestSchema.parse(req.body);
@@ -64,6 +67,28 @@ export function createApp(
     if (!config) throw new HttpError(404, 'NOT_FOUND', 'Checklist version not found');
     res.json({ checklistVersionId: config.id, ...scoreEvaluation(config.criteria, input.answers) });
   });
+  app.post('/api/evaluations', (req, res) => {
+    const input = EvaluationRequestSchema.parse(req.body);
+    res.status(202).json({
+      evaluationIds: evaluations.enqueue(
+        input.conversationIds,
+        input.checklistVersionId,
+        input.force,
+      ),
+    });
+  });
+  app.get('/api/evaluations', (req, res) => {
+    const conversationId = z.string().min(1).optional().parse(req.query.conversationId);
+    res.json(evaluations.list(conversationId));
+  });
+  app.get('/api/evaluations/:id', (req, res) => {
+    const evaluation = evaluations.get(req.params.id);
+    if (!evaluation) throw new HttpError(404, 'NOT_FOUND', 'Evaluation not found');
+    res.json(evaluation);
+  });
+  app.post('/api/evaluations/:id/retry', (req, res) =>
+    res.status(202).json({ evaluationIds: [evaluations.retry(req.params.id)] }),
+  );
   app.use((_req, _res, next) => next(new HttpError(404, 'NOT_FOUND', 'Route not found')));
   const errors: ErrorRequestHandler = (error, _req, res, _next) => {
     if (error instanceof HttpError) {

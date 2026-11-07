@@ -136,3 +136,54 @@ export const ScoreRequestSchema = z.object({
 export type ScoreRequest = z.infer<typeof ScoreRequestSchema>;
 export type ScoreResponse = ScoreSummary & { checklistVersionId: string };
 export type ApiError = { error: { code: string; message: string } };
+
+export const EvaluationRequestSchema = z.object({
+  conversationIds: z.array(z.string().min(1)).min(1).max(100),
+  checklistVersionId: z.string().min(1),
+  force: z.boolean().default(false),
+});
+export type EvaluationRequest = z.input<typeof EvaluationRequestSchema>;
+export type EvaluationStatus = 'queued' | 'running' | 'completed' | 'failed';
+export type TokenUsage = {
+  inputTokens: number | null;
+  outputTokens: number | null;
+  thinkingTokens: number | null;
+  totalTokens: number | null;
+};
+export type EvaluationAttempt = {
+  number: number;
+  startedAt: string;
+  finishedAt: string | null;
+  durationMs: number | null;
+  status: 'running' | 'completed' | 'failed';
+  errorCode: string | null;
+  usage: TokenUsage;
+  modelVersion: string | null;
+};
+export type CriterionEvidence = {
+  criterionId: string;
+  evidence: Message[];
+  checkedSpan: Message[];
+};
+export type Evaluation = {
+  id: string;
+  conversationId: string;
+  checklistVersionId: string;
+  providerId: string;
+  modelId: string;
+  configurationId: string;
+  promptVersion: string;
+  status: EvaluationStatus;
+  retryOfId: string | null;
+  createdAt: string;
+  startedAt: string | null;
+  finishedAt: string | null;
+  originalAnswers: CriterionAnswer[];
+  effectiveAnswers: CriterionAnswer[];
+  evidence: CriterionEvidence[];
+  originalScore: ScoreSummary | null;
+  finalScore: ScoreSummary | null;
+  attempts: EvaluationAttempt[];
+  usage: TokenUsage & { calls: number };
+  error: { code: string; message: string } | null;
+};
