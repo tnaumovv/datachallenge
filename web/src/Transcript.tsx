@@ -80,6 +80,7 @@ export function Transcript({
               <article
                 id={message.id}
                 tabIndex={-1}
+                aria-label={selectedMessageId === message.id ? 'Выбранная реплика' : undefined}
                 className={`message message-${message.speaker}${selectedMessageId === message.id ? ' message-selected' : ''}`}
               >
                 <div className="message-meta">
@@ -89,6 +90,9 @@ export function Transcript({
                 <p className="message-text" lang={languageTag[conversation.language]}>
                   {message.text}
                 </p>
+                {selectedMessageId === message.id && (
+                  <span className="message-selection-label">Выбранная реплика</span>
+                )}
               </article>
             </li>
           ))}
