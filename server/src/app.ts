@@ -117,7 +117,7 @@ export function createApp(
     const webRoot = options.webRoot;
     app.use(express.static(webRoot, { index: false }));
     app.get(['/', '/dialogs', '/dialogs/:id', '/checklists', '/appeals'], (_req, res) =>
-      res.sendFile(join(webRoot, 'index.html')),
+      res.sendFile('index.html', { root: webRoot }),
     );
   }
   app.use((_req, _res, next) => next(new HttpError(404, 'NOT_FOUND', 'Route not found')));

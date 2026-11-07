@@ -10,11 +10,13 @@ const databases: ReturnType<typeof createDatabase>[] = [];
 const directories: string[] = [];
 const shell = '<!doctype html><html><body><div id="root">CQA application</div></body></html>';
 
-function setup(withBuild = true) {
+function setup(withBuild = true, hiddenBuild = false) {
   const db = createDatabase(':memory:');
   databases.push(db);
-  const webRoot = mkdtempSync(join(tmpdir(), 'cqa-web-'));
-  directories.push(webRoot);
+  const directory = mkdtempSync(join(tmpdir(), 'cqa-web-'));
+  directories.push(directory);
+  const webRoot = hiddenBuild ? join(directory, '.worktree', 'dist', 'web') : directory;
+  mkdirSync(webRoot, { recursive: true });
   if (withBuild) {
     writeFileSync(join(webRoot, 'index.html'), shell);
     mkdirSync(join(webRoot, 'assets'));
@@ -32,6 +34,15 @@ afterEach(() => {
 });
 
 describe('production web serving', () => {
+  it('serves saved-dialog links from a hidden worktree build root', async () => {
+    const app = setup(true, true);
+    const response = await request(app).get('/dialogs/saved?evaluation=stored').expect(200);
+    expect(response.headers['content-type']).toContain('text/html');
+    expect(response.text).toBe(shell);
+    await request(app).get('/assets/app.js').expect(200);
+    await request(app).get('/api/unknown').expect(404);
+  });
+
   it.each(['/', '/dialogs', '/dialogs/saved-id?evaluation=stored-id', '/checklists', '/appeals'])(
     'serves the shell for direct navigation to %s',
     async (path) => {
