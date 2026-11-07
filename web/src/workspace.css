@@ -1417,7 +1417,7 @@ a {
     grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
     height: calc(100dvh - 205px);
-    min-height: 610px;
+    min-height: 520px;
   }
   .review-conversations {
     display: none;
