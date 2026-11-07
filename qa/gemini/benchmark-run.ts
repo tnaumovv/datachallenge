@@ -45,6 +45,10 @@ if (
   throw new Error('Only a plain local HTTP API is allowed');
 const base = target.origin;
 const reference: FrozenBenchmark = JSON.parse(readFileSync(options.reference, 'utf8'));
+if (!reference.configurationId?.trim())
+  throw new Error(
+    'Frozen configuration ID is required; legacy references cannot select comparable results',
+  );
 if (
   reference.schemaVersion !== 1 ||
   !Number.isFinite(Date.parse(reference.frozenAt)) ||
@@ -83,6 +87,8 @@ mkdirSync(directory, { recursive: true });
 type RunResult = BenchmarkResult & {
   evaluationId: string;
   modelId: string;
+  providerId: string;
+  configurationId: string;
   modelVersions: string[];
   calls: number;
   semanticMismatches: Record<string, unknown>[];
@@ -107,12 +113,12 @@ const run = {
   results: [] as RunResult[],
   stopReason: null as string | null,
   metrics: summarizeBenchmark(cases, []),
-  qualityGate: assessQualityTarget({ ...reference, cases }, []),
+  qualityGate: assessQualityTarget({ ...reference, cases }, [], checklist),
 };
 const reportPath = `${directory}/benchmark-${Date.now()}.json`;
 const save = () => {
   run.metrics = summarizeBenchmark(cases, run.results);
-  run.qualityGate = assessQualityTarget({ ...reference, cases }, run.results);
+  run.qualityGate = assessQualityTarget({ ...reference, cases }, run.results, checklist);
   writeFileSync(reportPath, JSON.stringify(run, null, 2) + '\n');
 };
 save();
@@ -127,7 +133,7 @@ for (const item of cases) {
         e.checklistVersionId === checklist.id &&
         e.modelId === reference.modelId &&
         e.promptVersion === reference.promptVersion &&
-        (!reference.configurationId || e.configurationId === reference.configurationId),
+        e.configurationId === reference.configurationId,
     );
     if (!saved) continue;
     evaluationId = saved.id;
@@ -164,7 +170,7 @@ for (const item of cases) {
   if (
     evaluation.modelId !== reference.modelId ||
     evaluation.promptVersion !== reference.promptVersion ||
-    (reference.configurationId && evaluation.configurationId !== reference.configurationId)
+    evaluation.configurationId !== reference.configurationId
   )
     review.technicalErrors.push('Evaluation does not match the frozen model/prompt configuration');
   const result: RunResult = {
@@ -172,6 +178,8 @@ for (const item of cases) {
     evaluationId,
     status: evaluation.status as 'completed' | 'failed',
     modelId: evaluation.modelId,
+    providerId: evaluation.providerId,
+    configurationId: evaluation.configurationId,
     modelVersions: [
       ...new Set(evaluation.attempts.map((a) => a.modelVersion).filter((v): v is string => !!v)),
     ],

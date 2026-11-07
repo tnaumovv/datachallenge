@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { ApiError, GoogleGenAI, ThinkingLevel } from '@google/genai';
-import { z } from 'zod';
-import { buildEvaluationPrompt, ModelOutputSchema } from './prompt.js';
+import { buildEvaluationPrompt } from './prompt.js';
+import { buildModelJsonSchema } from './generation-schema.js';
 import {
   ProviderError,
   type EvaluationProvider,
@@ -78,7 +78,7 @@ export class GeminiProvider implements EvaluationProvider {
     this.configurationId = createHash('sha256')
       .update(
         JSON.stringify({
-          adapter: 'gemini-v2',
+          adapter: 'gemini-v5',
           maxOutputTokens: this.maxOutputTokens,
           thinkingLevel: this.thinkingLevel ?? null,
           apiVersion: 'v1beta',
@@ -99,7 +99,7 @@ export class GeminiProvider implements EvaluationProvider {
   }
   async generate(input: ProviderInput): Promise<ProviderResult> {
     const prompt = buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
-    const { $schema, ...schema } = z.toJSONSchema(ModelOutputSchema);
+    const schema = buildModelJsonSchema(input.conversation, input.checklist);
     let retryAfterMs: number | undefined;
     const trackedFetch: typeof fetch = async (url, init) => {
       const response = await this.fetcher(url, init);

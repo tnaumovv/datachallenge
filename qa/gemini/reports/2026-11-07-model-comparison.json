@@ -1,0 +1,661 @@
+{
+  "date": "2026-11-07",
+  "kind": "assistant_reference_agreement_not_independent_accuracy",
+  "claimAbove95Supported": false,
+  "totalCalls": 18,
+  "liveProviders": ["gemini"],
+  "teamSetup": {
+    "upstreamCommit": "f54204ca",
+    "provider": "none",
+    "configuredGeminiModel": "gemini-3.5-flash",
+    "note": "Team template setting differs from measured Flash-Lite candidates; existing .env was not modified."
+  },
+  "limitations": [
+    "No independent human Ground Truth.",
+    "Known regressions are calibration, not holdout.",
+    "Reference coverage is partial for several examples.",
+    "The two run configurations differ and must not be pooled into one accuracy score.",
+    "Final shared-definitions schema optimization was verified offline only.",
+    "Cloud billing tier cannot be proved from API key contents; models publish a Free Tier; no paid-only provider was called."
+  ],
+  "runs": [
+    {
+      "startedAt": "2026-11-07T13:54:15.184Z",
+      "finishedAt": "2026-11-07T13:54:53.251Z",
+      "promptVersion": "cqa-evaluator-v4",
+      "referenceHash": "73691c49c017c518760391e2f7fd9c033e2d56e8690de940765a8c22915866a0",
+      "calls": 12,
+      "selectedModel": "gemini-3.5-flash-lite",
+      "models": [
+        {
+          "modelId": "gemini-3.5-flash-lite",
+          "configurationId": "89f149faf50f62be5db4b6d360dfd844836459a9fc5d5cf0b674bdb216f30511",
+          "regression": {
+            "scheduledDialogs": 2,
+            "completedDialogs": 2,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 12,
+            "comparedCriteria": 12,
+            "matchedCriteria": 12,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 100,
+            "exactDialogsOverScheduledPercent": 100,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 34.2380227506653,
+              "upperPercent": 100
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "identity": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "closing": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "empathy": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 100,
+            "matchedOverScheduledPercent": 100,
+            "comparedScores": 1,
+            "meanAbsoluteScoreError": 0,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 1,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatchCount": 0
+          },
+          "holdout": {
+            "scheduledDialogs": 9,
+            "completedDialogs": 4,
+            "failedDialogs": 1,
+            "invalidDialogs": 0,
+            "notRunDialogs": 4,
+            "scheduledCriteria": 66,
+            "comparedCriteria": 29,
+            "matchedCriteria": 26,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 50,
+            "exactDialogsOverScheduledPercent": 22.22,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 6.322510711784671,
+              "upperPercent": 54.74110308930111
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 8,
+                "compared": 3,
+                "matched": 2,
+                "agreementPercent": 66.67
+              },
+              "identity": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 8,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "empathy": {
+                "scheduled": 7,
+                "compared": 3,
+                "matched": 3,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 7,
+                "compared": 3,
+                "matched": 2,
+                "agreementPercent": 66.67
+              },
+              "closing": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 3,
+                "agreementPercent": 75
+              },
+              "gross": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 89.66,
+            "matchedOverScheduledPercent": 39.39,
+            "comparedScores": 3,
+            "meanAbsoluteScoreError": 5.31,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 1,
+              "trueNegatives": 3,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatchCount": 3
+          },
+          "results": [
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4284,
+              "errorCode": null,
+              "semanticMismatchCount": 0
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 5073,
+              "errorCode": null,
+              "semanticMismatchCount": 0
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4529,
+              "errorCode": null,
+              "semanticMismatchCount": 0
+            },
+            {
+              "status": "completed",
+              "calls": 2,
+              "totalTokens": 8226,
+              "errorCode": null,
+              "semanticMismatchCount": 3
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 3784,
+              "errorCode": null,
+              "semanticMismatchCount": 0
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4208,
+              "errorCode": null,
+              "semanticMismatchCount": 2
+            },
+            {
+              "status": "failed",
+              "calls": 2,
+              "totalTokens": 8051,
+              "errorCode": "INVALID_MODEL_OUTPUT",
+              "semanticMismatchCount": 0
+            }
+          ]
+        },
+        {
+          "modelId": "gemini-3.1-flash-lite",
+          "configurationId": "89f149faf50f62be5db4b6d360dfd844836459a9fc5d5cf0b674bdb216f30511",
+          "regression": {
+            "scheduledDialogs": 2,
+            "completedDialogs": 2,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 12,
+            "comparedCriteria": 12,
+            "matchedCriteria": 9,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": 0,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 65.76197724933469
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "identity": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 1,
+                "agreementPercent": 50
+              },
+              "closing": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 1,
+                "agreementPercent": 50
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 0,
+                "agreementPercent": 0
+              },
+              "empathy": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 75,
+            "matchedOverScheduledPercent": 75,
+            "comparedScores": 1,
+            "meanAbsoluteScoreError": 15,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 1,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatchCount": 3
+          },
+          "holdout": null,
+          "results": [
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4455,
+              "errorCode": null,
+              "semanticMismatchCount": 2
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4832,
+              "errorCode": null,
+              "semanticMismatchCount": 2
+            }
+          ]
+        },
+        {
+          "modelId": "gemini-3.8-flash",
+          "configurationId": "89f149faf50f62be5db4b6d360dfd844836459a9fc5d5cf0b674bdb216f30511",
+          "regression": {
+            "scheduledDialogs": 2,
+            "completedDialogs": 0,
+            "failedDialogs": 1,
+            "invalidDialogs": 0,
+            "notRunDialogs": 1,
+            "scheduledCriteria": 12,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 65.76197724933469
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "identity": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "consultation": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "closing": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "empathy": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              }
+            },
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": 0,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatchCount": 0
+          },
+          "holdout": null,
+          "results": [
+            {
+              "status": "failed",
+              "calls": 1,
+              "totalTokens": null,
+              "errorCode": "RATE_LIMIT",
+              "semanticMismatchCount": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "startedAt": "2026-11-07T13:56:58.019Z",
+      "finishedAt": "2026-11-07T13:57:23.208Z",
+      "promptVersion": "cqa-evaluator-v4",
+      "referenceHash": "0a9e717502d11e583ce6e8af27b6c2d294e43d46de6be0154648b33e2269d8a4",
+      "roleSchemaFollowup": true,
+      "calls": 6,
+      "selectedModel": "gemini-3.5-flash-lite",
+      "models": [
+        {
+          "modelId": "gemini-3.5-flash-lite",
+          "configurationId": "9fa1fa2dcba49d1d9b553b48f16c46741b2d73094df58ab951bead7a31469fe8",
+          "regression": {
+            "scheduledDialogs": 1,
+            "completedDialogs": 1,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 7,
+            "comparedCriteria": 7,
+            "matchedCriteria": 5,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": 0,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 79.34506856227625
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 0,
+                "agreementPercent": 0
+              },
+              "identity": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 0,
+                "agreementPercent": 0
+              },
+              "closing": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 71.43,
+            "matchedOverScheduledPercent": 71.43,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 1,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatchCount": 2
+          },
+          "holdout": {
+            "scheduledDialogs": 4,
+            "completedDialogs": 4,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 30,
+            "comparedCriteria": 30,
+            "matchedCriteria": 26,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 50,
+            "exactDialogsOverScheduledPercent": 50,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 15.003898915214947,
+              "upperPercent": 84.99610108478505
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 3,
+                "agreementPercent": 75
+              },
+              "needs": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 3,
+                "agreementPercent": 75
+              },
+              "identity": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 3,
+                "compared": 3,
+                "matched": 3,
+                "agreementPercent": 100
+              },
+              "empathy": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 3,
+                "compared": 3,
+                "matched": 3,
+                "agreementPercent": 100
+              },
+              "closing": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 2,
+                "agreementPercent": 50
+              },
+              "gross": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 86.67,
+            "matchedOverScheduledPercent": 86.67,
+            "comparedScores": 3,
+            "meanAbsoluteScoreError": 2.56,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 4,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatchCount": 4
+          },
+          "results": [
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4966,
+              "errorCode": null,
+              "semanticMismatchCount": 2
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4524,
+              "errorCode": null,
+              "semanticMismatchCount": 0
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4201,
+              "errorCode": null,
+              "semanticMismatchCount": 3
+            },
+            {
+              "status": "completed",
+              "calls": 1,
+              "totalTokens": 4543,
+              "errorCode": null,
+              "semanticMismatchCount": 2
+            },
+            {
+              "status": "completed",
+              "calls": 2,
+              "totalTokens": 7285,
+              "errorCode": null,
+              "semanticMismatchCount": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
