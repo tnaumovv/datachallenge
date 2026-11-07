@@ -1,5 +1,6 @@
 export type IconName =
   | 'dialogs'
+  | 'phone'
   | 'checklists'
   | 'appeals'
   | 'upload'
@@ -28,6 +29,9 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     >
       {name === 'dialogs' && (
         <path d="M20 11a7 7 0 0 1-7 7H8l-5 3V6a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3z" />
+      )}
+      {name === 'phone' && (
+        <path d="m8 3 3 5-3 2a14 14 0 0 0 6 6l2-3 5 3v3a2 2 0 0 1-2 2A18 18 0 0 1 3 5a2 2 0 0 1 2-2z" />
       )}
       {name === 'checklists' && (
         <>
