@@ -138,6 +138,9 @@ describe('working frontend flows', () => {
     const button = await screen.findByRole('button', { name: 'Оценить заново' });
     expect(screen.getByText('Вес: 10')).toBeTruthy();
     expect(screen.getByText('Вес: 20 · не учитывается')).toBeTruthy();
+    const violation = screen.getByText('Грубое нарушение').closest('summary')!;
+    expect(violation.textContent).toContain('Без нарушения');
+    expect(violation.textContent).not.toContain('баллов');
     expect(start).not.toHaveBeenCalled();
     expect(screen.getByText(/Сохранено/)).toBeTruthy();
     await userEvent.click(button);

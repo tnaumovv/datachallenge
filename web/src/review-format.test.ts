@@ -16,7 +16,7 @@ describe('criterion result meaning', () => {
 
   it('does not mark zero or a partial scale answer as completed', () => {
     expect(answerTone(consultation, 0)).toBe('attention');
-    expect(answerTone(consultation, 1)).toBe('attention');
+    expect(answerTone(consultation, 15)).toBe('attention');
     expect(answerTone(consultation, Math.max(...consultation.levels))).toBe('positive');
   });
 

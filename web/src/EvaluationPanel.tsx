@@ -464,7 +464,10 @@ function CriterionRow({
   onAppeal?: () => void;
 }) {
   const revised = isRevised(original, answer);
-  const awarded = contribution && points(contribution.points, contribution.maxPoints);
+  const awarded =
+    criterion.scoringMode === 'weighted' && contribution
+      ? points(contribution.points, contribution.maxPoints)
+      : null;
   const tone = answerTone(criterion, answer?.value);
   const directQuotes =
     evidence?.evidence.filter((message) => answer?.evidenceMessageIds.includes(message.id)) ?? [];
