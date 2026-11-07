@@ -1,6 +1,6 @@
 {
   "kind": "manual_smoke_expectations_not_organizer_ground_truth",
-  "scope": "Synthetic DEV chats only. Expectations derived from transcript and official checklist before these cases were evaluated with the candidate configuration. Only unambiguous decisions are asserted in edge cases.",
+  "scope": "Synthetic DEV chats only; not organizer Ground Truth. Initial expectations preceded the first candidate run. Follow-up calibration is explicitly marked and must not be counted as independent accuracy evidence.",
   "cases": [
     {
       "sourceId": "p1-ru-001",
@@ -70,23 +70,40 @@
       "sourceId": "p1-ru-014",
       "language": "RU",
       "role": "edge_case",
-      "expectedValues": { "contact": false, "identity": "NA", "closing": false, "gross": false },
+      "expectedValues": {
+        "contact": false,
+        "identity": "NA",
+        "closing": false,
+        "gross": false
+      },
       "notes": "m0010 has no agent name. Bot introduction cannot satisfy operator contact. m0014 is farewell only. Dialogue quality is partly subjective; not asserted here."
     },
     {
       "sourceId": "p1-kz-013",
       "language": "KZ",
       "role": "edge_case",
-      "expectedValues": { "contact": true, "identity": "NA", "closing": false, "gross": true },
-      "requiredEvidence": { "gross": ["m0012"] },
+      "expectedValues": {
+        "contact": true,
+        "identity": "NA",
+        "closing": false,
+        "gross": true
+      },
+      "requiredEvidence": {
+        "gross": ["m0012"]
+      },
       "notes": "m0012 offers paid private advice after work. Client rejection does not cancel the violation. System m0014 confirms agent closed chat without farewell."
     },
     {
       "sourceId": "p1-kz-015",
       "language": "KZ",
-      "role": "edge_case",
-      "expectedValues": { "contact": true, "identity": false },
-      "notes": "m0010 states an account-specific withdrawal restriction, m0011 explicitly says identity is not verified, m0012 waives verification. General-navigation N/A does not apply."
+      "role": "calibration_follow_up",
+      "expectedValues": {
+        "contact": true,
+        "identity": false,
+        "consultation": 20,
+        "closing": true
+      },
+      "notes": "m0010 states an account-specific withdrawal restriction, m0011 explicitly says identity is not verified, m0012 waives verification. General-navigation N/A does not apply. Follow-up calibration: m0014 explicitly offers review of the discussed restriction and says goodbye. Do not claim no next step exists. The original profile missed this step; these added expectations are not a blind holdout. Whether confirming an already-known restriction constitutes gross confidentiality disclosure remains a question for the organizers."
     },
     {
       "sourceId": "p1-en-006",
@@ -103,15 +120,24 @@
         "gross": false
       },
       "expectedTotal": 100,
-      "requiredEvidence": { "identity": ["m0013"] },
+      "requiredEvidence": {
+        "identity": ["m0013"]
+      },
       "notes": "System m0013 verifies identity before account review. Operator clarifies currency and timing, provides next step, answers report-download follow-up, summarizes and says goodbye in m0030."
     },
     {
       "sourceId": "p1-en-013",
       "language": "EN",
       "role": "edge_case",
-      "expectedValues": { "contact": true, "identity": "NA", "closing": false, "gross": true },
-      "requiredEvidence": { "gross": ["m0012"] },
+      "expectedValues": {
+        "contact": true,
+        "identity": "NA",
+        "closing": false,
+        "gross": true
+      },
+      "requiredEvidence": {
+        "gross": ["m0012"]
+      },
       "notes": "m0012 explicitly offers paid private advice outside company. Client refuses; flag still true. Chat closed by agent in m0014 without farewell."
     }
   ]
