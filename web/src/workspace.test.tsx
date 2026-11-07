@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ScoreResponse } from '../../shared/contracts.js';
 import { demoImport } from '../../shared/fixtures.js';
+import { scoreEvaluation } from '../../server/src/evaluations/scoring.js';
 import { App } from './App';
 import { api, RequestError } from './api';
 import { EvaluationPanel } from './EvaluationPanel';
@@ -41,6 +42,102 @@ afterEach(() => {
 });
 
 describe('working frontend flows', () => {
+  it('clears the previous evaluation, appeal and message when switching conversations', async () => {
+    const next = {
+      ...conversation,
+      id: 'kz/id',
+      sourceConversationId: 'KZ-002',
+      language: 'KZ' as const,
+    };
+    vi.mocked(api.conversations).mockResolvedValue([conversation, next]);
+    vi.mocked(api.evaluations).mockImplementation(async (id) =>
+      id === conversation.id ? [structuredClone(evaluation)] : [],
+    );
+    const start = vi.spyOn(api, 'start');
+    window.history.replaceState(
+      null,
+      '',
+      `/dialogs/${conversation.id}?evaluation=${evaluation.id}&appeal=old-appeal#m0002`,
+    );
+    render(<App />);
+    const picker = await screen.findByRole('combobox', { name: 'Выбрать диалог' });
+    await userEvent.selectOptions(picker, next.id);
+    expect(window.location.pathname).toBe('/dialogs/kz%2Fid');
+    expect(window.location.search).toBe('');
+    expect(window.location.hash).toBe('');
+    expect(await screen.findByRole('button', { name: 'Запустить оценку' })).toBeTruthy();
+    expect(screen.queryByRole('article', { name: 'Выбранная реплика' })).toBeNull();
+    expect(start).not.toHaveBeenCalled();
+  });
+
+  it('pairs a quote with its transcript message and restores the selection from the URL', async () => {
+    vi.mocked(api.evaluations).mockResolvedValue([structuredClone(evaluation)]);
+    const start = vi.spyOn(api, 'start');
+    window.history.replaceState(null, '', '/dialogs/' + conversation.id);
+    const { unmount } = render(<App />);
+    const criterion = (await screen.findByText('Установление контакта')).closest('details')!;
+    const quote = await within(criterion).findByRole('button', { name: /00:04/ });
+    await userEvent.click(quote);
+    const selected = screen.getByRole('article', { name: 'Выбранная реплика' });
+    expect(document.activeElement).toBe(selected);
+    expect(quote.getAttribute('aria-current')).toBe('true');
+    expect(quote.getAttribute('aria-controls')).toBe(selected.id);
+    expect(window.location.hash).toBe('#m0002');
+    unmount();
+    render(<App />);
+    expect((await screen.findByRole('article', { name: 'Выбранная реплика' })).id).toBe('m0002');
+    expect(start).not.toHaveBeenCalled();
+  });
+
+  it('opens original evidence from a deep link after a human correction clears effective pointers', async () => {
+    const revised = structuredClone(evaluation);
+    const answer = revised.effectiveAnswers.find((item) => item.criterionId === 'consultation')!;
+    Object.assign(answer, {
+      value: 20,
+      explanation: 'Решение проверяющего.',
+      evidenceMessageIds: [],
+      checkedSpanMessageIds: [],
+    });
+    revised.finalScore = scoreEvaluation(version.criteria, revised.effectiveAnswers);
+    vi.mocked(api.evaluations).mockResolvedValue([revised]);
+    window.history.replaceState(
+      null,
+      '',
+      `/dialogs/${conversation.id}?evaluation=${evaluation.id}#m0002`,
+    );
+    render(<App />);
+    const criterion = (await screen.findByText('Качество консультации')).closest('details')!;
+    expect(criterion.open).toBe(true);
+    expect(within(criterion).getByText('Исходные доказательства')).toBeTruthy();
+    expect(within(criterion).getByText(/Исходный ответ.*15 \/ 20/)).toBeTruthy();
+    const quote = within(criterion).getByRole('button', { name: /00:04/ });
+    expect(quote.getAttribute('aria-current')).toBe('true');
+    expect(quote.getAttribute('aria-controls')).toBe('m0002');
+  });
+
+  it.each([false, true])(
+    'shows the gross flag (%s) without a weighted points ratio',
+    async (triggered) => {
+      const flagged = structuredClone(evaluation);
+      for (const answers of [flagged.originalAnswers, flagged.effectiveAnswers]) {
+        answers.find((answer) => answer.criterionId === 'gross')!.value = triggered;
+      }
+      flagged.originalScore = flagged.finalScore = scoreEvaluation(
+        version.criteria,
+        flagged.effectiveAnswers,
+      );
+      vi.mocked(api.evaluations).mockResolvedValue([flagged]);
+      window.history.replaceState(null, '', '/dialogs/' + conversation.id);
+      render(<App />);
+      const criterion = (
+        await screen.findByText('Грубое нарушение', { selector: '.criterion-name' })
+      ).closest('details')!;
+      expect(criterion.textContent).toContain(triggered ? 'Нарушение' : 'Без нарушения');
+      expect(criterion.textContent).not.toContain('0 / 0');
+      expect(criterion.textContent).not.toContain('Вес:');
+    },
+  );
+
   it('shows genuine API records, filters them and opens a separate review route', async () => {
     render(<App />);
     const user = userEvent.setup();
