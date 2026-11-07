@@ -9,22 +9,35 @@ import { createDatabase } from '../server/src/db.js';
 import type { EvaluationProvider } from '../server/src/evaluations/provider.js';
 import { EvaluationService } from '../server/src/evaluations/service.js';
 
+const sampleAnswers = new Map(scoreExampleAnswers.map((answer) => [answer.criterionId, answer]));
+
 const demoProvider: EvaluationProvider = {
   id: 'demo',
   modelId: 'sample-answers',
   configurationId: 'demo-v1',
-  async generate({ conversation, signal }) {
+  async generate({ checklist, conversation, signal }) {
     await setTimeout(1200, undefined, { signal });
     const [first, greeting = first] = conversation.messages;
-    const answers = scoreExampleAnswers.map((answer) => ({
-      ...answer,
-      explanation:
-        answer.criterionId === 'contact'
-          ? 'В примере оператор поздоровался и представился.'
-          : 'Ответ для демонстрации интерфейса.',
-      evidenceMessageIds: answer.value === 'NA' ? [] : [greeting.id],
-      checkedSpanMessageIds: answer.value === 'NA' ? [first.id] : [],
-    }));
+    const answers = checklist.criteria.map((criterion) => {
+      const sample = sampleAnswers.get(criterion.id);
+      const allowedValues = criterion.answerType === 'binary' ? [false, true] : criterion.levels;
+      const value =
+        sample?.value === 'NA' && criterion.allowNA
+          ? 'NA'
+          : (allowedValues.find((allowed) => allowed === sample?.value) ??
+            (criterion.answerType === 'binary' ? false : 0));
+      return {
+        criterionId: criterion.id,
+        value,
+        explanation:
+          checklist.version === 1 && criterion.id === 'contact'
+            ? 'В примере оператор поздоровался и представился.'
+            : 'Ответ для демонстрации интерфейса.',
+        naReason: value === 'NA' ? sample?.naReason : null,
+        evidenceMessageIds: value === 'NA' ? [] : [greeting.id],
+        checkedSpanMessageIds: value === 'NA' ? [first.id] : [],
+      };
+    });
 
     return { text: JSON.stringify({ answers }), usage: {} };
   },
