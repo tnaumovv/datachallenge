@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import type { ChecklistVersion, Conversation } from '../../shared/contracts.js';
 import { api } from './api';
+import { AppealsPage } from './AppealsPage';
 import { EvaluationPanel } from './EvaluationPanel';
 import { Transcript, channelName } from './Transcript';
 
 declare const __CQA_DEMO__: boolean;
 
 type ReviewLocation = {
+  page: 'dialogs' | 'appeals';
+  appealId: string | null;
   conversationId: string | null;
   evaluationId: string | null;
   messageId: string | null;
@@ -30,6 +33,8 @@ function readLocation(): ReviewLocation {
   }
 
   return {
+    page: /^\/appeals\/?$/.test(url.pathname) ? 'appeals' : 'dialogs',
+    appealId: url.searchParams.get('appeal'),
     conversationId,
     evaluationId: url.searchParams.get('evaluation'),
     messageId: url.hash.slice(1) || null,
@@ -37,11 +42,14 @@ function readLocation(): ReviewLocation {
 }
 
 function reviewUrl(view: ReviewLocation): string {
+  if (view.page === 'appeals') return '/appeals';
   const path = view.conversationId
     ? `/dialogs/${encodeURIComponent(view.conversationId)}`
     : '/dialogs';
-  const query = view.evaluationId ? `?evaluation=${encodeURIComponent(view.evaluationId)}` : '';
-  return `${path}${query}${view.messageId ? `#${encodeURIComponent(view.messageId)}` : ''}`;
+  const query = new URLSearchParams();
+  if (view.evaluationId) query.set('evaluation', view.evaluationId);
+  if (view.appealId) query.set('appeal', view.appealId);
+  return `${path}${query.size ? `?${query}` : ''}${view.messageId ? `#${encodeURIComponent(view.messageId)}` : ''}`;
 }
 
 export function App() {
@@ -105,6 +113,14 @@ export function App() {
               )}
             </div>
           </div>
+          <nav className="main-nav" aria-label="Разделы">
+            <a href="/dialogs" aria-current={view.page === 'dialogs' ? 'page' : undefined}>
+              Диалоги
+            </a>
+            <a href="/appeals" aria-current={view.page === 'appeals' ? 'page' : undefined}>
+              Апелляции
+            </a>
+          </nav>
           <div className="sponsor">
             <span>При поддержке</span> <strong>Freedom Bank</strong>
           </div>
@@ -124,12 +140,35 @@ export function App() {
           </button>
         </main>
       )}
-      {data.status === 'ready' && (
+      {data.status === 'ready' && view.page === 'appeals' && (
+        <AppealsPage
+          conversations={data.conversations}
+          checklists={data.checklists}
+          onOpen={(evaluation, appealId) =>
+            navigate({
+              page: 'dialogs',
+              conversationId: evaluation.conversationId,
+              evaluationId: evaluation.id,
+              messageId: null,
+              appealId,
+            })
+          }
+        />
+      )}
+      {data.status === 'ready' && view.page === 'dialogs' && (
         <main className="workspace">
           <DialogList
             conversations={data.conversations}
             activeId={current?.id}
-            onSelect={(id) => navigate({ conversationId: id, evaluationId: null, messageId: null })}
+            onSelect={(id) =>
+              navigate({
+                page: 'dialogs',
+                conversationId: id,
+                evaluationId: null,
+                messageId: null,
+                appealId: null,
+              })
+            }
           />
           {current ? (
             <>
@@ -144,10 +183,35 @@ export function App() {
                 checklists={data.checklists}
                 requestedId={view.evaluationId}
                 onSelect={(id) =>
-                  navigate({ conversationId: current.id, evaluationId: id, messageId: null })
+                  navigate({
+                    page: 'dialogs',
+                    conversationId: current.id,
+                    evaluationId: id,
+                    messageId: null,
+                    appealId: null,
+                  })
+                }
+                selectedAppealId={view.appealId}
+                onSelectAppeal={(evaluationId, appealId) =>
+                  navigate({
+                    ...view,
+                    page: 'dialogs',
+                    conversationId: current.id,
+                    evaluationId,
+                    appealId,
+                  })
                 }
                 onEvidence={(id, evaluationId) => {
-                  navigate({ conversationId: current.id, evaluationId, messageId: id }, true);
+                  navigate(
+                    {
+                      ...view,
+                      page: 'dialogs',
+                      conversationId: current.id,
+                      evaluationId,
+                      messageId: id,
+                    },
+                    true,
+                  );
                   const message = document.getElementById(id);
                   message?.focus({ preventScroll: true });
                   message?.scrollIntoView({ block: 'nearest' });

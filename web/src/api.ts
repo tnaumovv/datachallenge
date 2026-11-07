@@ -1,7 +1,10 @@
 import type {
   ApiError,
+  Appeal,
+  AppealInput,
   ChecklistVersion,
   Conversation,
+  DecisionInput,
   Evaluation,
   EvaluationRequest,
 } from '../../shared/contracts.js';
@@ -24,22 +27,37 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
+function post<T>(path: string, body: unknown, signal: AbortSignal): Promise<T> {
+  return request<T>(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  });
+}
+
 export const api = {
   conversations: (signal: AbortSignal) => request<Conversation[]>('/conversations', { signal }),
   checklists: (signal: AbortSignal) => request<ChecklistVersion[]>('/checklists', { signal }),
-  evaluations: (conversationId: string, signal: AbortSignal) =>
-    request<Evaluation[]>(`/evaluations?${new URLSearchParams({ conversationId })}`, { signal }),
+  evaluations: (conversationId: string | null, signal: AbortSignal) =>
+    request<Evaluation[]>(
+      conversationId ? `/evaluations?${new URLSearchParams({ conversationId })}` : '/evaluations',
+      { signal },
+    ),
   evaluation: (id: string, signal: AbortSignal) =>
     request<Evaluation>(`/evaluations/${encodeURIComponent(id)}`, { signal }),
   start: (body: EvaluationRequest, signal: AbortSignal) =>
-    request<Enqueued>('/evaluations', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal,
-    }),
+    post<Enqueued>('/evaluations', body, signal),
   retry: (id: string, signal: AbortSignal) =>
     request<Enqueued>(`/evaluations/${encodeURIComponent(id)}/retry`, { method: 'POST', signal }),
+  appeals: (signal: AbortSignal, evaluationId?: string) =>
+    request<Appeal[]>(
+      evaluationId ? `/appeals?${new URLSearchParams({ evaluationId })}` : '/appeals',
+      { signal },
+    ),
+  submitAppeal: (body: AppealInput, signal: AbortSignal) => post<Appeal>('/appeals', body, signal),
+  resolveAppeal: (id: string, body: DecisionInput, signal: AbortSignal) =>
+    post<Evaluation>(`/appeals/${encodeURIComponent(id)}/decision`, body, signal),
 };
 
 export function startErrorMessage(error: unknown): string {
@@ -51,4 +69,17 @@ export function startErrorMessage(error: unknown): string {
   }
 
   return 'Не удалось запустить оценку. Проверьте список оценок перед повтором.';
+}
+
+export function appealErrorMessage(error: unknown, action: 'submit' | 'resolve'): string {
+  if (error instanceof RequestError) {
+    if (error.code === 'APPEAL_PENDING') return 'У этого критерия уже есть открытая апелляция.';
+    if (error.code === 'APPEAL_RESOLVED')
+      return 'По этой апелляции уже принято решение. Обновите историю.';
+    if (error.code === 'STALE_APPEAL') return 'Ответ по критерию изменился. Обновите историю.';
+    if (error.code === 'CHECKLIST_MISSING') return 'Версия чек-листа для этой оценки недоступна.';
+  }
+  return action === 'submit'
+    ? 'Не удалось отправить апелляцию. Повторите попытку.'
+    : 'Не удалось сохранить решение. Повторите попытку.';
 }
