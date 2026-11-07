@@ -1,0 +1,835 @@
+{
+  "generatedAt": "2026-11-07T09:56:55.840Z",
+  "displayTimezone": "Asia/Qyzylorda",
+  "branch": "codex/gemini-quality",
+  "applicationBaseCommit": "301379c82778ee6e1294fad2c2ff55637631228a",
+  "implementationCommits": ["8740d5c", "0a8d24d", "1314bbc"],
+  "scope": "Isolated worktree, local port 3011, separate SQLite database; nine synthetic DEV chats; no real calls or full DEV batch. No application files in server/ or shared/ changed by this branch.",
+  "recommendation": {
+    "model": "gemini-3.6-flash",
+    "maxOutputTokens": 8192,
+    "thinkingLevel": "provider default (no additional backend environment option)",
+    "use": "Reviewed small samples and saved-result demonstration",
+    "readyForUnattendedBulk": false
+  },
+  "profiles": {
+    "initialClarifications": {
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "localVersion": 2,
+      "sourceCommit": "8740d5c",
+      "successfulDistinctChats": 9,
+      "note": "All original weights, levels and N/A rules preserved. One unasserted KZ consultation issue discovered during manual review."
+    },
+    "escalationClarification": {
+      "checklistVersionId": "6d721a98-63a1-461c-9750-2ff5badc3173",
+      "localVersion": 3,
+      "sourceCommit": "0a8d24d",
+      "configSha256": "3d132680296560f1f4191c2dd886afd24fd3c2fdd7b7daba789f5f22abbf6ab6",
+      "successfulDistinctChats": 3,
+      "testedSources": ["p1-kz-015", "p1-ru-003", "p1-en-006"],
+      "note": "Clarifies that review/escalation can be a valid next step and a closing summary. These are calibration/regression cases, not unseen accuracy evidence. The other six chats were not rerun on this profile to conserve quota."
+    }
+  },
+  "validation": {
+    "applicationTestsPassed": 103,
+    "qaReviewerTestsPassed": 6,
+    "typecheck": "passed (application and QA)",
+    "build": "passed",
+    "qaFormatting": "passed",
+    "importIdempotency": "0 imported / 9 existing; existing identical checklist reused",
+    "persistence": {
+      "totalEvaluations": 13,
+      "verified": true,
+      "restartedWith": "standard compiled backend, npm start"
+    },
+    "callBudgetGuard": "Budget below four attempts refused enqueue; evaluation snapshot unchanged",
+    "readOnlyReview": "Three saved results reviewed with --max-calls 0; no POST or model calls"
+  },
+  "isolatedRunUsage": {
+    "evaluations": 13,
+    "completedEvaluations": 12,
+    "failedEvaluations": 1,
+    "modelCalls": 19,
+    "knownTotalTokenSubtotal": 76870,
+    "unknownUsageAttempts": 7,
+    "completeTotalTokens": null,
+    "costUsd": null,
+    "errorCounts": {
+      "RATE_LIMIT": 1,
+      "PROVIDER_FAILED": 6
+    },
+    "note": "Includes failed attempts and excludes earlier exploratory probes outside the isolated database. Cached reads added no calls. Do not interpret the known subtotal as complete billing usage."
+  },
+  "providerFindings": [
+    {
+      "code": "UNAVAILABLE",
+      "observation": "Three captured HTTP 503 responses explicitly reported high demand. Earlier generic provider failures did not preserve HTTP diagnostics."
+    },
+    {
+      "code": "RESOURCE_EXHAUSTED",
+      "observedAt": "2026-11-07T09:51:39.501Z",
+      "limitInResponse": "20 generateContent free-tier requests per day for gemini-3.6-flash",
+      "retryDelayInResponse": "22h8m19.89039399s",
+      "approximateSuggestedRetryAt": "2026-11-08T08:00:00Z",
+      "note": "Backend retried and the next attempt succeeded; remaining quota is not verified. No further model calls were made after the final three-case run. Review safe handling of long retry delays supplied in the API error body, not only the Retry-After header."
+    }
+  ],
+  "manualReviewFindings": [
+    {
+      "sourceId": "p1-kz-015",
+      "evaluationId": "8a663d4d-d88e-43ad-815f-011840762314",
+      "issue": "Initial profile ignored the explicitly offered review step and scored consultation 0 / closing false. Initial automated expectations for this case covered only contact and identity, so matching them was not proof of overall correctness."
+    },
+    {
+      "sourceId": "p1-kz-015",
+      "evaluationId": "90f407f0-a148-4c28-85b0-6cb555a1e037",
+      "issue": "Revised profile recognizes consultation 20 and closing true, but explanations are in Ukrainian despite a Russian-language system instruction. Empathy and dialogue values also changed; the total increase is not solely the intended two-criterion correction.",
+      "needsFollowUp": true
+    },
+    {
+      "sourceId": "p1-kz-015",
+      "issue": "Model marks identity false but gross false. Whether confirming a restriction already described by the client is confidential disclosure needs organizer clarification; no definitive label was imposed.",
+      "needsFollowUp": true
+    },
+    {
+      "issue": "No product reference or organizer Ground Truth was provided. Correct navigation or general account rules cannot be independently fact-checked from client acknowledgement alone.",
+      "needsFollowUp": true
+    }
+  ],
+  "exploratoryModelComparison": [
+    {
+      "model": "gemini-3.8-flash",
+      "observation": "Previous submitted evaluation failed after four calls (three timeouts and one invalid output). Two new low-thinking probes also failed; the second reached the 90-second client timeout. Exact reason for the earlier invalid output cannot be reconstructed."
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "observation": "Fast initial response (4.3 seconds) omitted checked evidence for the gross criterion and made N/A/closing errors. A clarified checklist passed structure but still confused general navigation with protected account disclosure. Not selected for unattended scoring."
+    },
+    {
+      "requestedModel": "gemini-3.5-flash",
+      "actualModel": "gemini-3.6-flash",
+      "observation": "One 503 followed by a successful 18.8-second single probe with the expected RU values. Subsequent isolated checks used explicit gemini-3.6-flash.",
+      "successfulProbeTokens": 5384
+    }
+  ],
+  "initialProfileResults": [
+    {
+      "sourceId": "p1-en-001",
+      "language": "EN",
+      "evaluationId": "acf5cafb-7720-42a2-8181-d1bd5c82e8f6",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 92.31,
+      "finalTotal": 92.31,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": "NA",
+        "identity": "NA",
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": false,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 2664,
+        "outputTokens": 495,
+        "thinkingTokens": 2312,
+        "totalTokens": 5471,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 19582,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2664,
+            "outputTokens": 495,
+            "thinkingTokens": 2312,
+            "totalTokens": 5471
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-en-006",
+      "language": "EN",
+      "evaluationId": "61883970-fef9-4220-bf79-51670b34bddf",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 100,
+      "finalTotal": 100,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": true,
+        "identity": true,
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": true,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 3325,
+        "outputTokens": 573,
+        "thinkingTokens": 2600,
+        "totalTokens": 6498,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 16676,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 3325,
+            "outputTokens": 573,
+            "thinkingTokens": 2600,
+            "totalTokens": 6498
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-en-013",
+      "language": "EN",
+      "evaluationId": "7e38a8d6-a2c9-416d-bd5c-2a455f6635c0",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 62.31,
+      "finalTotal": 62.31,
+      "grossViolation": true,
+      "values": {
+        "contact": true,
+        "needs": "NA",
+        "identity": "NA",
+        "consultation": 20,
+        "empathy": false,
+        "dialogue": 7,
+        "closing": false,
+        "gross": true
+      },
+      "usage": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "thinkingTokens": null,
+        "totalTokens": null,
+        "calls": 3
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "failed",
+          "errorCode": "PROVIDER_FAILED",
+          "failureStage": "provider",
+          "durationMs": 17248,
+          "finishReason": null,
+          "modelVersion": null,
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null,
+            "thinkingTokens": null,
+            "totalTokens": null
+          }
+        },
+        {
+          "number": 2,
+          "status": "failed",
+          "errorCode": "PROVIDER_FAILED",
+          "failureStage": "provider",
+          "durationMs": 14994,
+          "finishReason": null,
+          "modelVersion": null,
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null,
+            "thinkingTokens": null,
+            "totalTokens": null
+          }
+        },
+        {
+          "number": 3,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 23220,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2730,
+            "outputTokens": 557,
+            "thinkingTokens": 3448,
+            "totalTokens": 6735
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-kz-001",
+      "language": "KZ",
+      "evaluationId": "4efa2a8b-45b7-4144-bcb8-4d509ff5b780",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 92.31,
+      "finalTotal": 92.31,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": "NA",
+        "identity": "NA",
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": false,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 2816,
+        "outputTokens": 512,
+        "thinkingTokens": 2617,
+        "totalTokens": 5945,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 17286,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2816,
+            "outputTokens": 512,
+            "thinkingTokens": 2617,
+            "totalTokens": 5945
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-kz-001",
+      "language": "KZ",
+      "evaluationId": "fb19bdb6-5b50-499f-bd33-db54da10752f",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "failed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": [],
+      "originalTotal": null,
+      "finalTotal": null,
+      "grossViolation": null,
+      "values": {},
+      "usage": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "thinkingTokens": null,
+        "totalTokens": null,
+        "calls": 3
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "failed",
+          "errorCode": "PROVIDER_FAILED",
+          "failureStage": null,
+          "durationMs": 3016,
+          "finishReason": null,
+          "modelVersion": null,
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null,
+            "thinkingTokens": null,
+            "totalTokens": null
+          }
+        },
+        {
+          "number": 2,
+          "status": "failed",
+          "errorCode": "PROVIDER_FAILED",
+          "failureStage": null,
+          "durationMs": 3624,
+          "finishReason": null,
+          "modelVersion": null,
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null,
+            "thinkingTokens": null,
+            "totalTokens": null
+          }
+        },
+        {
+          "number": 3,
+          "status": "failed",
+          "errorCode": "PROVIDER_FAILED",
+          "failureStage": null,
+          "durationMs": 2480,
+          "finishReason": null,
+          "modelVersion": null,
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null,
+            "thinkingTokens": null,
+            "totalTokens": null
+          }
+        }
+      ],
+      "cacheVerified": false,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-kz-013",
+      "language": "KZ",
+      "evaluationId": "29102068-0224-4324-bee1-efa7c647b033",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 92.31,
+      "finalTotal": 92.31,
+      "grossViolation": true,
+      "values": {
+        "contact": true,
+        "needs": "NA",
+        "identity": "NA",
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": false,
+        "gross": true
+      },
+      "usage": {
+        "inputTokens": 2898,
+        "outputTokens": 569,
+        "thinkingTokens": 2127,
+        "totalTokens": 5594,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 15569,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2898,
+            "outputTokens": 569,
+            "thinkingTokens": 2127,
+            "totalTokens": 5594
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-kz-015",
+      "language": "KZ",
+      "evaluationId": "8a663d4d-d88e-43ad-815f-011840762314",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 18.82,
+      "finalTotal": 18.82,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": "NA",
+        "identity": false,
+        "consultation": 0,
+        "empathy": false,
+        "dialogue": 4,
+        "closing": false,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 2884,
+        "outputTokens": 585,
+        "thinkingTokens": 3334,
+        "totalTokens": 6803,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 19091,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2884,
+            "outputTokens": 585,
+            "thinkingTokens": 3334,
+            "totalTokens": 6803
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-ru-001",
+      "language": "RU",
+      "evaluationId": "3d7076bd-0736-4ce6-ac9c-ba59d107b7cd",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 92.31,
+      "finalTotal": 92.31,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": "NA",
+        "identity": "NA",
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": false,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 2683,
+        "outputTokens": 539,
+        "thinkingTokens": 2481,
+        "totalTokens": 5703,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 29546,
+          "finishReason": null,
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2683,
+            "outputTokens": 539,
+            "thinkingTokens": 2481,
+            "totalTokens": 5703
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-ru-003",
+      "language": "RU",
+      "evaluationId": "8030ecd5-8dae-44ce-b628-f22ad3a27733",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 75.63,
+      "finalTotal": 75.63,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": true,
+        "identity": "NA",
+        "consultation": 10,
+        "empathy": true,
+        "dialogue": 7,
+        "closing": false,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 2802,
+        "outputTokens": 1014,
+        "thinkingTokens": 3062,
+        "totalTokens": 6878,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 23224,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2802,
+            "outputTokens": 1014,
+            "thinkingTokens": 3062,
+            "totalTokens": 6878
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-ru-014",
+      "language": "RU",
+      "evaluationId": "c0df2d61-5749-4554-826c-e77632dd5f42",
+      "checklistVersionId": "ec07d997-f0ff-487b-bc1d-9369beda8578",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 46.92,
+      "finalTotal": 46.92,
+      "grossViolation": false,
+      "values": {
+        "contact": false,
+        "needs": "NA",
+        "identity": "NA",
+        "consultation": 20,
+        "empathy": false,
+        "dialogue": 7,
+        "closing": false,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 2749,
+        "outputTokens": 513,
+        "thinkingTokens": 3280,
+        "totalTokens": 6542,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 18272,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2749,
+            "outputTokens": 513,
+            "thinkingTokens": 3280,
+            "totalTokens": 6542
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    }
+  ],
+  "revisedProfileResults": [
+    {
+      "sourceId": "p1-en-006",
+      "language": "EN",
+      "evaluationId": "a9572596-b867-45c3-b2aa-d76641a5f67e",
+      "checklistVersionId": "6d721a98-63a1-461c-9750-2ff5badc3173",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 100,
+      "finalTotal": 100,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": true,
+        "identity": true,
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": true,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "thinkingTokens": null,
+        "totalTokens": null,
+        "calls": 2
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "failed",
+          "errorCode": "RATE_LIMIT",
+          "failureStage": "provider",
+          "durationMs": 272,
+          "finishReason": null,
+          "modelVersion": null,
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null,
+            "thinkingTokens": null,
+            "totalTokens": null
+          }
+        },
+        {
+          "number": 2,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 17232,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 3503,
+            "outputTokens": 1251,
+            "thinkingTokens": 2153,
+            "totalTokens": 6907
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-kz-015",
+      "language": "KZ",
+      "evaluationId": "90f407f0-a148-4c28-85b0-6cb555a1e037",
+      "checklistVersionId": "6d721a98-63a1-461c-9750-2ff5badc3173",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 76.47,
+      "finalTotal": 76.47,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": "NA",
+        "identity": false,
+        "consultation": 20,
+        "empathy": true,
+        "dialogue": 10,
+        "closing": true,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": 3062,
+        "outputTokens": 638,
+        "thinkingTokens": 3810,
+        "totalTokens": 7510,
+        "calls": 1
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 21667,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 3062,
+            "outputTokens": 638,
+            "thinkingTokens": 3810,
+            "totalTokens": 7510
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    },
+    {
+      "sourceId": "p1-ru-003",
+      "language": "RU",
+      "evaluationId": "dc87d349-c6c2-43f6-9432-3776a63d3ee5",
+      "checklistVersionId": "6d721a98-63a1-461c-9750-2ff5badc3173",
+      "status": "completed",
+      "modelId": "gemini-3.6-flash",
+      "actualModelVersions": ["gemini-3.6-flash"],
+      "originalTotal": 75.63,
+      "finalTotal": 75.63,
+      "grossViolation": false,
+      "values": {
+        "contact": true,
+        "needs": true,
+        "identity": "NA",
+        "consultation": 10,
+        "empathy": true,
+        "dialogue": 7,
+        "closing": false,
+        "gross": false
+      },
+      "usage": {
+        "inputTokens": null,
+        "outputTokens": null,
+        "thinkingTokens": null,
+        "totalTokens": null,
+        "calls": 2
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "status": "failed",
+          "errorCode": "PROVIDER_FAILED",
+          "failureStage": "provider",
+          "durationMs": 13221,
+          "finishReason": null,
+          "modelVersion": null,
+          "usage": {
+            "inputTokens": null,
+            "outputTokens": null,
+            "thinkingTokens": null,
+            "totalTokens": null
+          }
+        },
+        {
+          "number": 2,
+          "status": "completed",
+          "errorCode": null,
+          "failureStage": null,
+          "durationMs": 19451,
+          "finishReason": "STOP",
+          "modelVersion": "gemini-3.6-flash",
+          "usage": {
+            "inputTokens": 2980,
+            "outputTokens": 690,
+            "thinkingTokens": 2614,
+            "totalTokens": 6284
+          }
+        }
+      ],
+      "cacheVerified": true,
+      "persistenceVerified": true
+    }
+  ],
+  "preIsolationLocalState": {
+    "note": "Before worktree isolation was requested, the original demo database received a clarified default checklist v2 and a completed but semantically rejected Flash-Lite evaluation. These were preserved, not deleted. Main .env model was restored to its prior gemini-3.8-flash setting.",
+    "rejectedEvaluationId": "440c289c-67e3-4a65-8e6c-cf7085f09917",
+    "checklistVersionId": "d16733d4-22dd-45d0-8203-6fa5c24cf786"
+  },
+  "remainingWork": [
+    "Use the prepared profile through the normal checklist-version flow after team review.",
+    "Confirm fresh provider quota before evaluating unseen/control data.",
+    "Review explanation-language enforcement without rejecting legitimate Kazakh quotations.",
+    "Keep manual review and obtain organizer labels/product rules before claiming accuracy."
+  ]
+}
