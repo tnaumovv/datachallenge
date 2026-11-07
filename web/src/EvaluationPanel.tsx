@@ -12,6 +12,7 @@ import type {
 import { useEvaluation } from './use-evaluation';
 import { AppealForm, AppealHistory, AppealReview, useEvaluationAppeals } from './EvaluationAppeals';
 import { answerLabel, numbers } from './review-format';
+import { ActionButton } from './ActionButton';
 
 const evaluationLabel: Record<Evaluation['status'], string> = {
   queued: 'В очереди',
@@ -82,7 +83,7 @@ export function EvaluationPanel({
     >
       <div className="panel-header evaluation-header">
         <div className="title-row">
-          <h2 id="evaluation-heading">Проверка</h2>
+          <h2 id="evaluation-heading">Оценка</h2>
           {evaluation && (
             <span className={`status status-${evaluation.status}`} role="status">
               {evaluationLabel[evaluation.status]}
@@ -145,13 +146,14 @@ export function EvaluationPanel({
           </p>
         )}
         {completed && checklist && (
-          <button
-            className="button secondary rerun-button"
+          <ActionButton
+            icon="refresh"
+            className="rerun-button"
             disabled={review.submitting}
             onClick={() => void review.run(checklist.id, undefined, true)}
           >
             {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
-          </button>
+          </ActionButton>
         )}
         {review.history === 'loading' && (
           <p className="muted panel-note" role="status">
@@ -185,13 +187,14 @@ export function EvaluationPanel({
             {!missingEvaluation && !evaluation && checklist && (
               <div className="run-card">
                 <p>Диалог ещё не оценён.</p>
-                <button
-                  className="button primary"
+                <ActionButton
+                  icon="play"
+                  variant="primary"
                   disabled={review.submitting}
                   onClick={() => void review.run(checklist.id)}
                 >
                   {review.submitting ? 'Запускаем оценку…' : 'Запустить оценку'}
-                </button>
+                </ActionButton>
               </div>
             )}
             {review.pollBlocked && (
@@ -278,13 +281,6 @@ function CompletedReview({
   return (
     <>
       <ScoreCard evaluation={evaluation} score={score} />
-      <AppealHistory
-        history={appeals.history}
-        checklist={checklist}
-        selectedId={selectedAppealId}
-        onSelect={onSelectAppeal}
-        onReload={appeals.reload}
-      />
       {selected && criterion && (
         <AppealReview
           key={selected.id}
@@ -316,6 +312,13 @@ function CompletedReview({
               }
             : undefined
         }
+      />
+      <AppealHistory
+        history={appeals.history}
+        checklist={checklist}
+        selectedId={selectedAppealId}
+        onSelect={onSelectAppeal}
+        onReload={appeals.reload}
       />
       {draft && (
         <AppealForm
@@ -463,7 +466,7 @@ function CriterionRow({
           {criterion.scoringMode === 'weighted' && (
             <small className="criterion-weight">
               Вес: {numbers.format(criterion.weight)}
-              {answer?.value === 'NA' ? ' · исключён (N/A)' : ''}
+              {answer?.value === 'NA' ? ' · не учитывается' : ''}
             </small>
           )}
         </span>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ImportRequestSchema, type ImportResult } from '../../shared/contracts.js';
 import { api, importErrorMessage } from './api';
+import { ActionButton } from './ActionButton';
 
 export function ImportDialog({
   onClose,
@@ -24,6 +25,10 @@ export function ImportDialog({
       node?.close();
     };
   }, []);
+  function close() {
+    dialog.current?.close();
+    onClose();
+  }
   async function submit() {
     if (request.current) return;
     setError(null);
@@ -53,7 +58,10 @@ export function ImportDialog({
     setBusy(true);
     try {
       const result = await api.importRecords(checked.data, controller.signal);
-      if (!controller.signal.aborted) onImported(result);
+      if (!controller.signal.aborted) {
+        dialog.current?.close();
+        onImported(result);
+      }
     } catch (cause) {
       if (!controller.signal.aborted) setError(importErrorMessage(cause));
     } finally {
@@ -68,11 +76,10 @@ export function ImportDialog({
       aria-labelledby="import-heading"
       onCancel={(event) => {
         event.preventDefault();
-        if (!busy) onClose();
+        if (!busy) close();
       }}
     >
       <h2 id="import-heading">Импорт диалогов</h2>
-      <p className="muted">Загрузите записи из источника или выберите JSON-файл.</p>
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -157,16 +164,17 @@ export function ImportDialog({
           </p>
         )}
         <div className="form-actions">
-          <button type="button" className="button secondary" onClick={onClose} disabled={busy}>
+          <button type="button" className="button secondary" onClick={close} disabled={busy}>
             Отмена
           </button>
-          <button
+          <ActionButton
+            icon="upload"
+            variant="primary"
             type="submit"
-            className="button primary"
             disabled={busy || !group.trim() || (source === 'json' && !text.trim())}
           >
             {busy ? 'Импортируем…' : 'Импортировать'}
-          </button>
+          </ActionButton>
         </div>
       </form>
     </dialog>

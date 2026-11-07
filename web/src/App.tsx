@@ -5,6 +5,8 @@ import { AppealsPage } from './AppealsPage';
 import { ChecklistEditor } from './ChecklistEditor';
 import { DialogsPage, conversationTitle } from './DialogsPage';
 import { EvaluationPanel } from './EvaluationPanel';
+import { ActionButton } from './ActionButton';
+import { Icon } from './Icon';
 import { Transcript, channelName } from './Transcript';
 import { pageLocation, readLocation, reviewUrl, type ReviewLocation } from './navigation';
 
@@ -20,36 +22,6 @@ const titles = {
   appeals: 'Апелляции',
   'not-found': 'Страница не найдена',
 };
-
-function NavIcon({ name }: { name: 'dialogs' | 'checklists' | 'appeals' }) {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {name === 'dialogs' ? (
-        <path d="M20 11a7 7 0 0 1-7 7H8l-5 3V6a3 3 0 0 1 3-3h11a3 3 0 0 1 3 3z" />
-      ) : name === 'checklists' ? (
-        <>
-          <rect x="5" y="4" width="15" height="17" rx="3" />
-          <path d="M9 4V2m6 2V2M9 11l2 2 5-5m-7 9h7" />
-        </>
-      ) : (
-        <>
-          <path d="M12 3v17M5 21h14M4 7h16M6 7l-4 7h8zm12 0-4 7h8z" />
-          <circle cx="12" cy="5" r="2" />
-        </>
-      )}
-    </svg>
-  );
-}
 
 export function App() {
   const [view, setView] = useState(readLocation);
@@ -83,7 +55,7 @@ export function App() {
     return () => window.removeEventListener('popstate', sync);
   }, []);
   useEffect(() => {
-    document.title = titles[view.page] + ' — CQA';
+    document.title = titles[view.page] + ' — Freedom CQA';
   }, [view.page]);
   useEffect(() => {
     const controller = new AbortController();
@@ -159,17 +131,17 @@ export function App() {
           className="app-brand"
           href="/dialogs"
           onClick={(e) => navClick(e, 'dialogs')}
-          aria-label="CQA — Диалоги"
+          aria-label="Freedom CQA — Диалоги"
         >
-          <span className="brand-symbol" aria-hidden="true">
-            c.
-          </span>
           <span>
-            CQA<small>Контроль качества</small>
+            freedom
+            <span className="brand-dot" aria-hidden="true">
+              .
+            </span>
+            <small>CQA · Контроль качества</small>
           </span>
         </a>
         <div className="sidebar-divider" />
-        <p className="nav-caption">Рабочая область</p>
         <nav className="sidebar-nav" aria-label="Разделы">
           {(['dialogs', 'checklists', 'appeals'] as const).map((page) => (
             <a
@@ -178,30 +150,24 @@ export function App() {
               aria-current={view.page === page ? 'page' : undefined}
               onClick={(e) => navClick(e, page)}
             >
-              <NavIcon name={page} />
-              <span>{titles[page]}</span>
-              <span className="nav-arrow" aria-hidden="true">
-                ↗
+              <span className="nav-icon">
+                <Icon name={page} />
               </span>
+              <span>{titles[page]}</span>
             </a>
           ))}
         </nav>
-        <div className="sidebar-bottom">
-          <div className="sidebar-orbit" aria-hidden="true" />
-          <span>
-            Качество начинается
-            <br />с внимания к диалогу.
-          </span>
-          {demo && <strong className="demo-label">Демо · вымышленные данные и оценки</strong>}
-        </div>
       </aside>
       <div className="app-main">
         <div className="app-topline">
-          <span>
-            CQA <span aria-hidden="true">/</span> {titles[view.page]}
+          <span className="workspace-path">
+            <span className="workspace-name">Контроль качества</span>
+            <span className="path-separator" aria-hidden="true">
+              /
+            </span>{' '}
+            {titles[view.page]}
           </span>
-          <span className="topline-caption">Проверка и пересмотр диалогов</span>
-          {demo && <strong className="topline-demo">Демо · вымышленные данные</strong>}
+          {demo && <strong className="topline-demo">Демо · данные и оценки вымышлены</strong>}
         </div>
         {loadError && data && (
           <div className="notice notice-error global-notice" role="alert">
@@ -218,7 +184,6 @@ export function App() {
                 <>
                   <span className="loading-ring" aria-hidden="true" />
                   <h1>Загружаем рабочую область…</h1>
-                  <p role="status">Получаем данные с сервера.</p>
                 </>
               ) : (
                 <>
@@ -251,12 +216,13 @@ export function App() {
               <main id="main-content" className="page-content" tabIndex={-1}>
                 <header className="page-heading detail-heading">
                   <div>
-                    <button
-                      className="text-button back-link"
+                    <ActionButton
+                      icon="back"
+                      className="back-link"
                       onClick={() => navigate(pageLocation('dialogs'))}
                     >
-                      ← К диалогам
-                    </button>
+                      К диалогам
+                    </ActionButton>
                     <h1>{conversation ? conversationTitle(conversation) : 'Диалог не найден'}</h1>
                     {conversation && (
                       <p className="page-description">
@@ -312,11 +278,7 @@ export function App() {
               <main id="main-content" className="page-content" tabIndex={-1}>
                 <header className="page-heading">
                   <div>
-                    <p className="eyebrow">Правила проверки</p>
                     <h1>Чек-листы</h1>
-                    <p className="page-description">
-                      Критерии, шкалы и версии для оценки диалогов.
-                    </p>
                   </div>
                 </header>
                 <ChecklistEditor

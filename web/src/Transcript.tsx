@@ -43,7 +43,7 @@ export function Transcript({
     <section className="panel transcript-panel" aria-labelledby="transcript-heading">
       <div className="panel-header transcript-header">
         <div className="title-row">
-          <h2 id="transcript-heading">Транскрипт</h2>
+          <h2 id="transcript-heading">Содержание диалога</h2>
           <a className="jump-link" href="#evaluation-panel">
             К оценке ↓
           </a>
