@@ -4,19 +4,17 @@ import { api, importErrorMessage, startErrorMessage } from './api';
 afterEach(() => vi.unstubAllGlobals());
 describe('API contract integration', () => {
   it('imports organizer records without moving access URLs or keys into the browser', async () => {
-    const fetcher = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(
-          JSON.stringify({
-            groupId: 'CONTROL',
-            imported: 2,
-            existing: 0,
-            conversationIds: ['a', 'b'],
-          }),
-          { status: 201 },
-        ),
-      );
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          groupId: 'CONTROL',
+          imported: 2,
+          existing: 0,
+          conversationIds: ['a', 'b'],
+        }),
+        { status: 201 },
+      ),
+    );
     vi.stubGlobal('fetch', fetcher);
     await api.importRecords(
       { source: 'organizer', groupId: 'CONTROL' },
@@ -42,16 +40,14 @@ describe('API contract integration', () => {
   it('keeps a missing model a visible failure and never turns it into a score', async () => {
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn()
-        .mockResolvedValue(
-          new Response(
-            JSON.stringify({
-              error: { code: 'AI_NOT_CONFIGURED', message: 'private diagnostics' },
-            }),
-            { status: 503 },
-          ),
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: { code: 'AI_NOT_CONFIGURED', message: 'private diagnostics' },
+          }),
+          { status: 503 },
         ),
+      ),
     );
     const error = await api
       .start({ conversationIds: ['a'], checklistVersionId: 'v1' }, new AbortController().signal)
