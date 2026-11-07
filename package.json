@@ -18,7 +18,8 @@
     "build:web": "vite build --config web/vite.config.ts",
     "preview:web": "vite preview --config web/vite.config.ts",
     "demo:web": "tsx web/demo.ts",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "export:results": "tsx server/src/results/cli.ts"
   },
   "dependencies": {
     "@google/genai": "^3.0.0",
