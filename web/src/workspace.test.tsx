@@ -31,6 +31,16 @@ beforeEach(() => {
       this.removeAttribute('open');
     },
   });
+  vi.spyOn(api, 'profiles').mockResolvedValue([
+    {
+      id: 'legacy',
+      title: 'Legacy',
+      checklistId: version.checklistId,
+      channels: ['agent chat', 'voice call'],
+      activeVersionId: version.id,
+      revision: 1,
+    },
+  ]);
   vi.spyOn(api, 'conversations').mockResolvedValue([structuredClone(conversation)]);
   vi.spyOn(api, 'checklists').mockResolvedValue([structuredClone(version)]);
   vi.spyOn(api, 'evaluations').mockResolvedValue([]);

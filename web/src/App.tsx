@@ -1,3 +1,8 @@
+import { DisplaySettings } from './DisplaySettings';
+import { ReviewQueuePage } from './ReviewQueuePage';
+import { OverviewPage } from './OverviewPage';
+import { OperationsPage } from './OperationsPage';
+import { ChecklistProfiles } from './ChecklistProfiles';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import type { ChecklistInput, ChecklistVersion, Conversation } from '../../shared/contracts.js';
 import { api } from './api';
@@ -18,6 +23,9 @@ type WorkspaceData = {
   hasConversations: boolean;
 };
 const titles = {
+  overview: 'Обзор',
+  review: 'Проверка',
+  operations: 'Операции',
   dialogs: 'Диалоги',
   checklists: 'Чек-листы',
   appeals: 'Апелляции',
@@ -144,19 +152,31 @@ export function App() {
         </a>
         <div className="sidebar-divider" />
         <nav className="sidebar-nav" aria-label="Разделы">
-          {(['dialogs', 'checklists', 'appeals'] as const).map((page) => (
-            <a
-              key={page}
-              href={'/' + page}
-              aria-current={view.page === page ? 'page' : undefined}
-              onClick={(e) => navClick(e, page)}
-            >
-              <span className="nav-icon">
-                <Icon name={page} />
-              </span>
-              <span>{titles[page]}</span>
-            </a>
-          ))}
+          {(['overview', 'dialogs', 'review', 'checklists', 'appeals', 'operations'] as const).map(
+            (page) => (
+              <a
+                key={page}
+                href={'/' + page}
+                aria-current={view.page === page ? 'page' : undefined}
+                onClick={(e) => navClick(e, page)}
+              >
+                <span className="nav-icon">
+                  <Icon
+                    name={
+                      page === 'overview'
+                        ? 'checklists'
+                        : page === 'review'
+                          ? 'warning'
+                          : page === 'operations'
+                            ? 'refresh'
+                            : page
+                    }
+                  />
+                </span>
+                <span>{titles[page]}</span>
+              </a>
+            ),
+          )}
         </nav>
       </aside>
       <div className="app-main">
@@ -168,6 +188,7 @@ export function App() {
             </span>{' '}
             {titles[view.page]}
           </span>
+          <DisplaySettings />
           {demo && <strong className="topline-demo">Демо · данные и оценки вымышлены</strong>}
         </div>
         {loadError && data && (
@@ -283,6 +304,9 @@ export function App() {
                 )}
               </main>
             )}
+            {view.page === 'overview' && <OverviewPage checklists={data.checklists} />}
+            {view.page === 'operations' && <OperationsPage />}
+            {view.page === 'review' && <ReviewQueuePage />}
             {view.page === 'checklists' && (
               <main id="main-content" className="page-content" tabIndex={-1}>
                 <header className="page-heading">
@@ -290,6 +314,7 @@ export function App() {
                     <h1>Чек-листы</h1>
                   </div>
                 </header>
+                <ChecklistProfiles versions={data.checklists} />
                 <ChecklistEditor
                   versions={data.checklists}
                   loading={loading}

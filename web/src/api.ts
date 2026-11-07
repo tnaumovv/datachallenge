@@ -1,3 +1,4 @@
+import type { ChecklistProfile } from '../../shared/checklist-profiles.js';
 import type {
   ApiError,
   Appeal,
@@ -25,7 +26,7 @@ export class RequestError extends Error {
   }
 }
 
-async function request<T>(path: string, options: RequestInit): Promise<T> {
+export async function request<T>(path: string, options: RequestInit): Promise<T> {
   const response = await fetch(`/api${path}`, options);
   if (!response.ok) {
     const body: Partial<ApiError> | null = await response.json().catch(() => null);
@@ -35,7 +36,7 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
-function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+export function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   return request<T>(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -45,6 +46,7 @@ function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> 
 }
 
 export const api = {
+  profiles: (signal: AbortSignal) => request<ChecklistProfile[]>('/checklist-profiles', { signal }),
   conversations: (signal: AbortSignal) => request<Conversation[]>('/conversations', { signal }),
   checklists: (signal: AbortSignal) => request<ChecklistVersion[]>('/checklists', { signal }),
   createChecklistVersion: (checklistId: string, input: ChecklistInput, signal?: AbortSignal) =>

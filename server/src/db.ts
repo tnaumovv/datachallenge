@@ -1,10 +1,24 @@
+import { initializeReviewStorage } from './review/service.js';
+import { initializePrecedentStorage } from './precedents/service.js';
+import { initializeProfileStorage } from './checklists/profiles.js';
+import { initializeUsageStorage } from './usage/ledger.js';
 import { DatabaseSync } from 'node:sqlite';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 export function createDatabase(path: string) {
   if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true });
+  const existed = path !== ':memory:' && existsSync(path);
   const db = new DatabaseSync(path);
+  const migrationsExist = !!db
+    .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='schema_migrations'")
+    .get();
+  const migrationApplied =
+    migrationsExist && !!db.prepare('SELECT version FROM schema_migrations WHERE version=1').get();
+  const reviewMigrationApplied =
+    migrationsExist && !!db.prepare('SELECT version FROM schema_migrations WHERE version=2').get();
+  if (existed && (!migrationApplied || !reviewMigrationApplied))
+    db.prepare('VACUUM INTO ?').run(path + '.backup-' + Date.now());
   db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS conversations (
       id TEXT PRIMARY KEY, group_id TEXT NOT NULL, source_id TEXT NOT NULL,
@@ -37,5 +51,34 @@ export function createDatabase(path: string) {
     CREATE UNIQUE INDEX IF NOT EXISTS appeals_pending ON appeals(evaluation_id,criterion_id) WHERE status='pending';
     CREATE INDEX IF NOT EXISTS appeals_evaluation ON appeals(evaluation_id);
     `);
+  if (!migrationApplied) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      db.exec(
+        'CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)',
+      );
+      initializeUsageStorage(db);
+      initializeProfileStorage(db);
+      db.prepare('INSERT INTO schema_migrations VALUES (?,?)').run(1, new Date().toISOString());
+      db.exec('COMMIT');
+    } catch (error) {
+      db.exec('ROLLBACK');
+      db.close();
+      throw error;
+    }
+  }
+  if (!reviewMigrationApplied) {
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      initializeReviewStorage(db);
+      initializePrecedentStorage(db);
+      db.prepare('INSERT INTO schema_migrations VALUES (?,?)').run(2, new Date().toISOString());
+      db.exec('COMMIT');
+    } catch (error) {
+      db.exec('ROLLBACK');
+      db.close();
+      throw error;
+    }
+  }
   return db;
 }

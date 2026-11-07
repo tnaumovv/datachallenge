@@ -226,3 +226,47 @@ describe('OpenAI-compatible evaluation providers', () => {
     expect(() => providerFromEnv({ AI_PROVIDER: 'groq', GROQ_API_KEY: 'key' })).toThrow();
   });
 });
+
+describe('explicit inexpensive OpenAI reasoning configuration', () => {
+  it('passes none through configuration and gives it a distinct cache identity', async () => {
+    const provider = providerFromEnv({
+      AI_PROVIDER: 'openai',
+      OPENAI_API_KEY: 'test',
+      OPENAI_MODEL: 'gpt-6-luna',
+      AI_REASONING_EFFORT: 'none',
+    });
+    expect(provider).toBeDefined();
+    let body: any;
+    const candidate = new CompatibleProvider(
+      { kind: 'openai', apiKey: 'test', modelId: 'gpt-6-luna', reasoningEffort: 'none' },
+      async (_url, init) => {
+        body = JSON.parse(String(init?.body));
+        return completion();
+      },
+    );
+    await candidate.generate(input());
+    expect(body.reasoning_effort).toBe('none');
+    expect(candidate.configurationId).not.toBe(
+      new CompatibleProvider({
+        kind: 'openai',
+        apiKey: 'test',
+        modelId: 'gpt-6-luna',
+        reasoningEffort: 'low',
+      }).configurationId,
+    );
+  });
+});
+
+it('classifies exhausted quota without retrying or exposing provider text', async () => {
+  const provider = new CompatibleProvider(
+    { kind: 'openai', apiKey: 'secret', modelId: 'test' },
+    async () =>
+      new Response(JSON.stringify({ error: { type: 'insufficient_quota', message: 'private' } }), {
+        status: 429,
+      }),
+  );
+  await expect(provider.generate(input())).rejects.toMatchObject({
+    code: 'BILLING_REQUIRED',
+    retryable: false,
+  });
+});

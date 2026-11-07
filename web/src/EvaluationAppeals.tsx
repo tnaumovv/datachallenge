@@ -315,6 +315,8 @@ function DecisionForm({
 }) {
   const [decision, setDecision] = useState<DecisionInput['decision']>('confirm');
   const [replacement, setReplacement] = useState(0);
+  const [evidenceIds, setEvidenceIds] = useState('');
+  const [checkedIds, setCheckedIds] = useState('');
   const [reason, setReason] = useState('');
   const action = useAppealAction('resolve');
   const values: CriterionAnswer['value'][] =
@@ -362,7 +364,25 @@ function DecisionForm({
       onSubmit={(event) => {
         event.preventDefault();
         if (!body) return;
-        void action.run((signal) => api.resolveAppeal(appeal.id, body, signal), onResolved);
+        const payload: DecisionInput = evaluation?.policyVersion
+          ? {
+              ...body,
+              expectedRevision: evaluation.revision ?? 0,
+              ...(body.decision === 'change'
+                ? {
+                    replacementAnswer: {
+                      criterionId: criterion.id,
+                      value: body.replacementValue,
+                      explanation: reason,
+                      evidenceMessageIds: evidenceIds.split(/[\s,]+/).filter(Boolean),
+                      checkedSpanMessageIds: checkedIds.split(/[\s,]+/).filter(Boolean),
+                      naReason: body.replacementValue === 'NA' ? reason : null,
+                    },
+                  }
+                : {}),
+            }
+          : body;
+        void action.run((signal) => api.resolveAppeal(appeal.id, payload, signal), onResolved);
       }}
     >
       <fieldset disabled={action.busy}>
@@ -404,6 +424,26 @@ function DecisionForm({
               </option>
             ))}
           </select>
+        </>
+      )}
+      {decision === 'change' && evaluation?.policyVersion && (
+        <>
+          <label className="field-label">
+            Доказательства · ID реплик
+            <input
+              className="field"
+              value={evidenceIds}
+              onChange={(e) => setEvidenceIds(e.target.value)}
+            />
+          </label>
+          <label className="field-label">
+            Проверенный участок · ID реплик
+            <input
+              className="field"
+              value={checkedIds}
+              onChange={(e) => setCheckedIds(e.target.value)}
+            />
+          </label>
         </>
       )}
       <label className="field-label" htmlFor="appeal-reason">

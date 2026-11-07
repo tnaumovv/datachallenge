@@ -1,3 +1,4 @@
+import { candidatePrompt, candidateJsonSchema } from './candidate.js';
 import { createHash } from 'node:crypto';
 import { ApiError, GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { buildEvaluationPrompt } from './prompt.js';
@@ -98,8 +99,12 @@ export class GeminiProvider implements EvaluationProvider {
     });
   }
   async generate(input: ProviderInput): Promise<ProviderResult> {
-    const prompt = buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
-    const schema = buildModelJsonSchema(input.conversation, input.checklist);
+    const prompt = input.policyVersion
+      ? candidatePrompt(input)
+      : buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
+    const schema = input.policyVersion
+      ? candidateJsonSchema()
+      : buildModelJsonSchema(input.conversation, input.checklist);
     let retryAfterMs: number | undefined;
     const trackedFetch: typeof fetch = async (url, init) => {
       const response = await this.fetcher(url, init);

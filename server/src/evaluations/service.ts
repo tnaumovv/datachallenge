@@ -1,3 +1,12 @@
+import { PrecedentService, sourceFamily, type ApprovedPrecedent } from '../precedents/service.js';
+import { criterionFingerprint } from '../checklists/profiles.js';
+import { consistencyReasons } from './consistency.js';
+import type { PriceSnapshot } from '../../../shared/diagnostics.js';
+import { EvaluationPolicy } from './policy.js';
+import { validateCandidate } from './candidate.js';
+import { POLICY_VERSION, type CandidateOutput } from '../../../shared/evaluation-policy.js';
+import { initializeReviewStorage, queueReview } from '../review/service.js';
+import { recordCacheReceipt } from '../usage/ledger.js';
 import { createHash, randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import type {
@@ -74,6 +83,7 @@ const errorMessage = (code: string) =>
     INVALID_PROVIDER_REQUEST: 'Provider rejected the configured model or generation options',
     MODEL_BLOCKED: 'Model request or response was blocked by the provider',
     PROVIDER_FAILED: 'Model request failed',
+    REVIEW_REQUIRED: 'Human review is required before this evaluation can be completed',
   })[code] ?? 'Evaluation failed';
 
 export class EvaluationService {
@@ -87,19 +97,43 @@ export class EvaluationService {
   constructor(
     private db: DatabaseSync,
     private provider?: EvaluationProvider,
-    options: { concurrency?: number; requestTimeoutMs?: number; retryDelayMs?: number } = {},
+    private candidateOptions: {
+      concurrency?: number;
+      requestTimeoutMs?: number;
+      retryDelayMs?: number;
+      candidate?: boolean;
+      precedents?: boolean;
+      deadlineMs?: number;
+      verifier?: EvaluationProvider;
+      priceSnapshot?: PriceSnapshot;
+    } = {},
   ) {
-    this.concurrency = options.concurrency ?? 2;
-    this.requestTimeoutMs = options.requestTimeoutMs ?? 90_000;
-    this.retryDelayMs = options.retryDelayMs ?? 1_000;
+    this.concurrency = candidateOptions.concurrency ?? 2;
+    this.requestTimeoutMs = candidateOptions.requestTimeoutMs ?? 90_000;
+    this.retryDelayMs = candidateOptions.retryDelayMs ?? 1_000;
     if (
       !Number.isInteger(this.concurrency) ||
       this.concurrency < 1 ||
       this.concurrency > 10 ||
       this.requestTimeoutMs <= 0 ||
-      this.retryDelayMs < 0
+      this.retryDelayMs < 0 ||
+      (candidateOptions.deadlineMs !== undefined &&
+        (!Number.isFinite(candidateOptions.deadlineMs) || candidateOptions.deadlineMs <= 0))
     )
       throw new Error('Invalid queue configuration');
+  }
+  private policySnapshot() {
+    return JSON.stringify({
+      version: POLICY_VERSION,
+      deadlineMs: this.candidateOptions.deadlineMs ?? 120000,
+      verifier: this.candidateOptions.verifier
+        ? [
+            this.candidateOptions.verifier.id,
+            this.candidateOptions.verifier.modelId,
+            this.candidateOptions.verifier.configurationId,
+          ]
+        : null,
+    });
   }
   getConfiguration(): EvaluationConfiguration {
     return {
@@ -107,7 +141,7 @@ export class EvaluationService {
       providerId: this.provider?.id ?? null,
       modelId: this.provider?.modelId ?? null,
       configurationId: this.provider?.configurationId ?? null,
-      promptVersion: PROMPT_VERSION,
+      promptVersion: this.candidateOptions.candidate ? POLICY_VERSION : PROMPT_VERSION,
     };
   }
   get(id: string): Evaluation | undefined {
@@ -153,6 +187,26 @@ export class EvaluationService {
     this.db.exec('BEGIN IMMEDIATE');
     try {
       const ids = records.map((c) => {
+        const precedentExamples: ApprovedPrecedent[] = [];
+        if (this.candidateOptions.candidate && this.candidateOptions.precedents) {
+          const service = new PrecedentService(this.db);
+          for (const criterion of checklist.criteria) {
+            for (const example of service.select({
+              fingerprint: criterionFingerprint(criterion),
+              channel: c.channel,
+              language: c.language,
+              transcriptHash: c.transcriptHash,
+              sourceFamily: sourceFamily(c.sourceConversationId),
+            }).examples) {
+              if (
+                precedentExamples.length < 2 &&
+                !precedentExamples.some((e) => e.id === example.id)
+              )
+                precedentExamples.push(example);
+            }
+          }
+        }
+
         const cacheKey = createHash('sha256')
           .update(
             JSON.stringify([
@@ -162,7 +216,19 @@ export class EvaluationService {
               p.id,
               p.modelId,
               p.configurationId,
-              PROMPT_VERSION,
+              this.candidateOptions.candidate
+                ? [
+                    POLICY_VERSION,
+                    'facts-v1',
+                    'candidate-validator-v1',
+                    this.candidateOptions.deadlineMs ?? 120000,
+                    this.candidateOptions.verifier?.id,
+                    this.candidateOptions.verifier?.modelId,
+                    this.candidateOptions.verifier?.configurationId,
+                    checklist,
+                    precedentExamples,
+                  ]
+                : PROMPT_VERSION,
             ]),
           )
           .digest('hex');
@@ -172,16 +238,35 @@ export class EvaluationService {
               "SELECT id FROM evaluations WHERE cache_key=? AND status IN ('completed','queued','running') ORDER BY rowid DESC LIMIT 1",
             )
             .get(cacheKey);
-          if (previous) return previous.id as string;
+          if (previous) {
+            recordCacheReceipt(this.db, {
+              evaluationId: previous.id as string,
+              conversationId: c.id,
+              checklistVersionId: checklist.id,
+              cacheKey,
+            });
+            return previous.id as string;
+          }
         }
         const result: Evaluation = {
+          ...(this.candidateOptions.priceSnapshot
+            ? { priceSnapshot: structuredClone(this.candidateOptions.priceSnapshot) }
+            : {}),
           id: randomUUID(),
           conversationId: c.id,
           checklistVersionId: checklist.id,
           providerId: p.id,
           modelId: p.modelId,
           configurationId: p.configurationId,
-          promptVersion: PROMPT_VERSION,
+          promptVersion: this.candidateOptions.candidate ? POLICY_VERSION : PROMPT_VERSION,
+          ...(this.candidateOptions.candidate
+            ? {
+                policyVersion: POLICY_VERSION,
+                revision: 0,
+                policySnapshot: this.policySnapshot(),
+                precedentExamples,
+              }
+            : {}),
           status: 'queued',
           retryOfId,
           createdAt: new Date().toISOString(),
@@ -256,7 +341,10 @@ export class EvaluationService {
         evaluation.providerId !== p.id ||
         evaluation.modelId !== p.modelId ||
         evaluation.configurationId !== p.configurationId ||
-        evaluation.promptVersion !== PROMPT_VERSION
+        (evaluation.policyVersion !== undefined &&
+          evaluation.policySnapshot !== this.policySnapshot()) ||
+        evaluation.promptVersion !==
+          (this.candidateOptions.candidate ? POLICY_VERSION : PROMPT_VERSION)
       ) {
         this.fail(evaluation, 'PROVIDER_CHANGED');
         continue;
@@ -288,7 +376,13 @@ export class EvaluationService {
       else signal.addEventListener('abort', abort, { once: true });
     });
   }
-  private async generate(evaluation: Evaluation, repair?: RepairContext): Promise<ProviderResult> {
+  private async generate(
+    evaluation: Evaluation,
+    repair?: RepairContext,
+    provider = this.provider!,
+    remaining = this.requestTimeoutMs,
+    criterionIds?: string[],
+  ): Promise<ProviderResult> {
     const conversation = new ConversationService(this.db).get(evaluation.conversationId)!;
     const checklist = new ChecklistService(this.db).get(evaluation.checklistVersionId)!;
     const controller = new AbortController();
@@ -299,16 +393,23 @@ export class EvaluationService {
         controller.abort();
         reject(new ProviderError(code, code === 'TIMEOUT'));
       };
-      timer = setTimeout(() => abort('TIMEOUT'), this.requestTimeoutMs);
+      timer = setTimeout(() => abort('TIMEOUT'), Math.min(this.requestTimeoutMs, remaining));
       stop = () => abort('INTERRUPTED');
       if (this.stopController.signal.aborted) stop();
       else this.stopController.signal.addEventListener('abort', stop, { once: true });
     });
     try {
       return await Promise.race([
-        this.provider!.generate({
+        provider.generate({
+          policyVersion: evaluation.policyVersion,
+          precedents: evaluation.precedentExamples,
           conversation,
-          checklist,
+          checklist: criterionIds
+            ? {
+                ...checklist,
+                criteria: checklist.criteria.filter((c) => criterionIds.includes(c.id)),
+              }
+            : checklist,
           signal: controller.signal,
           repair,
         }),
@@ -319,7 +420,252 @@ export class EvaluationService {
       this.stopController.signal.removeEventListener('abort', stop);
     }
   }
+  private async runCandidate(evaluation: Evaluation) {
+    initializeReviewStorage(this.db);
+    const policy = new EvaluationPolicy(this.candidateOptions.deadlineMs);
+    const conversation = new ConversationService(this.db).get(evaluation.conversationId)!;
+    const checklist = new ChecklistService(this.db).get(evaluation.checklistVersionId)!;
+    let primary: CandidateOutput | undefined;
+    let primaryReasons: string[] = [];
+    let repair: RepairContext | undefined;
+    let stage: 'primary' | 'repair' | 'verifier' = 'primary';
+    let provider = this.provider!;
+    const review = (reasons: string[]) => {
+      queueReview(this.db, evaluation, reasons);
+      evaluation.originalAnswers = [];
+      evaluation.effectiveAnswers = [];
+      evaluation.originalScore = null;
+      evaluation.finalScore = null;
+      this.fail(evaluation, 'REVIEW_REQUIRED');
+    };
+    for (;;) {
+      if (!policy.reserve()) {
+        if (primary) review(['budget_exhausted']);
+        else this.fail(evaluation, 'TIMEOUT');
+        return;
+      }
+      const attempt: EvaluationAttempt = {
+        ...(stage !== 'verifier' && evaluation.priceSnapshot
+          ? { priceSnapshot: structuredClone(evaluation.priceSnapshot) }
+          : {}),
+        number: evaluation.attempts.length + 1,
+        startedAt: new Date().toISOString(),
+        finishedAt: null,
+        durationMs: null,
+        status: 'running',
+        errorCode: null,
+        failureStage: null,
+        finishReason: null,
+        blockReason: null,
+        validationErrors: [],
+        usage: unknownUsage(),
+        modelVersion: null,
+      };
+      evaluation.attempts.push(attempt);
+      this.save(evaluation);
+      let response: ProviderResult | undefined;
+      let failure: ProviderError | undefined;
+      let parsed: CandidateOutput | undefined;
+      try {
+        response = await this.generate(
+          evaluation,
+          repair,
+          provider,
+          policy.remaining(),
+          stage === 'verifier'
+            ? checklist.criteria
+                .filter(
+                  (c) =>
+                    primaryReasons.length > 0 ||
+                    primary!.assessments.some(
+                      (a) =>
+                        a.status === 'resolved' &&
+                        a.answer.criterionId === c.id &&
+                        (a.answer.value === 'NA' || c.scoringMode === 'flag'),
+                    ),
+                )
+                .map((c) => c.id)
+            : undefined,
+        );
+        attempt.usage = safeUsage(response.usage);
+        attempt.modelVersion = response.modelVersion ?? null;
+        attempt.finishReason = response.finishReason ?? null;
+        attempt.blockReason = response.blockReason ?? null;
+        if (response.blockReason) throw new ProviderError('MODEL_BLOCKED', false);
+        try {
+          if (response.finishReason && response.finishReason !== 'STOP')
+            throw new Error('Incomplete output');
+          parsed = validateCandidate(
+            JSON.parse(response.text),
+            conversation,
+            stage === 'verifier'
+              ? {
+                  ...checklist,
+                  criteria: checklist.criteria.filter((c) =>
+                    primary!.assessments.some(
+                      (a) =>
+                        a.status === 'resolved' &&
+                        a.answer.criterionId === c.id &&
+                        (a.answer.value === 'NA' ||
+                          c.scoringMode === 'flag' ||
+                          primaryReasons.length > 0),
+                    ),
+                  ),
+                }
+              : checklist,
+          );
+        } catch (error) {
+          attempt.failureStage = 'schema';
+          attempt.validationErrors = validationIssues(error);
+          throw new ProviderError('INVALID_MODEL_OUTPUT', false);
+        }
+      } catch (error) {
+        failure =
+          error instanceof ProviderError ? error : new ProviderError('PROVIDER_FAILED', false);
+        attempt.failureStage ??= 'provider';
+      }
+      attempt.status = failure ? 'failed' : 'completed';
+      attempt.errorCode = failure?.code ?? null;
+      attempt.finishedAt = new Date().toISOString();
+      attempt.durationMs = Date.now() - Date.parse(attempt.startedAt);
+      this.db.prepare('INSERT INTO evaluation_runs VALUES(?,?,?,?)').run(
+        randomUUID(),
+        evaluation.id,
+        stage,
+        JSON.stringify({
+          output: parsed ?? null,
+          raw: response?.text ?? null,
+          attempt: attempt.number,
+          preliminaryScore:
+            parsed && parsed.assessments.every((a) => a.status === 'resolved')
+              ? scoreEvaluation(
+                  stage === 'verifier'
+                    ? checklist.criteria.filter((c) =>
+                        parsed!.assessments.some(
+                          (a) => a.status === 'resolved' && a.answer.criterionId === c.id,
+                        ),
+                      )
+                    : checklist.criteria,
+                  parsed.assessments.flatMap((a) => (a.status === 'resolved' ? [a.answer] : [])),
+                )
+              : null,
+        }),
+      );
+      this.save(evaluation);
+      if (failure) {
+        const delay = failure.retryAfterMs ?? this.retryDelayMs;
+        if (failure.retryable && policy.retry(delay)) {
+          try {
+            await this.pause(delay);
+          } catch {
+            this.fail(evaluation, 'INTERRUPTED');
+            return;
+          }
+          continue;
+        }
+        if (stage !== 'verifier' && failure.code === 'INVALID_MODEL_OUTPUT' && policy.repair()) {
+          repair = {
+            failureStage: attempt.failureStage,
+            finishReason: attempt.finishReason,
+            validationErrors: attempt.validationErrors,
+          };
+          stage = 'repair';
+          continue;
+        }
+        if (primary) review(['verifier_unavailable']);
+        else this.fail(evaluation, failure.code);
+        return;
+      }
+      if (stage === 'verifier') {
+        const disagreement = parsed!.assessments.some(
+          (a) =>
+            a.status !== 'resolved' ||
+            primary!.assessments.some(
+              (p) =>
+                p.status === 'resolved' &&
+                a.status === 'resolved' &&
+                p.answer.criterionId === a.answer.criterionId &&
+                p.answer.value !== a.answer.value,
+            ),
+        );
+        if (disagreement) {
+          review(['verifier_disagreement']);
+          return;
+        }
+        if (primaryReasons.length || consistencyReasons(parsed!, conversation, checklist).length) {
+          review([...primaryReasons, ...consistencyReasons(parsed!, conversation, checklist)]);
+          return;
+        }
+      } else {
+        primary = parsed!;
+        primaryReasons = consistencyReasons(primary, conversation, checklist);
+        if (primary.assessments.some((a) => a.status === 'unresolved')) {
+          review(['unresolved']);
+          return;
+        }
+        const risky =
+          primaryReasons.length > 0 ||
+          primary.assessments.some(
+            (a) =>
+              a.status === 'resolved' &&
+              checklist.criteria.some(
+                (c) =>
+                  c.id === a.answer.criterionId &&
+                  c.scoringMode === 'flag' &&
+                  a.answer.value === true,
+              ),
+          );
+        if (risky) {
+          if (!this.candidateOptions.verifier) {
+            review([
+              'verification_required',
+              ...primaryReasons,
+              ...(primary.assessments.some(
+                (a) =>
+                  a.status === 'resolved' &&
+                  a.answer.value === true &&
+                  checklist.criteria.some(
+                    (c) => c.id === a.answer.criterionId && c.scoringMode === 'flag',
+                  ),
+              )
+                ? ['gross_requires_human']
+                : []),
+            ]);
+            return;
+          }
+          provider = this.candidateOptions.verifier;
+          stage = 'verifier';
+          repair = undefined;
+          continue;
+        }
+      }
+      const answers = primary!.assessments.flatMap((a) =>
+        a.status === 'resolved' ? [a.answer] : [],
+      );
+      if (
+        answers.some(
+          (a) =>
+            a.value === true &&
+            checklist.criteria.some((c) => c.id === a.criterionId && c.scoringMode === 'flag'),
+        )
+      ) {
+        review(['gross_requires_human']);
+        return;
+      }
+      evaluation.originalAnswers = answers;
+      evaluation.effectiveAnswers = structuredClone(answers);
+      evaluation.evidence = validateEvidence(conversation, answers, checklist.criteria);
+      evaluation.originalScore = scoreEvaluation(checklist.criteria, answers);
+      evaluation.finalScore = structuredClone(evaluation.originalScore);
+      evaluation.status = 'completed';
+      evaluation.finishedAt = new Date().toISOString();
+      this.save(evaluation);
+      return;
+    }
+  }
+
   private async run(evaluation: Evaluation) {
+    if (evaluation.policyVersion) return this.runCandidate(evaluation);
     let transientRetries = 0;
     let repair: RepairContext | undefined;
     for (;;) {
@@ -328,6 +674,9 @@ export class EvaluationService {
         return;
       }
       const attempt: EvaluationAttempt = {
+        ...(evaluation.priceSnapshot
+          ? { priceSnapshot: structuredClone(evaluation.priceSnapshot) }
+          : {}),
         number: evaluation.attempts.length + 1,
         startedAt: new Date().toISOString(),
         finishedAt: null,

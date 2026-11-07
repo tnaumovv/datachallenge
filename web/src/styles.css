@@ -971,3 +971,160 @@ textarea.field {
     align-items: center;
   }
 }
+
+/* Quality workspace additions reuse the existing native controls and panel tokens. */
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.metric-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.metric-card strong {
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+}
+.operations-list {
+  display: grid;
+  gap: 16px;
+}
+.operations-list > .panel,
+.profiles-panel {
+  padding: 24px;
+}
+.diagnostics {
+  margin-top: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border, #ddd);
+  overflow-wrap: anywhere;
+}
+.diagnostics summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+}
+.metadata-grid {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) minmax(0, 2fr);
+  gap: 8px;
+}
+.metadata-grid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.profile-row {
+  padding: 16px 0;
+  border-top: 1px solid var(--border, #ddd);
+}
+.profile-row li {
+  overflow-wrap: anywhere;
+}
+.message-timeline {
+  padding: 12px 20px;
+}
+.message-timeline nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px;
+}
+.message-timeline a {
+  display: block;
+  min-width: 42px;
+  padding: 8px 4px;
+  border-bottom: 5px solid #777;
+  font-size: 11px;
+}
+.message-timeline .timeline-operator {
+  border-color: #4b8530;
+}
+.message-timeline .timeline-client {
+  border-color: #737bb8;
+}
+.button-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .overview-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .metric-card {
+    padding: 16px;
+  }
+}
+@media (max-width: 420px) {
+  .overview-cards {
+    grid-template-columns: 1fr;
+  }
+  .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+  .operations-list > .panel,
+  .profiles-panel {
+    padding: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.human-review-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  margin-top: 24px;
+  align-items: start;
+}
+.human-decision {
+  padding: 24px;
+  min-width: 0;
+}
+.human-decision fieldset {
+  border: 1px solid var(--line);
+  padding: 16px;
+  margin: 16px 0;
+  min-width: 0;
+}
+.human-decision label {
+  display: block;
+  margin-top: 12px;
+}
+.human-decision textarea {
+  width: 100%;
+  min-height: 72px;
+}
+.human-decision input {
+  width: 100%;
+}
+.review-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.loss-reasons {
+  padding: 20px 0;
+}
+.loss-reasons li {
+  margin: 12px 0;
+}
+.loss-reasons .button {
+  margin: 4px 4px 4px 0;
+}
+@media (max-width: 900px) {
+  .human-review-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -19,3 +19,12 @@ describe('workspace routes', () => {
     expect(readLocation(new URL('https://cqa.test/')).conversationId).toBeNull();
   });
 });
+
+it.each(['overview', 'review', 'operations'] as const)(
+  'keeps direct %s routes through refresh and URL construction',
+  (page) => {
+    const location = readLocation(new URL('https://example.test/' + page));
+    expect(location.page).toBe(page);
+    expect(reviewUrl(location)).toBe('/' + page);
+  },
+);

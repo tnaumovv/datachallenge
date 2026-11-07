@@ -1,3 +1,5 @@
+import { useProfiles } from './use-profiles';
+import { Diagnostics, EvaluationComparisonView } from './OperationsPage';
 import { useState } from 'react';
 import type {
   ChecklistVersion,
@@ -57,13 +59,15 @@ export function EvaluationPanel({
   onSelect: (id: string | null) => void;
   onEvidence: (messageId: string, evaluationId: string) => void;
 }) {
+  const profiles = useProfiles();
+  const activeProfile = profiles.profiles.find((p) => p.channels.includes(conversation.channel));
   const [preferredVersion, setPreferredVersion] = useState<string | null>(null);
   const review = useEvaluation(conversation.id, requestedId, preferredVersion, onSelect);
   const evaluation = review.current;
   const checklistId =
     evaluation?.checklistVersionId ??
     preferredVersion ??
-    (checklists.find((checklist) => checklist.checklistId === 'default') ?? checklists[0])?.id;
+    (profiles.status === 'ready' ? activeProfile?.activeVersionId : undefined);
   const checklist = checklists.find((checklist) => checklist.id === checklistId);
   const attempts = review.items.filter((item) => item.checklistVersionId === checklistId);
   const retry =
@@ -84,12 +88,31 @@ export function EvaluationPanel({
       className="panel evaluation-panel"
       aria-labelledby="evaluation-heading"
     >
+      {evaluation &&
+        activeProfile &&
+        evaluation.checklistVersionId !== activeProfile.activeVersionId && (
+          <p className="notice">
+            Оценка по предыдущей версии. Для актуального результата выберите активный чек-лист и
+            запустите новую оценку.
+          </p>
+        )}
+      {profiles.status === 'loading' && <p role="status">Загружаем активный чек-лист…</p>}
+      {profiles.status === 'error' && (
+        <div className="notice notice-error" role="alert">
+          Не удалось загрузить активный чек-лист. Выберите версию явно или повторите загрузку.{' '}
+          <button className="button secondary" onClick={profiles.reload}>
+            Повторить загрузку профилей
+          </button>
+        </div>
+      )}
       <div className="panel-header evaluation-header">
         <div className="title-row">
           <h2 id="evaluation-heading">Оценка</h2>
           {evaluation && (
             <span className={`status status-${evaluation.status}`} role="status">
-              {evaluationLabel[evaluation.status]}
+              {evaluation.error?.code === 'REVIEW_REQUIRED'
+                ? 'Нужна проверка'
+                : evaluationLabel[evaluation.status]}
             </span>
           )}
         </div>
@@ -106,7 +129,7 @@ export function EvaluationPanel({
                 selectEvaluation(null);
               }}
             >
-              {!checklist && <option value={checklistId}>Версия недоступна</option>}
+              {!checklist && <option value={checklistId ?? ''}>Выберите версию явно</option>}
               {checklists.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.title} · версия {item.version}
@@ -208,24 +231,34 @@ export function EvaluationPanel({
                 </button>
               </div>
             )}
-            {evaluation?.status === 'failed' && checklist && (
-              <div className="notice notice-error">
-                <p>Оценка не завершилась.</p>
-                {retry ? (
-                  <button className="button secondary" onClick={() => selectEvaluation(retry.id)}>
-                    Открыть повторную оценку
-                  </button>
-                ) : (
-                  <button
-                    className="button secondary"
-                    disabled={review.submitting}
-                    onClick={() => void review.run(checklist.id, evaluation.id)}
-                  >
-                    {review.submitting ? 'Запускаем оценку…' : 'Повторить оценку'}
-                  </button>
-                )}
+            {evaluation?.error?.code === 'REVIEW_REQUIRED' && (
+              <div className="notice">
+                <p>Результат предварительный. Итог появится после проверки доказательств.</p>
+                <a href="/review" className="button secondary">
+                  Открыть очередь проверки
+                </a>
               </div>
             )}
+            {evaluation?.status === 'failed' &&
+              evaluation.error?.code !== 'REVIEW_REQUIRED' &&
+              checklist && (
+                <div className="notice notice-error">
+                  <p>Оценка не завершилась.</p>
+                  {retry ? (
+                    <button className="button secondary" onClick={() => selectEvaluation(retry.id)}>
+                      Открыть повторную оценку
+                    </button>
+                  ) : (
+                    <button
+                      className="button secondary"
+                      disabled={review.submitting}
+                      onClick={() => void review.run(checklist.id, evaluation.id)}
+                    >
+                      {review.submitting ? 'Запускаем оценку…' : 'Повторить оценку'}
+                    </button>
+                  )}
+                </div>
+              )}
             {checklist &&
               !missingEvaluation &&
               (completed && evaluation.finalScore ? (
@@ -244,6 +277,12 @@ export function EvaluationPanel({
               ) : (
                 <Criteria key={checklist.id} checklist={checklist} onEvidence={() => {}} />
               ))}
+          </>
+        )}
+        {evaluation && (
+          <>
+            <Diagnostics evaluation={evaluation} />
+            <EvaluationComparisonView evaluation={evaluation} items={review.items} />
           </>
         )}
       </div>
@@ -287,6 +326,42 @@ function CompletedReview({
   return (
     <>
       <ScoreCard evaluation={evaluation} score={score} />
+      <section className="loss-reasons">
+        <h3>Причины снижения</h3>
+        {score.contributions.filter(
+          (c) => c.points !== null && c.maxPoints !== null && c.maxPoints > c.points,
+        ).length === 0 ? (
+          <p className="muted">Снижения по применимым критериям нет.</p>
+        ) : (
+          <ul>
+            {score.contributions
+              .filter((c) => c.points !== null && c.maxPoints !== null && c.maxPoints > c.points)
+              .sort((a, b) => b.maxPoints! - b.points! - (a.maxPoints! - a.points!))
+              .map((c) => {
+                const answer = evaluation.effectiveAnswers.find(
+                  (a) => a.criterionId === c.criterionId,
+                );
+                return (
+                  <li key={c.criterionId}>
+                    <strong>{checklist.criteria.find((x) => x.id === c.criterionId)?.title}</strong>{' '}
+                    · −{numbers.format(c.maxPoints! - c.points!)}
+                    <p>{answer?.explanation}</p>
+                    {[
+                      ...new Set([
+                        ...(answer?.evidenceMessageIds ?? []),
+                        ...(answer?.checkedSpanMessageIds ?? []),
+                      ]),
+                    ].map((id) => (
+                      <button className="button secondary" key={id} onClick={() => onEvidence(id)}>
+                        Реплика {id}
+                      </button>
+                    ))}
+                  </li>
+                );
+              })}
+          </ul>
+        )}
+      </section>
       {selected && criterion && (
         <AppealReview
           key={selected.id}
@@ -354,6 +429,9 @@ function ScoreCard({ evaluation, score }: { evaluation: Evaluation; score: Score
   return (
     <div className="score-card">
       <div className="score-heading">Итоговый балл</div>
+      {evaluation.evaluationSource === 'human_review' && (
+        <p>Итог принят проверяющим; исходного полного балла модели нет.</p>
+      )}
       {score.total !== null ? (
         <div className="score-number">
           {numbers.format(score.total)}

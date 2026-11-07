@@ -1,5 +1,5 @@
 export type ReviewLocation = {
-  page: 'dialogs' | 'checklists' | 'appeals' | 'not-found';
+  page: 'dialogs' | 'checklists' | 'appeals' | 'overview' | 'review' | 'operations' | 'not-found';
   conversationId: string | null;
   evaluationId: string | null;
   appealId: string | null;
@@ -24,7 +24,13 @@ export function readLocation(url = new URL(window.location.href)): ReviewLocatio
         ? 'checklists'
         : /^\/appeals\/?$/.test(url.pathname)
           ? 'appeals'
-          : 'not-found';
+          : /^\/overview\/?$/.test(url.pathname)
+            ? 'overview'
+            : /^\/review\/?$/.test(url.pathname)
+              ? 'review'
+              : /^\/operations\/?$/.test(url.pathname)
+                ? 'operations'
+                : 'not-found';
   return {
     page,
     conversationId: decoded(route?.[1]),
