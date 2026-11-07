@@ -1,3 +1,5 @@
+import { KnowledgeSources } from './KnowledgeSources';
+import './knowledge.css';
 import { useEffect, useState } from 'react';
 import type {
   ChecklistVersion,
@@ -8,6 +10,7 @@ import type {
 import type { CandidateOutput, ReviewItem } from '../../shared/evaluation-policy.js';
 import { post, request, RequestError } from './api';
 import { Transcript } from './Transcript';
+import { Select } from './components/ui/select';
 type ReviewDetail = {
   decisions?: { id: string; revision: number; createdAt: string; action: string; reason: string }[];
   item: ReviewItem;
@@ -80,18 +83,20 @@ export function ReviewQueuePage() {
       )}
       <label>
         Состояние
-        <select
+        <Select
           className="field"
+          aria-label="Состояние"
           value={status}
-          onChange={(e) => {
-            setStatus(e.target.value as 'open' | 'resolved');
+          onValueChange={(value) => {
+            setStatus(value as 'open' | 'resolved');
             setOffset(0);
             setSelected('');
           }}
-        >
-          <option value="open">Открытые</option>
-          <option value="resolved">Завершённые</option>
-        </select>
+          options={[
+            { value: 'open', label: 'Открытые' },
+            { value: 'resolved', label: 'Завершённые' },
+          ]}
+        />
       </label>
       <div className="review-items">
         {items
@@ -215,6 +220,10 @@ export function HumanDecision({ detail, onSaved }: { detail: ReviewDetail; onSav
   }
   return (
     <section id="evaluation-panel" className="panel human-decision">
+      <details className="knowledge-context">
+        <summary>Регламенты для этой оценки</summary>
+        <KnowledgeSources snapshot={d.evaluation.knowledge} />
+      </details>
       <h2>Решение проверяющего</h2>
       <p>Проверьте каждый ответ и его доказательства. N/A допустим только по правилу критерия.</p>
       {d.item.status === 'resolved' ? (
@@ -240,12 +249,13 @@ export function HumanDecision({ detail, onSaved }: { detail: ReviewDetail; onSav
                 )}
                 <label>
                   Ответ
-                  <select
+                  <Select
                     className="field"
+                    aria-label="Ответ"
                     required
                     value={a && chosen.has(c.id) ? String(a.value) : ''}
-                    onChange={(e) => {
-                      const v = e.target.value;
+                    placeholder="Выберите ответ"
+                    onValueChange={(v) => {
                       change(c.id, {
                         value:
                           v === 'NA'
@@ -258,17 +268,14 @@ export function HumanDecision({ detail, onSaved }: { detail: ReviewDetail; onSav
                         naReason: v === 'NA' ? (a?.naReason ?? '') : null,
                       });
                     }}
-                  >
-                    <option value="" disabled>
-                      Выберите ответ
-                    </option>
-                    {(c.answerType === 'binary' ? [true, false] : c.levels).map((v) => (
-                      <option key={String(v)} value={String(v)}>
-                        {typeof v === 'boolean' ? (v ? 'Да' : 'Нет') : v}
-                      </option>
-                    ))}
-                    {c.allowNA && <option value="NA">N/A</option>}
-                  </select>
+                    options={[
+                      ...(c.answerType === 'binary' ? [true, false] : c.levels).map((v) => ({
+                        value: String(v),
+                        label: typeof v === 'boolean' ? (v ? 'Да' : 'Нет') : String(v),
+                      })),
+                      ...(c.allowNA ? [{ value: 'NA', label: 'N/A' }] : []),
+                    ]}
+                  />
                 </label>
                 <label>
                   Обоснование
@@ -380,17 +387,13 @@ function ApprovePrecedent({ detail }: { detail: ReviewDetail }) {
       </p>
       <label>
         Критерий
-        <select
+        <Select
           className="field"
+          aria-label="Критерий"
           value={criterionId}
-          onChange={(e) => setCriterionId(e.target.value)}
-        >
-          {detail.checklist.criteria.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.title}
-            </option>
-          ))}
-        </select>
+          onValueChange={setCriterionId}
+          options={detail.checklist.criteria.map((c) => ({ value: c.id, label: c.title }))}
+        />
       </label>
       <label>
         Обезличенный пример

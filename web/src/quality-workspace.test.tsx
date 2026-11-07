@@ -5,9 +5,11 @@ import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/re
 import { HumanDecision } from './ReviewQueuePage';
 import { conversation, evaluation, version } from '../tests/fixtures';
 import { OverviewPage } from './OverviewPage';
+import { api } from './api';
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 it('does not silently turn an unresolved criterion into false while typing an explanation', () => {
   const criterion = version.criteria[0];
@@ -38,9 +40,19 @@ it('does not silently turn an unresolved criterion into false while typing an ex
     (screen.getByRole('button', { name: 'Подтвердить проверенные ответы' }) as HTMLButtonElement)
       .disabled,
   ).toBe(true);
-  expect((screen.getByLabelText('Ответ') as HTMLSelectElement).value).toBe('');
+  expect(screen.getByRole('combobox', { name: 'Ответ' }).textContent).toContain('Выберите ответ');
 });
 it('does not render failed or missing averages as a zero score', async () => {
+  vi.spyOn(api, 'profiles').mockResolvedValue([
+    {
+      id: 'legacy',
+      title: 'Main',
+      checklistId: version.checklistId,
+      channels: ['agent chat'],
+      activeVersionId: version.id,
+      revision: 1,
+    },
+  ]);
   vi.stubGlobal(
     'fetch',
     vi.fn(

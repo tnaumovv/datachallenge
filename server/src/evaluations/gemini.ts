@@ -1,7 +1,10 @@
+import { withKnowledge } from '../knowledge/prompt.js';
 import { candidatePrompt, candidateJsonSchema } from './candidate.js';
 import { createHash } from 'node:crypto';
 import { ApiError, GoogleGenAI, ThinkingLevel } from '@google/genai';
-import { buildEvaluationPrompt } from './prompt.js';
+import { buildEvaluationPrompt, PROMPT_VERSION } from './prompt.js';
+import { buildEvaluationPrompt as buildLegacyPrompt } from './legacy-prompt.js';
+import { buildRubricJsonSchema } from './rubric.js';
 import { buildModelJsonSchema } from './generation-schema.js';
 import {
   ProviderError,
@@ -61,6 +64,8 @@ export class GeminiProvider implements EvaluationProvider {
   readonly id = 'gemini';
   readonly modelId: string;
   readonly configurationId: string;
+  readonly outputFormat: 'answers-v4' | 'rubric-v7';
+  readonly promptVersion: string;
   private client: GoogleGenAI;
   private maxOutputTokens: number;
   private thinkingLevel?: ThinkingLevel;
@@ -70,16 +75,20 @@ export class GeminiProvider implements EvaluationProvider {
       modelId: string;
       maxOutputTokens?: number;
       thinkingLevel?: GeminiThinkingLevel;
+      outputFormat?: 'answers-v4' | 'rubric-v7';
     },
     private fetcher: typeof fetch = fetch,
   ) {
     this.modelId = config.modelId;
+    this.outputFormat = config.outputFormat ?? 'rubric-v7';
+    this.promptVersion = this.outputFormat === 'rubric-v7' ? PROMPT_VERSION : 'cqa-evaluator-v4';
     this.maxOutputTokens = config.maxOutputTokens ?? 8192;
     this.thinkingLevel = config.thinkingLevel ? THINKING_LEVELS[config.thinkingLevel] : undefined;
     this.configurationId = createHash('sha256')
       .update(
         JSON.stringify({
-          adapter: 'gemini-v5',
+          adapter: 'gemini-v6',
+          outputFormat: this.outputFormat,
           maxOutputTokens: this.maxOutputTokens,
           thinkingLevel: this.thinkingLevel ?? null,
           apiVersion: 'v1beta',
@@ -99,12 +108,23 @@ export class GeminiProvider implements EvaluationProvider {
     });
   }
   async generate(input: ProviderInput): Promise<ProviderResult> {
-    const prompt = input.policyVersion
+    const basePrompt = input.policyVersion
       ? candidatePrompt(input)
-      : buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
+      : (this.outputFormat === 'rubric-v7' ? buildEvaluationPrompt : buildLegacyPrompt)(
+          input.conversation,
+          input.checklist,
+          input.repair,
+        );
+    const prompt = withKnowledge(
+      basePrompt,
+      input.knowledge,
+      input.policyVersion ? 'answers-v4' : this.outputFormat,
+    );
     const schema = input.policyVersion
       ? candidateJsonSchema()
-      : buildModelJsonSchema(input.conversation, input.checklist);
+      : this.outputFormat === 'rubric-v7'
+        ? buildRubricJsonSchema(input.conversation, input.checklist, input.knowledge)
+        : buildModelJsonSchema(input.conversation, input.checklist);
     let retryAfterMs: number | undefined;
     const trackedFetch: typeof fetch = async (url, init) => {
       const response = await this.fetcher(url, init);

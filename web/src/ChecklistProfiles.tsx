@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Select } from './components/ui/select';
 import type { ChecklistVersion } from '../../shared/contracts.js';
 import type { ChecklistProfile, ChecklistDiff } from '../../shared/checklist-profiles.js';
 import { request, post } from './api';
@@ -98,21 +99,19 @@ function Profile({
       </h3>
       <label>
         Версия
-        <select
+        <Select
           className="field"
+          aria-label="Версия"
           value={selected}
           disabled={busy}
-          onChange={(e) => setSelected(e.target.value)}
-        >
-          {versions
+          onValueChange={setSelected}
+          options={versions
             .filter((v) => v.checklistId === p.checklistId)
-            .map((v) => (
-              <option key={v.id} value={v.id}>
-                v{v.version} · {v.title}
-                {v.id === p.activeVersionId ? ' · активна' : ''}
-              </option>
-            ))}
-        </select>
+            .map((v) => ({
+              value: v.id,
+              label: `v${v.version} · ${v.title}${v.id === p.activeVersionId ? ' · активна' : ''}`,
+            }))}
+        />
       </label>
       {diff && (
         <>

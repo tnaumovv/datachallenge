@@ -50,7 +50,10 @@ it('expands from the keyboard and keeps real navigation usable when collapsed', 
     'true',
   );
   const navigation = screen.getByRole('navigation', { name: 'Разделы' });
-  expect(within(navigation).getAllByRole('link')).toHaveLength(6);
+  expect(within(navigation).getAllByRole('link')).toHaveLength(7);
+  expect(within(navigation).getByRole('link', { name: 'База знаний' }).getAttribute('href')).toBe(
+    '/knowledge',
+  );
   expect(
     within(navigation).getByRole('link', { name: 'Диалоги' }).getAttribute('aria-current'),
   ).toBe('page');

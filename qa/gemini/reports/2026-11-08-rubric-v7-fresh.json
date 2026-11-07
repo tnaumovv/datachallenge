@@ -1,0 +1,3328 @@
+{
+  "kind": "paired_synthetic_accuracy_comparison_not_organizer_ground_truth",
+  "referenceSha256": "51159842ebe2a490bd09dca0c7efa57cfd631bbdc244c2692d82f3d0077bc929",
+  "frozenAt": "2026-11-07T19:46:10.834Z",
+  "startedAt": "2026-11-07T19:46:21.322Z",
+  "finishedAt": "2026-11-07T19:50:01.924Z",
+  "modelId": "gemini-3.5-flash-lite",
+  "configurations": [
+    {
+      "name": "baseline",
+      "protocolHash": "dd94a1351d5b82a99358fd2dd6a14366138660943faf853485f4575709b2ee43",
+      "configuration": {
+        "configured": true,
+        "providerId": "gemini",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "d96df6f0556c4ad8a51c7ce183fb1e404f7158b6d4b2bc88f019e851c898f627",
+        "promptVersion": "cqa-evaluator-v4"
+      }
+    },
+    {
+      "name": "candidate",
+      "protocolHash": "dd94a1351d5b82a99358fd2dd6a14366138660943faf853485f4575709b2ee43",
+      "configuration": {
+        "configured": true,
+        "providerId": "gemini",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "df77fc8263620d4e8370e45d60eaaec1fd939f9f5e8cbc36bb4197c102cfc8c9",
+        "promptVersion": "cqa-evaluator-v7"
+      }
+    }
+  ],
+  "uniqueDialogs": 12,
+  "repeats": 2,
+  "actualCalls": 62,
+  "maxCalls": 100,
+  "variants": {
+    "baseline": {
+      "repeats": [
+        {
+          "holdout": {
+            "scheduledDialogs": 12,
+            "completedDialogs": 11,
+            "failedDialogs": 1,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 96,
+            "comparedCriteria": 88,
+            "matchedCriteria": 70,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 18.18,
+            "exactDialogsOverScheduledPercent": 16.67,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 4.6965142183853805,
+              "upperPercent": 44.80308622529734
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 7,
+                "agreementPercent": 63.64
+              },
+              "needs": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 4,
+                "agreementPercent": 36.36
+              },
+              "identity": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 11,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 10,
+                "agreementPercent": 90.91
+              },
+              "empathy": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 10,
+                "agreementPercent": 90.91
+              },
+              "dialogue": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 6,
+                "agreementPercent": 54.55
+              },
+              "closing": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 11,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 12,
+                "compared": 11,
+                "matched": 11,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 79.55,
+            "matchedOverScheduledPercent": 72.92,
+            "comparedScores": 11,
+            "meanAbsoluteScoreError": 9.34,
+            "na": {
+              "missed": 7,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 1,
+              "trueNegatives": 10,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "recovery2-ru-bot-details",
+                "criterionId": "contact",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "recovery2-ru-bot-details",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-ru-two-tasks",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-ru-two-tasks",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 4
+              },
+              {
+                "sourceId": "recovery2-ru-verified",
+                "criterionId": "contact",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "recovery2-ru-verified",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": false
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "consultation",
+                "expected": 5,
+                "actual": 0
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "dialogue",
+                "expected": 4,
+                "actual": 0
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "empathy",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 4
+              },
+              {
+                "sourceId": "recovery-kz-wait",
+                "criterionId": "dialogue",
+                "expected": 7,
+                "actual": 4
+              },
+              {
+                "sourceId": "recovery-en-calculation",
+                "criterionId": "contact",
+                "expected": false,
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-en-calculation",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-en-calculation",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 4
+              },
+              {
+                "sourceId": "recovery-en-clarify-drop",
+                "criterionId": "contact",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "recovery-en-contradiction",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": false
+              }
+            ]
+          },
+          "regression": {
+            "scheduledDialogs": 0,
+            "completedDialogs": 0,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 0,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": null,
+            "dialogueConfidenceInterval95": null,
+            "byCriterion": {},
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": null,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "holdoutByLanguage": {
+            "RU": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 3,
+              "failedDialogs": 1,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 24,
+              "matchedCriteria": 18,
+              "matchingDialogs": 0,
+              "exactDialogAgreementPercent": 0,
+              "exactDialogsOverScheduledPercent": 0,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 0,
+                "upperPercent": 48.98908364545973
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 1,
+                  "agreementPercent": 33.33
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 0,
+                  "agreementPercent": 0
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 2,
+                  "agreementPercent": 66.67
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 75,
+              "matchedOverScheduledPercent": 56.25,
+              "comparedScores": 3,
+              "meanAbsoluteScoreError": 9.51,
+              "na": {
+                "missed": 3,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 3,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-ru-bot-details",
+                  "criterionId": "contact",
+                  "expected": true,
+                  "actual": false
+                },
+                {
+                  "sourceId": "recovery2-ru-bot-details",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery2-ru-two-tasks",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery2-ru-two-tasks",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 4
+                },
+                {
+                  "sourceId": "recovery2-ru-verified",
+                  "criterionId": "contact",
+                  "expected": true,
+                  "actual": false
+                },
+                {
+                  "sourceId": "recovery2-ru-verified",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                }
+              ]
+            },
+            "KZ": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 25,
+              "matchingDialogs": 1,
+              "exactDialogAgreementPercent": 25,
+              "exactDialogsOverScheduledPercent": 25,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 4.558726080970055,
+                "upperPercent": 69.93581574175981
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 1,
+                  "agreementPercent": 25
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 78.13,
+              "matchedOverScheduledPercent": 78.13,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 11.66,
+              "na": {
+                "missed": 2,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 1,
+                "trueNegatives": 3,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": false
+                },
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "consultation",
+                  "expected": 5,
+                  "actual": 0
+                },
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "dialogue",
+                  "expected": 4,
+                  "actual": 0
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "empathy",
+                  "expected": true,
+                  "actual": false
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 4
+                },
+                {
+                  "sourceId": "recovery-kz-wait",
+                  "criterionId": "dialogue",
+                  "expected": 7,
+                  "actual": 4
+                }
+              ]
+            },
+            "EN": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 27,
+              "matchingDialogs": 1,
+              "exactDialogAgreementPercent": 25,
+              "exactDialogsOverScheduledPercent": 25,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 4.558726080970055,
+                "upperPercent": 69.93581574175981
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 84.38,
+              "matchedOverScheduledPercent": 84.38,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 6.89,
+              "na": {
+                "missed": 2,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 4,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery-en-calculation",
+                  "criterionId": "contact",
+                  "expected": false,
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-en-calculation",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-en-calculation",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 4
+                },
+                {
+                  "sourceId": "recovery-en-clarify-drop",
+                  "criterionId": "contact",
+                  "expected": true,
+                  "actual": false
+                },
+                {
+                  "sourceId": "recovery-en-contradiction",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "holdout": {
+            "scheduledDialogs": 12,
+            "completedDialogs": 9,
+            "failedDialogs": 3,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 96,
+            "comparedCriteria": 72,
+            "matchedCriteria": 60,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 22.22,
+            "exactDialogsOverScheduledPercent": 16.67,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 4.6965142183853805,
+              "upperPercent": 44.80308622529734
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 6,
+                "agreementPercent": 66.67
+              },
+              "needs": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 4,
+                "agreementPercent": 44.44
+              },
+              "identity": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 9,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 8,
+                "agreementPercent": 88.89
+              },
+              "empathy": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 9,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 6,
+                "agreementPercent": 66.67
+              },
+              "closing": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 9,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 12,
+                "compared": 9,
+                "matched": 9,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 83.33,
+            "matchedOverScheduledPercent": 62.5,
+            "comparedScores": 9,
+            "meanAbsoluteScoreError": 5.68,
+            "na": {
+              "missed": 5,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 9,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "recovery2-ru-bot-details",
+                "criterionId": "contact",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "recovery2-ru-two-tasks",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-ru-two-tasks",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 4
+              },
+              {
+                "sourceId": "recovery2-ru-verified",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "consultation",
+                "expected": 5,
+                "actual": 0
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "dialogue",
+                "expected": 4,
+                "actual": 0
+              },
+              {
+                "sourceId": "recovery-en-secondary",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-en-calculation",
+                "criterionId": "contact",
+                "expected": false,
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-en-calculation",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-en-calculation",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 4
+              },
+              {
+                "sourceId": "recovery-en-clarify-drop",
+                "criterionId": "contact",
+                "expected": true,
+                "actual": false
+              }
+            ]
+          },
+          "regression": {
+            "scheduledDialogs": 0,
+            "completedDialogs": 0,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 0,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": null,
+            "dialogueConfidenceInterval95": null,
+            "byCriterion": {},
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": null,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "holdoutByLanguage": {
+            "RU": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 3,
+              "failedDialogs": 1,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 24,
+              "matchedCriteria": 20,
+              "matchingDialogs": 0,
+              "exactDialogAgreementPercent": 0,
+              "exactDialogsOverScheduledPercent": 0,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 0,
+                "upperPercent": 48.98908364545973
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 2,
+                  "agreementPercent": 66.67
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 1,
+                  "agreementPercent": 33.33
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 2,
+                  "agreementPercent": 66.67
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 3,
+                  "matched": 3,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 83.33,
+              "matchedOverScheduledPercent": 62.5,
+              "comparedScores": 3,
+              "meanAbsoluteScoreError": 7.73,
+              "na": {
+                "missed": 2,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 3,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-ru-bot-details",
+                  "criterionId": "contact",
+                  "expected": true,
+                  "actual": false
+                },
+                {
+                  "sourceId": "recovery2-ru-two-tasks",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery2-ru-two-tasks",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 4
+                },
+                {
+                  "sourceId": "recovery2-ru-verified",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                }
+              ]
+            },
+            "KZ": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 2,
+              "failedDialogs": 2,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 16,
+              "matchedCriteria": 13,
+              "matchingDialogs": 1,
+              "exactDialogAgreementPercent": 50,
+              "exactDialogsOverScheduledPercent": 25,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 4.558726080970055,
+                "upperPercent": 69.93581574175981
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 2,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 1,
+                  "agreementPercent": 50
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 2,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 1,
+                  "agreementPercent": 50
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 2,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 1,
+                  "agreementPercent": 50
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 2,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 2,
+                  "matched": 2,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 81.25,
+              "matchedOverScheduledPercent": 40.63,
+              "comparedScores": 2,
+              "meanAbsoluteScoreError": 0.91,
+              "na": {
+                "missed": 1,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 2,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "consultation",
+                  "expected": 5,
+                  "actual": 0
+                },
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "dialogue",
+                  "expected": 4,
+                  "actual": 0
+                }
+              ]
+            },
+            "EN": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 27,
+              "matchingDialogs": 1,
+              "exactDialogAgreementPercent": 25,
+              "exactDialogsOverScheduledPercent": 25,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 4.558726080970055,
+                "upperPercent": 69.93581574175981
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 84.38,
+              "matchedOverScheduledPercent": 84.38,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 6.53,
+              "na": {
+                "missed": 2,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 4,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery-en-secondary",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-en-calculation",
+                  "criterionId": "contact",
+                  "expected": false,
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-en-calculation",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-en-calculation",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 4
+                },
+                {
+                  "sourceId": "recovery-en-clarify-drop",
+                  "criterionId": "contact",
+                  "expected": true,
+                  "actual": false
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "aggregate": {
+        "scheduledDialogs": 24,
+        "completedDialogs": 20,
+        "failedDialogs": 4,
+        "invalidDialogs": 0,
+        "notRunDialogs": 0,
+        "scheduledCriteria": 192,
+        "comparedCriteria": 160,
+        "matchedCriteria": 130,
+        "matchingDialogs": 4,
+        "exactDialogAgreementPercent": 20,
+        "exactDialogsOverScheduledPercent": 16.67,
+        "byCriterion": {
+          "contact": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 13,
+            "agreementPercent": 65
+          },
+          "needs": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 8,
+            "agreementPercent": 40
+          },
+          "identity": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 20,
+            "agreementPercent": 100
+          },
+          "consultation": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 18,
+            "agreementPercent": 90
+          },
+          "empathy": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 19,
+            "agreementPercent": 95
+          },
+          "dialogue": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 12,
+            "agreementPercent": 60
+          },
+          "closing": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 20,
+            "agreementPercent": 100
+          },
+          "gross": {
+            "scheduled": 24,
+            "compared": 20,
+            "matched": 20,
+            "agreementPercent": 100
+          }
+        },
+        "criterionAgreementPercent": 81.25,
+        "matchedOverScheduledPercent": 67.71,
+        "comparedScores": 20,
+        "meanAbsoluteScoreError": 7.69,
+        "na": {
+          "missed": 12,
+          "spurious": 0
+        },
+        "gross": {
+          "truePositives": 1,
+          "trueNegatives": 19,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        },
+        "mismatches": [
+          {
+            "sourceId": "recovery2-ru-bot-details#0",
+            "criterionId": "contact",
+            "expected": true,
+            "actual": false
+          },
+          {
+            "sourceId": "recovery2-ru-bot-details#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-ru-two-tasks#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-ru-two-tasks#0",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 4
+          },
+          {
+            "sourceId": "recovery2-ru-verified#0",
+            "criterionId": "contact",
+            "expected": true,
+            "actual": false
+          },
+          {
+            "sourceId": "recovery2-ru-verified#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-kz-vague#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": false
+          },
+          {
+            "sourceId": "recovery2-kz-vague#0",
+            "criterionId": "consultation",
+            "expected": 5,
+            "actual": 0
+          },
+          {
+            "sourceId": "recovery2-kz-vague#0",
+            "criterionId": "dialogue",
+            "expected": 4,
+            "actual": 0
+          },
+          {
+            "sourceId": "recovery-kz-paid#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-kz-paid#0",
+            "criterionId": "empathy",
+            "expected": true,
+            "actual": false
+          },
+          {
+            "sourceId": "recovery-kz-paid#0",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 4
+          },
+          {
+            "sourceId": "recovery-kz-wait#0",
+            "criterionId": "dialogue",
+            "expected": 7,
+            "actual": 4
+          },
+          {
+            "sourceId": "recovery-en-calculation#0",
+            "criterionId": "contact",
+            "expected": false,
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-en-calculation#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-en-calculation#0",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 4
+          },
+          {
+            "sourceId": "recovery-en-clarify-drop#0",
+            "criterionId": "contact",
+            "expected": true,
+            "actual": false
+          },
+          {
+            "sourceId": "recovery-en-contradiction#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": false
+          },
+          {
+            "sourceId": "recovery2-ru-bot-details#1",
+            "criterionId": "contact",
+            "expected": true,
+            "actual": false
+          },
+          {
+            "sourceId": "recovery2-ru-two-tasks#1",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-ru-two-tasks#1",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 4
+          },
+          {
+            "sourceId": "recovery2-ru-verified#1",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-kz-vague#1",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-kz-vague#1",
+            "criterionId": "consultation",
+            "expected": 5,
+            "actual": 0
+          },
+          {
+            "sourceId": "recovery2-kz-vague#1",
+            "criterionId": "dialogue",
+            "expected": 4,
+            "actual": 0
+          },
+          {
+            "sourceId": "recovery-en-secondary#1",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-en-calculation#1",
+            "criterionId": "contact",
+            "expected": false,
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-en-calculation#1",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-en-calculation#1",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 4
+          },
+          {
+            "sourceId": "recovery-en-clarify-drop#1",
+            "criterionId": "contact",
+            "expected": true,
+            "actual": false
+          }
+        ]
+      },
+      "byLanguage": {
+        "RU": {
+          "scheduledDialogs": 8,
+          "completedDialogs": 6,
+          "failedDialogs": 2,
+          "invalidDialogs": 0,
+          "notRunDialogs": 0,
+          "scheduledCriteria": 64,
+          "comparedCriteria": 48,
+          "matchedCriteria": 38,
+          "matchingDialogs": 0,
+          "exactDialogAgreementPercent": 0,
+          "exactDialogsOverScheduledPercent": 0,
+          "dialogueConfidenceInterval95": {
+            "lowerPercent": 0,
+            "upperPercent": 32.440756488388026
+          },
+          "byCriterion": {
+            "contact": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 3,
+              "agreementPercent": 50
+            },
+            "needs": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 1,
+              "agreementPercent": 16.67
+            },
+            "identity": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            },
+            "consultation": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            },
+            "empathy": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            },
+            "dialogue": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 4,
+              "agreementPercent": 66.67
+            },
+            "closing": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            },
+            "gross": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            }
+          },
+          "criterionAgreementPercent": 79.17,
+          "matchedOverScheduledPercent": 59.38,
+          "comparedScores": 6,
+          "meanAbsoluteScoreError": 8.62,
+          "na": {
+            "missed": 5,
+            "spurious": 0
+          },
+          "gross": {
+            "truePositives": 0,
+            "trueNegatives": 6,
+            "falsePositives": 0,
+            "falseNegatives": 0
+          },
+          "mismatches": [
+            {
+              "sourceId": "recovery2-ru-bot-details#0",
+              "criterionId": "contact",
+              "expected": true,
+              "actual": false
+            },
+            {
+              "sourceId": "recovery2-ru-bot-details#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery2-ru-two-tasks#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery2-ru-two-tasks#0",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 4
+            },
+            {
+              "sourceId": "recovery2-ru-verified#0",
+              "criterionId": "contact",
+              "expected": true,
+              "actual": false
+            },
+            {
+              "sourceId": "recovery2-ru-verified#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery2-ru-bot-details#1",
+              "criterionId": "contact",
+              "expected": true,
+              "actual": false
+            },
+            {
+              "sourceId": "recovery2-ru-two-tasks#1",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery2-ru-two-tasks#1",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 4
+            },
+            {
+              "sourceId": "recovery2-ru-verified#1",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            }
+          ]
+        },
+        "KZ": {
+          "scheduledDialogs": 8,
+          "completedDialogs": 6,
+          "failedDialogs": 2,
+          "invalidDialogs": 0,
+          "notRunDialogs": 0,
+          "scheduledCriteria": 64,
+          "comparedCriteria": 48,
+          "matchedCriteria": 38,
+          "matchingDialogs": 2,
+          "exactDialogAgreementPercent": 33.33,
+          "exactDialogsOverScheduledPercent": 25,
+          "dialogueConfidenceInterval95": {
+            "lowerPercent": 7.1479212752109,
+            "upperPercent": 59.07245696898311
+          },
+          "byCriterion": {
+            "contact": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            },
+            "needs": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 3,
+              "agreementPercent": 50
+            },
+            "identity": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            },
+            "consultation": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 4,
+              "agreementPercent": 66.67
+            },
+            "empathy": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 5,
+              "agreementPercent": 83.33
+            },
+            "dialogue": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 2,
+              "agreementPercent": 33.33
+            },
+            "closing": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            },
+            "gross": {
+              "scheduled": 8,
+              "compared": 6,
+              "matched": 6,
+              "agreementPercent": 100
+            }
+          },
+          "criterionAgreementPercent": 79.17,
+          "matchedOverScheduledPercent": 59.38,
+          "comparedScores": 6,
+          "meanAbsoluteScoreError": 8.08,
+          "na": {
+            "missed": 3,
+            "spurious": 0
+          },
+          "gross": {
+            "truePositives": 1,
+            "trueNegatives": 5,
+            "falsePositives": 0,
+            "falseNegatives": 0
+          },
+          "mismatches": [
+            {
+              "sourceId": "recovery2-kz-vague#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": false
+            },
+            {
+              "sourceId": "recovery2-kz-vague#0",
+              "criterionId": "consultation",
+              "expected": 5,
+              "actual": 0
+            },
+            {
+              "sourceId": "recovery2-kz-vague#0",
+              "criterionId": "dialogue",
+              "expected": 4,
+              "actual": 0
+            },
+            {
+              "sourceId": "recovery-kz-paid#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-kz-paid#0",
+              "criterionId": "empathy",
+              "expected": true,
+              "actual": false
+            },
+            {
+              "sourceId": "recovery-kz-paid#0",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 4
+            },
+            {
+              "sourceId": "recovery-kz-wait#0",
+              "criterionId": "dialogue",
+              "expected": 7,
+              "actual": 4
+            },
+            {
+              "sourceId": "recovery2-kz-vague#1",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery2-kz-vague#1",
+              "criterionId": "consultation",
+              "expected": 5,
+              "actual": 0
+            },
+            {
+              "sourceId": "recovery2-kz-vague#1",
+              "criterionId": "dialogue",
+              "expected": 4,
+              "actual": 0
+            }
+          ]
+        },
+        "EN": {
+          "scheduledDialogs": 8,
+          "completedDialogs": 8,
+          "failedDialogs": 0,
+          "invalidDialogs": 0,
+          "notRunDialogs": 0,
+          "scheduledCriteria": 64,
+          "comparedCriteria": 64,
+          "matchedCriteria": 54,
+          "matchingDialogs": 2,
+          "exactDialogAgreementPercent": 25,
+          "exactDialogsOverScheduledPercent": 25,
+          "dialogueConfidenceInterval95": {
+            "lowerPercent": 7.1479212752109,
+            "upperPercent": 59.07245696898311
+          },
+          "byCriterion": {
+            "contact": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 4,
+              "agreementPercent": 50
+            },
+            "needs": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 4,
+              "agreementPercent": 50
+            },
+            "identity": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "consultation": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "empathy": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "dialogue": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 6,
+              "agreementPercent": 75
+            },
+            "closing": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "gross": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            }
+          },
+          "criterionAgreementPercent": 84.38,
+          "matchedOverScheduledPercent": 84.38,
+          "comparedScores": 8,
+          "meanAbsoluteScoreError": 6.71,
+          "na": {
+            "missed": 4,
+            "spurious": 0
+          },
+          "gross": {
+            "truePositives": 0,
+            "trueNegatives": 8,
+            "falsePositives": 0,
+            "falseNegatives": 0
+          },
+          "mismatches": [
+            {
+              "sourceId": "recovery-en-calculation#0",
+              "criterionId": "contact",
+              "expected": false,
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-en-calculation#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-en-calculation#0",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 4
+            },
+            {
+              "sourceId": "recovery-en-clarify-drop#0",
+              "criterionId": "contact",
+              "expected": true,
+              "actual": false
+            },
+            {
+              "sourceId": "recovery-en-contradiction#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": false
+            },
+            {
+              "sourceId": "recovery-en-secondary#1",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-en-calculation#1",
+              "criterionId": "contact",
+              "expected": false,
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-en-calculation#1",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-en-calculation#1",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 4
+            },
+            {
+              "sourceId": "recovery-en-clarify-drop#1",
+              "criterionId": "contact",
+              "expected": true,
+              "actual": false
+            }
+          ]
+        }
+      }
+    },
+    "candidate": {
+      "repeats": [
+        {
+          "holdout": {
+            "scheduledDialogs": 12,
+            "completedDialogs": 12,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 96,
+            "comparedCriteria": 96,
+            "matchedCriteria": 88,
+            "matchingDialogs": 5,
+            "exactDialogAgreementPercent": 41.67,
+            "exactDialogsOverScheduledPercent": 41.67,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 19.326031365875664,
+              "upperPercent": 68.04886874504503
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 11,
+                "agreementPercent": 91.67
+              },
+              "identity": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 10,
+                "agreementPercent": 83.33
+              },
+              "empathy": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 10,
+                "agreementPercent": 83.33
+              },
+              "dialogue": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 9,
+                "agreementPercent": 75
+              },
+              "closing": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 91.67,
+            "matchedOverScheduledPercent": 91.67,
+            "comparedScores": 12,
+            "meanAbsoluteScoreError": 5.71,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 1,
+              "trueNegatives": 11,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "recovery2-ru-bot-details",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-ru-two-tasks",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 7
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "empathy",
+                "expected": false,
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "consultation",
+                "expected": 0,
+                "actual": 5
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 7
+              },
+              {
+                "sourceId": "recovery-kz-wait",
+                "criterionId": "dialogue",
+                "expected": 7,
+                "actual": 10
+              },
+              {
+                "sourceId": "recovery-en-secondary",
+                "criterionId": "consultation",
+                "expected": 15,
+                "actual": 10
+              },
+              {
+                "sourceId": "recovery-en-contradiction",
+                "criterionId": "empathy",
+                "expected": false,
+                "actual": true
+              }
+            ]
+          },
+          "regression": {
+            "scheduledDialogs": 0,
+            "completedDialogs": 0,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 0,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": null,
+            "dialogueConfidenceInterval95": null,
+            "byCriterion": {},
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": null,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "holdoutByLanguage": {
+            "RU": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 30,
+              "matchingDialogs": 2,
+              "exactDialogAgreementPercent": 50,
+              "exactDialogsOverScheduledPercent": 50,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 15.003898915214947,
+                "upperPercent": 84.99610108478505
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 93.75,
+              "matchedOverScheduledPercent": 93.75,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 1.73,
+              "na": {
+                "missed": 1,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 4,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-ru-bot-details",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery2-ru-two-tasks",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 7
+                }
+              ]
+            },
+            "KZ": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 28,
+              "matchingDialogs": 1,
+              "exactDialogAgreementPercent": 25,
+              "exactDialogsOverScheduledPercent": 25,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 4.558726080970055,
+                "upperPercent": 69.93581574175981
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 87.5,
+              "matchedOverScheduledPercent": 87.5,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 7.69,
+              "na": {
+                "missed": 0,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 1,
+                "trueNegatives": 3,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "empathy",
+                  "expected": false,
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "consultation",
+                  "expected": 0,
+                  "actual": 5
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 7
+                },
+                {
+                  "sourceId": "recovery-kz-wait",
+                  "criterionId": "dialogue",
+                  "expected": 7,
+                  "actual": 10
+                }
+              ]
+            },
+            "EN": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 30,
+              "matchingDialogs": 2,
+              "exactDialogAgreementPercent": 50,
+              "exactDialogsOverScheduledPercent": 50,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 15.003898915214947,
+                "upperPercent": 84.99610108478505
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 93.75,
+              "matchedOverScheduledPercent": 93.75,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 7.69,
+              "na": {
+                "missed": 0,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 4,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery-en-secondary",
+                  "criterionId": "consultation",
+                  "expected": 15,
+                  "actual": 10
+                },
+                {
+                  "sourceId": "recovery-en-contradiction",
+                  "criterionId": "empathy",
+                  "expected": false,
+                  "actual": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "holdout": {
+            "scheduledDialogs": 12,
+            "completedDialogs": 12,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 96,
+            "comparedCriteria": 96,
+            "matchedCriteria": 88,
+            "matchingDialogs": 6,
+            "exactDialogAgreementPercent": 50,
+            "exactDialogsOverScheduledPercent": 50,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 25.37815976337061,
+              "upperPercent": 74.6218402366294
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 11,
+                "agreementPercent": 91.67
+              },
+              "identity": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 10,
+                "agreementPercent": 83.33
+              },
+              "empathy": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 10,
+                "agreementPercent": 83.33
+              },
+              "dialogue": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 9,
+                "agreementPercent": 75
+              },
+              "closing": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 12,
+                "compared": 12,
+                "matched": 12,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 91.67,
+            "matchedOverScheduledPercent": 91.67,
+            "comparedScores": 12,
+            "meanAbsoluteScoreError": 5.58,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 1,
+              "trueNegatives": 11,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "recovery2-ru-bot-details",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "recovery2-ru-two-tasks",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 7
+              },
+              {
+                "sourceId": "recovery2-kz-vague",
+                "criterionId": "empathy",
+                "expected": false,
+                "actual": true
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "consultation",
+                "expected": 0,
+                "actual": 5
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "empathy",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "recovery-kz-paid",
+                "criterionId": "dialogue",
+                "expected": 10,
+                "actual": 7
+              },
+              {
+                "sourceId": "recovery-kz-wait",
+                "criterionId": "dialogue",
+                "expected": 7,
+                "actual": 10
+              },
+              {
+                "sourceId": "recovery-en-secondary",
+                "criterionId": "consultation",
+                "expected": 15,
+                "actual": 10
+              }
+            ]
+          },
+          "regression": {
+            "scheduledDialogs": 0,
+            "completedDialogs": 0,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 0,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": null,
+            "dialogueConfidenceInterval95": null,
+            "byCriterion": {},
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": null,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "holdoutByLanguage": {
+            "RU": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 30,
+              "matchingDialogs": 2,
+              "exactDialogAgreementPercent": 50,
+              "exactDialogsOverScheduledPercent": 50,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 15.003898915214947,
+                "upperPercent": 84.99610108478505
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 93.75,
+              "matchedOverScheduledPercent": 93.75,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 1.73,
+              "na": {
+                "missed": 1,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 4,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-ru-bot-details",
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery2-ru-two-tasks",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 7
+                }
+              ]
+            },
+            "KZ": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 27,
+              "matchingDialogs": 1,
+              "exactDialogAgreementPercent": 25,
+              "exactDialogsOverScheduledPercent": 25,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 4.558726080970055,
+                "upperPercent": 69.93581574175981
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 2,
+                  "agreementPercent": 50
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 84.38,
+              "matchedOverScheduledPercent": 84.38,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 13.08,
+              "na": {
+                "missed": 0,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 1,
+                "trueNegatives": 3,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery2-kz-vague",
+                  "criterionId": "empathy",
+                  "expected": false,
+                  "actual": true
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "consultation",
+                  "expected": 0,
+                  "actual": 5
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "empathy",
+                  "expected": true,
+                  "actual": false
+                },
+                {
+                  "sourceId": "recovery-kz-paid",
+                  "criterionId": "dialogue",
+                  "expected": 10,
+                  "actual": 7
+                },
+                {
+                  "sourceId": "recovery-kz-wait",
+                  "criterionId": "dialogue",
+                  "expected": 7,
+                  "actual": 10
+                }
+              ]
+            },
+            "EN": {
+              "scheduledDialogs": 4,
+              "completedDialogs": 4,
+              "failedDialogs": 0,
+              "invalidDialogs": 0,
+              "notRunDialogs": 0,
+              "scheduledCriteria": 32,
+              "comparedCriteria": 32,
+              "matchedCriteria": 31,
+              "matchingDialogs": 3,
+              "exactDialogAgreementPercent": 75,
+              "exactDialogsOverScheduledPercent": 75,
+              "dialogueConfidenceInterval95": {
+                "lowerPercent": 30.064184258240186,
+                "upperPercent": 95.44127391902994
+              },
+              "byCriterion": {
+                "contact": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "needs": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "identity": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "consultation": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 3,
+                  "agreementPercent": 75
+                },
+                "empathy": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "dialogue": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "closing": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                },
+                "gross": {
+                  "scheduled": 4,
+                  "compared": 4,
+                  "matched": 4,
+                  "agreementPercent": 100
+                }
+              },
+              "criterionAgreementPercent": 96.88,
+              "matchedOverScheduledPercent": 96.88,
+              "comparedScores": 4,
+              "meanAbsoluteScoreError": 1.92,
+              "na": {
+                "missed": 0,
+                "spurious": 0
+              },
+              "gross": {
+                "truePositives": 0,
+                "trueNegatives": 4,
+                "falsePositives": 0,
+                "falseNegatives": 0
+              },
+              "mismatches": [
+                {
+                  "sourceId": "recovery-en-secondary",
+                  "criterionId": "consultation",
+                  "expected": 15,
+                  "actual": 10
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "aggregate": {
+        "scheduledDialogs": 24,
+        "completedDialogs": 24,
+        "failedDialogs": 0,
+        "invalidDialogs": 0,
+        "notRunDialogs": 0,
+        "scheduledCriteria": 192,
+        "comparedCriteria": 192,
+        "matchedCriteria": 176,
+        "matchingDialogs": 11,
+        "exactDialogAgreementPercent": 45.83,
+        "exactDialogsOverScheduledPercent": 45.83,
+        "byCriterion": {
+          "contact": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 24,
+            "agreementPercent": 100
+          },
+          "needs": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 22,
+            "agreementPercent": 91.67
+          },
+          "identity": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 24,
+            "agreementPercent": 100
+          },
+          "consultation": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 20,
+            "agreementPercent": 83.33
+          },
+          "empathy": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 20,
+            "agreementPercent": 83.33
+          },
+          "dialogue": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 18,
+            "agreementPercent": 75
+          },
+          "closing": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 24,
+            "agreementPercent": 100
+          },
+          "gross": {
+            "scheduled": 24,
+            "compared": 24,
+            "matched": 24,
+            "agreementPercent": 100
+          }
+        },
+        "criterionAgreementPercent": 91.67,
+        "matchedOverScheduledPercent": 91.67,
+        "comparedScores": 24,
+        "meanAbsoluteScoreError": 5.64,
+        "na": {
+          "missed": 2,
+          "spurious": 0
+        },
+        "gross": {
+          "truePositives": 2,
+          "trueNegatives": 22,
+          "falsePositives": 0,
+          "falseNegatives": 0
+        },
+        "mismatches": [
+          {
+            "sourceId": "recovery2-ru-bot-details#0",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-ru-two-tasks#0",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 7
+          },
+          {
+            "sourceId": "recovery2-kz-vague#0",
+            "criterionId": "empathy",
+            "expected": false,
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-kz-paid#0",
+            "criterionId": "consultation",
+            "expected": 0,
+            "actual": 5
+          },
+          {
+            "sourceId": "recovery-kz-paid#0",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 7
+          },
+          {
+            "sourceId": "recovery-kz-wait#0",
+            "criterionId": "dialogue",
+            "expected": 7,
+            "actual": 10
+          },
+          {
+            "sourceId": "recovery-en-secondary#0",
+            "criterionId": "consultation",
+            "expected": 15,
+            "actual": 10
+          },
+          {
+            "sourceId": "recovery-en-contradiction#0",
+            "criterionId": "empathy",
+            "expected": false,
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-ru-bot-details#1",
+            "criterionId": "needs",
+            "expected": "NA",
+            "actual": true
+          },
+          {
+            "sourceId": "recovery2-ru-two-tasks#1",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 7
+          },
+          {
+            "sourceId": "recovery2-kz-vague#1",
+            "criterionId": "empathy",
+            "expected": false,
+            "actual": true
+          },
+          {
+            "sourceId": "recovery-kz-paid#1",
+            "criterionId": "consultation",
+            "expected": 0,
+            "actual": 5
+          },
+          {
+            "sourceId": "recovery-kz-paid#1",
+            "criterionId": "empathy",
+            "expected": true,
+            "actual": false
+          },
+          {
+            "sourceId": "recovery-kz-paid#1",
+            "criterionId": "dialogue",
+            "expected": 10,
+            "actual": 7
+          },
+          {
+            "sourceId": "recovery-kz-wait#1",
+            "criterionId": "dialogue",
+            "expected": 7,
+            "actual": 10
+          },
+          {
+            "sourceId": "recovery-en-secondary#1",
+            "criterionId": "consultation",
+            "expected": 15,
+            "actual": 10
+          }
+        ]
+      },
+      "byLanguage": {
+        "RU": {
+          "scheduledDialogs": 8,
+          "completedDialogs": 8,
+          "failedDialogs": 0,
+          "invalidDialogs": 0,
+          "notRunDialogs": 0,
+          "scheduledCriteria": 64,
+          "comparedCriteria": 64,
+          "matchedCriteria": 60,
+          "matchingDialogs": 4,
+          "exactDialogAgreementPercent": 50,
+          "exactDialogsOverScheduledPercent": 50,
+          "dialogueConfidenceInterval95": {
+            "lowerPercent": 21.521606221387756,
+            "upperPercent": 78.47839377861224
+          },
+          "byCriterion": {
+            "contact": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "needs": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 6,
+              "agreementPercent": 75
+            },
+            "identity": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "consultation": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "empathy": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "dialogue": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 6,
+              "agreementPercent": 75
+            },
+            "closing": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "gross": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            }
+          },
+          "criterionAgreementPercent": 93.75,
+          "matchedOverScheduledPercent": 93.75,
+          "comparedScores": 8,
+          "meanAbsoluteScoreError": 1.73,
+          "na": {
+            "missed": 2,
+            "spurious": 0
+          },
+          "gross": {
+            "truePositives": 0,
+            "trueNegatives": 8,
+            "falsePositives": 0,
+            "falseNegatives": 0
+          },
+          "mismatches": [
+            {
+              "sourceId": "recovery2-ru-bot-details#0",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery2-ru-two-tasks#0",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 7
+            },
+            {
+              "sourceId": "recovery2-ru-bot-details#1",
+              "criterionId": "needs",
+              "expected": "NA",
+              "actual": true
+            },
+            {
+              "sourceId": "recovery2-ru-two-tasks#1",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 7
+            }
+          ]
+        },
+        "KZ": {
+          "scheduledDialogs": 8,
+          "completedDialogs": 8,
+          "failedDialogs": 0,
+          "invalidDialogs": 0,
+          "notRunDialogs": 0,
+          "scheduledCriteria": 64,
+          "comparedCriteria": 64,
+          "matchedCriteria": 55,
+          "matchingDialogs": 2,
+          "exactDialogAgreementPercent": 25,
+          "exactDialogsOverScheduledPercent": 25,
+          "dialogueConfidenceInterval95": {
+            "lowerPercent": 7.1479212752109,
+            "upperPercent": 59.07245696898311
+          },
+          "byCriterion": {
+            "contact": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "needs": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "identity": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "consultation": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 6,
+              "agreementPercent": 75
+            },
+            "empathy": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 5,
+              "agreementPercent": 62.5
+            },
+            "dialogue": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 4,
+              "agreementPercent": 50
+            },
+            "closing": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "gross": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            }
+          },
+          "criterionAgreementPercent": 85.94,
+          "matchedOverScheduledPercent": 85.94,
+          "comparedScores": 8,
+          "meanAbsoluteScoreError": 10.39,
+          "na": {
+            "missed": 0,
+            "spurious": 0
+          },
+          "gross": {
+            "truePositives": 2,
+            "trueNegatives": 6,
+            "falsePositives": 0,
+            "falseNegatives": 0
+          },
+          "mismatches": [
+            {
+              "sourceId": "recovery2-kz-vague#0",
+              "criterionId": "empathy",
+              "expected": false,
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-kz-paid#0",
+              "criterionId": "consultation",
+              "expected": 0,
+              "actual": 5
+            },
+            {
+              "sourceId": "recovery-kz-paid#0",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 7
+            },
+            {
+              "sourceId": "recovery-kz-wait#0",
+              "criterionId": "dialogue",
+              "expected": 7,
+              "actual": 10
+            },
+            {
+              "sourceId": "recovery2-kz-vague#1",
+              "criterionId": "empathy",
+              "expected": false,
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-kz-paid#1",
+              "criterionId": "consultation",
+              "expected": 0,
+              "actual": 5
+            },
+            {
+              "sourceId": "recovery-kz-paid#1",
+              "criterionId": "empathy",
+              "expected": true,
+              "actual": false
+            },
+            {
+              "sourceId": "recovery-kz-paid#1",
+              "criterionId": "dialogue",
+              "expected": 10,
+              "actual": 7
+            },
+            {
+              "sourceId": "recovery-kz-wait#1",
+              "criterionId": "dialogue",
+              "expected": 7,
+              "actual": 10
+            }
+          ]
+        },
+        "EN": {
+          "scheduledDialogs": 8,
+          "completedDialogs": 8,
+          "failedDialogs": 0,
+          "invalidDialogs": 0,
+          "notRunDialogs": 0,
+          "scheduledCriteria": 64,
+          "comparedCriteria": 64,
+          "matchedCriteria": 61,
+          "matchingDialogs": 5,
+          "exactDialogAgreementPercent": 62.5,
+          "exactDialogsOverScheduledPercent": 62.5,
+          "dialogueConfidenceInterval95": {
+            "lowerPercent": 30.574239460262735,
+            "upperPercent": 86.31557141764026
+          },
+          "byCriterion": {
+            "contact": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "needs": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "identity": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "consultation": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 6,
+              "agreementPercent": 75
+            },
+            "empathy": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 7,
+              "agreementPercent": 87.5
+            },
+            "dialogue": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "closing": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            },
+            "gross": {
+              "scheduled": 8,
+              "compared": 8,
+              "matched": 8,
+              "agreementPercent": 100
+            }
+          },
+          "criterionAgreementPercent": 95.31,
+          "matchedOverScheduledPercent": 95.31,
+          "comparedScores": 8,
+          "meanAbsoluteScoreError": 4.81,
+          "na": {
+            "missed": 0,
+            "spurious": 0
+          },
+          "gross": {
+            "truePositives": 0,
+            "trueNegatives": 8,
+            "falsePositives": 0,
+            "falseNegatives": 0
+          },
+          "mismatches": [
+            {
+              "sourceId": "recovery-en-secondary#0",
+              "criterionId": "consultation",
+              "expected": 15,
+              "actual": 10
+            },
+            {
+              "sourceId": "recovery-en-contradiction#0",
+              "criterionId": "empathy",
+              "expected": false,
+              "actual": true
+            },
+            {
+              "sourceId": "recovery-en-secondary#1",
+              "criterionId": "consultation",
+              "expected": 15,
+              "actual": 10
+            }
+          ]
+        }
+      }
+    }
+  },
+  "promotion": {
+    "eligible": true,
+    "reasons": []
+  },
+  "limitations": [
+    "ASSISTANT_LABELS_NOT_ORGANIZER_GROUND_TRUTH",
+    "REPEATS_ARE_CORRELATED",
+    "SMALL_SYNTHETIC_SAMPLE"
+  ],
+  "initialPromotion": {
+    "eligible": false,
+    "reasons": ["BASELINE_INCOMPLETE"]
+  },
+  "pairedComplete": {
+    "baseline": {
+      "completedPairs": 20,
+      "matchedCriteria": 130,
+      "comparedCriteria": 160,
+      "agreementPercent": 81.25,
+      "exactDialogs": 4,
+      "meanAbsoluteScoreError": 7.6935
+    },
+    "candidate": {
+      "completedPairs": 20,
+      "matchedCriteria": 148,
+      "comparedCriteria": 160,
+      "agreementPercent": 92.5,
+      "exactDialogs": 9,
+      "meanAbsoluteScoreError": 5.3075
+    }
+  },
+  "independentAccuracyEstimate": false,
+  "humanReviewed": false,
+  "labelSource": "Assistant-authored synthetic rubric expectations, NOT human-reviewed or organizer Ground Truth",
+  "casesFile": "qa/gemini/accuracy-recovery-holdout.json",
+  "measuredInputsUnchangedAfterFormatting": true,
+  "stoppedDevelopmentRun": {
+    "calls": 12,
+    "reason": "HTTP 400 from combined generation bounds; not counted as a successful comparison",
+    "completedCandidateDialogs": 5,
+    "failedCandidateDialogs": 1
+  },
+  "promotionPolicyCorrection": "The plan requires preserving candidate completion. A baseline failure remains in the denominator and does not itself veto improved candidate completion. Corrected BASELINE_INCOMPLETE gate after a failing regression test; predictions and labels unchanged.",
+  "remainingErrors": "Missed needs N/A after bot clarification, consultation secondary-detail and private-offer boundaries, subjective empathy/clarity steps.",
+  "reproducibility": "Full frozen manifest, raw responses and SQLite histories remain in runtime/accuracy-recovery/fresh-final-12; inference-input-hashes.json binds all 24 initial prompt/schema pairs. Source snapshot archived before formatting.",
+  "reviewPatch": {
+    "promptVersion": "cqa-evaluator-v7.1",
+    "measuredVersion": "cqa-evaluator-v7",
+    "emptyCorpusInitialPromptSchemaPairsUnchanged": 24,
+    "savedCandidateEvaluationsReplayed": 24,
+    "replayValuesScoresEvidenceUnchanged": true,
+    "newInferenceScope": "Structured verificationLimitation added only when knowledge sources exist; independently tested on the isolated live synthetic RAG probe, not claimed as a new accuracy benchmark.",
+    "exactDialogPromotionNowRequiresStrictImprovement": true
+  }
+}

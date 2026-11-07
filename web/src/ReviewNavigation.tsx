@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Conversation } from '../../shared/contracts.js';
 import { ActionButton } from './ActionButton';
 import { conversationTitle } from './DialogsPage';
+import { Select } from './components/ui/select';
 
 /** Compact adaptation of Merey's 196878f conversation switching. */
 export function ReviewNavigation({
@@ -51,25 +52,18 @@ export function ReviewNavigation({
           <span>Выбрать диалог</span>
           <span>{index >= 0 ? `${index + 1} из ${conversations.length}` : '—'}</span>
         </span>
-        <select
+        <Select
           className="field"
           aria-label="Выбрать диалог"
           value={pickerValue}
           disabled={!matches.length}
-          onChange={(event) => onOpen(event.target.value)}
-        >
-          {!pickerValue && (
-            <option value="" disabled>
-              {matches.length ? 'Выбрать диалог' : 'Ничего не найдено'}
-            </option>
-          )}
-          {matches.map((conversation) => (
-            <option key={conversation.id} value={conversation.id}>
-              {conversation.sourceConversationId} · {conversation.language} ·{' '}
-              {conversationTitle(conversation).slice(0, 100)}
-            </option>
-          ))}
-        </select>
+          onValueChange={onOpen}
+          placeholder={matches.length ? 'Выбрать диалог' : 'Ничего не найдено'}
+          options={matches.map((conversation) => ({
+            value: conversation.id,
+            label: `${conversation.sourceConversationId} · ${conversation.language} · ${conversationTitle(conversation).slice(0, 100)}`,
+          }))}
+        />
       </label>
       <span className="sr-only" role="status">
         {term && !matches.length ? 'Ничего не найдено. Измените запрос.' : ''}

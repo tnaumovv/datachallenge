@@ -184,6 +184,7 @@ export type CriterionEvidence = {
   checkedSpan: Message[];
 };
 export type Evaluation = {
+  knowledge?: import('./knowledge.js').KnowledgeSnapshot;
   policyVersion?: string;
   policySnapshot?: string;
   priceSnapshot?: import('./diagnostics.js').PriceSnapshot;

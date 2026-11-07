@@ -1,0 +1,515 @@
+[
+  {
+    "sourceId": "grounding3-ru-newsletter",
+    "language": "RU",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 20,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": false,
+      "gross": false
+    },
+    "notes": "Настройки и платформа уже известны до оператора; одно пожелание не является итогом.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Как отключить новостную рассылку?"
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "bot",
+        "text": "В мобильном приложении или на сайте?"
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "На сайте, хочу убрать только новости, сообщения о безопасности оставить."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "Добрый день, я Ирина. В настройках уведомлений снимите галочку «Новости», а «Безопасность» оставьте включённой."
+      },
+      {
+        "timestamp": "01:20",
+        "speaker": "client",
+        "text": "Сделано, благодарю."
+      },
+      {
+        "timestamp": "01:40",
+        "speaker": "operator",
+        "text": "Пожалуйста, всего хорошего!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-ru-file-format",
+    "language": "RU",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": true,
+      "identity": "NA",
+      "consultation": 20,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": true,
+      "gross": false
+    },
+    "notes": "Нужно узнать формат и программу; оператор спрашивает до инструкции. Дальнейшая помощь и прощание присутствуют.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Выгрузка открывается нечитаемыми символами."
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Здравствуйте, я Олег. Какой формат у файла и в какой программе вы его открываете?"
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "CSV, открываю в Excel."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "Попробуйте импорт через «Данные — Из текста/CSV» с выбором UTF-8. Если символы останутся, передайте пример строки без личных данных для проверки."
+      },
+      {
+        "timestamp": "01:20",
+        "speaker": "client",
+        "text": "Через импорт текст читается, спасибо."
+      },
+      {
+        "timestamp": "01:40",
+        "speaker": "operator",
+        "text": "Нужна ли ещё помощь? До свидания!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-ru-two-requests",
+    "language": "RU",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": false,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 10,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": false,
+      "gross": false
+    },
+    "notes": "Запрос содержит два существенных вопроса, решён только первый. Напоминание второго вопроса не является переспросом из-за неясности.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Где скачать счёт за подписку и как самостоятельно удалить профиль?"
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Здравствуйте! Счёт скачивается в разделе «Подписка — Платежи»."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "Счёт нашёл. А как удалить профиль?"
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "На этом всё. До свидания."
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-ru-disconnect",
+    "language": "RU",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": true,
+      "identity": "NA",
+      "consultation": "NA",
+      "empathy": true,
+      "dialogue": 10,
+      "closing": "NA",
+      "gross": false
+    },
+    "notes": "Запрос ещё не сформулирован. Необходимый вопрос оператора задан, затем явный сетевой обрыв.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Подключите человека, нужна помощь."
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Здравствуйте, я Лидия. С каким вопросом вам помочь?"
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "system",
+        "text": "Соединение потеряно до ответа клиента. Сеанс завершён."
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-kz-known-format",
+    "language": "KZ",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 20,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": true,
+      "gross": false
+    },
+    "notes": "Бот уже собрал раздел и формат, повторные уточнения не нужны. Итог отдельно от прощания.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Айлық үзіндіні қалай жүктеймін?"
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "bot",
+        "text": "Қай құрылғыны қолданасыз және қандай формат керек?"
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "Телефондағы қолданба, PDF керек, осы ай үшін."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "Сәлеметсіз бе! Мен Дана. «Құжаттар» бөліміне кіріп, осы айды және PDF форматын таңдаңыз, содан кейін «Жүктеу» түймесін басыңыз."
+      },
+      {
+        "timestamp": "01:20",
+        "speaker": "client",
+        "text": "PDF ашылды, рақмет."
+      },
+      {
+        "timestamp": "01:40",
+        "speaker": "operator",
+        "text": "Осы айдың үзіндісін жүктедіңіз. Басқа көмек керек пе? Сау болыңыз!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-kz-independent-question",
+    "language": "KZ",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 10,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": false,
+      "gross": false
+    },
+    "notes": "Из двух существенных вопросов ответили только про пароль; блокировку уведомлений игнорируют.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Құпиясөзді қай жерден өзгертемін және жарнамалық хабарламаларды қалай өшіремін?"
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Сәлеметсіз бе, мен Ерлан. Құпиясөзді «Баптаулар — Қауіпсіздік» бөлімінде өзгерте аласыз."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "Құпиясөзді түсіндім. Жарнамалық хабарламаларды ше?"
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "Сау болыңыз!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-kz-protected-change",
+    "language": "KZ",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": "NA",
+      "identity": false,
+      "consultation": 20,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": true,
+      "gross": false
+    },
+    "notes": "Оператор выполнил защищённое изменение без проверки личности; не штрафуем консультацию автоматически за идентификацию.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Менің тіркелген электрондық поштамды new-address@example.test мекенжайына ауыстырыңыз."
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Сәлеметсіз бе, мен Әлия. Сіздің есептік жазбаңыздағы электрондық поштаны new-address@example.test мекенжайына ауыстырдым."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "Жаңарған мекенжай көрініп тұр."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "Электрондық поштаңыз жаңартылды. Тағы көмегім қажет пе? Сау болыңыз!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-kz-private-offer",
+    "language": "KZ",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 0,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": true,
+      "gross": true
+    },
+    "notes": "Нет ответа о местонахождении документа. Предложение частной платной услуги само по себе нарушение; вежливость оценивается отдельно.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Жылдық есепті қайдан табуға болады?"
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Сәлеметсіз бе, мен Самат. Жеке нөміріме жазыңыз, компаниядан тыс 5000 теңгеге түсіндіріп беремін."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "Жоқ, ақылы жеке қызмет керек емес."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "Тағы сұрағыңыз болса айтыңыз. Сау болыңыз!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-en-bot-introduction",
+    "language": "EN",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": false,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 20,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": true,
+      "gross": false
+    },
+    "notes": "Бот представился, оператор только поздоровался. Имя бота не засчитывается.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "Where can I download a receipt for yesterday’s subscription payment?"
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "bot",
+        "text": "Hello, I am Robin, the automated assistant. Connecting you to an agent."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "operator",
+        "text": "Hello! Open Billing, then Payment history, choose yesterday’s payment and select Download receipt."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "client",
+        "text": "I have the receipt now."
+      },
+      {
+        "timestamp": "01:20",
+        "speaker": "operator",
+        "text": "Anything else I can help with? Goodbye!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-en-late-detail",
+    "language": "EN",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": false,
+      "identity": "NA",
+      "consultation": 20,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": true,
+      "gross": false
+    },
+    "notes": "Оператор сначала фактически передал обращение, затем спросил необходимые дату и код. Эскалация остаётся конкретным следующим шагом; порядок уточнения нарушен.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "My transfer was rejected, please investigate."
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Hello, I am Morgan. I have already submitted your transfer investigation to the payments team."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "operator",
+        "text": "What was the transfer date and which rejection code did you see? The team needs both to locate it."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "client",
+        "text": "Today, code R17."
+      },
+      {
+        "timestamp": "01:20",
+        "speaker": "operator",
+        "text": "I have added those details. The payments team will investigate the rejected transfer. Is there anything else I can help with? Goodbye."
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-en-secondary-label",
+    "language": "EN",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 15,
+      "empathy": true,
+      "dialogue": 10,
+      "closing": true,
+      "gross": false
+    },
+    "notes": "Основная задача экспорта решена; второстепенная просьба указать точное название кнопки пропущена.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "I need to download my transaction history. Please explain the route; if possible, also mention the exact label on the final download button."
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Hello, I am Casey. Open Activity, choose Transactions, set your date range, and use the download action in the upper right."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "That route was enough, the file has downloaded."
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "You now have your transaction file. Do you need help with anything else? Goodbye!"
+      }
+    ]
+  },
+  {
+    "sourceId": "grounding3-en-unclear-steps",
+    "language": "EN",
+    "role": "fresh_synthetic_accuracy_holdout",
+    "channel": "agent chat",
+    "expectedValues": {
+      "contact": true,
+      "needs": "NA",
+      "identity": "NA",
+      "consultation": 20,
+      "empathy": true,
+      "dialogue": 4,
+      "closing": true,
+      "gross": false
+    },
+    "notes": "Первичная инструкция неясна, клиент вынужден уточнить формулировку. Впоследствии вопрос полностью решён.",
+    "transcript": [
+      {
+        "timestamp": "00:00",
+        "speaker": "client",
+        "text": "How do I mute promotional push notifications on the mobile app?"
+      },
+      {
+        "timestamp": "00:20",
+        "speaker": "operator",
+        "text": "Hello, I am Jamie. Go there and disable that one."
+      },
+      {
+        "timestamp": "00:40",
+        "speaker": "client",
+        "text": "Which screen is “there”, and which switch do you mean?"
+      },
+      {
+        "timestamp": "01:00",
+        "speaker": "operator",
+        "text": "Open Settings, then Notifications, and turn off the Promotions switch."
+      },
+      {
+        "timestamp": "01:20",
+        "speaker": "client",
+        "text": "That worked."
+      },
+      {
+        "timestamp": "01:40",
+        "speaker": "operator",
+        "text": "Promotional notifications are off now. Can I help with anything else? Goodbye!"
+      }
+    ]
+  }
+]

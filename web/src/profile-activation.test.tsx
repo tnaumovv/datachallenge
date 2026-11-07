@@ -6,6 +6,7 @@ import { DialogsPage } from './DialogsPage';
 import { EvaluationPanel } from './EvaluationPanel';
 import { api } from './api';
 import { conversation, version } from '../tests/fixtures';
+import userEvent from '@testing-library/user-event';
 const newer = { ...version, id: 'inactive-v2', version: 2 };
 const profiles = [
   {
@@ -51,7 +52,9 @@ function mount(kind: string) {
 const picker = (kind: string) =>
   screen.getByRole('combobox', {
     name: kind === 'batch' ? 'Чек-лист для оценки' : 'Чек-лист',
-  }) as HTMLSelectElement;
+  }) as HTMLButtonElement;
+const versionLabel = (kind: string, item = version) =>
+  `${item.title} · ${kind === 'batch' ? 'v' : 'версия '}${item.version}`;
 const run = (kind: string) =>
   screen.queryByRole('button', {
     name: kind === 'batch' ? /Оценить выбранные/ : 'Запустить оценку',
@@ -71,11 +74,11 @@ it.each(['batch', 'individual'])(
     );
     mount(kind);
     await waitFor(() => expect(picker(kind).disabled).toBe(false));
-    expect(picker(kind).value).toBe('');
+    expect(picker(kind).textContent).toContain('Выберите версию явно');
     expect(!run(kind) || run(kind)!.disabled).toBe(true);
     expect(api.start).not.toHaveBeenCalled();
     await act(async () => resolve(new Response(JSON.stringify(profiles))));
-    await waitFor(() => expect(picker(kind).value).toBe(version.id));
+    await waitFor(() => expect(picker(kind).textContent).toContain(versionLabel(kind)));
     fireEvent.click(run(kind)!);
     await waitFor(() =>
       expect(api.start).toHaveBeenCalledWith(
@@ -95,11 +98,12 @@ it.each(['batch', 'individual'])(
     vi.stubGlobal('fetch', fetcher);
     mount(kind);
     await screen.findByText(/Не удалось загрузить активный чек-лист/);
-    expect(picker(kind).value).toBe('');
+    expect(picker(kind).textContent).toContain('Выберите версию явно');
     expect(!run(kind) || run(kind)!.disabled).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: 'Повторить загрузку профилей' }));
-    await waitFor(() => expect(picker(kind).value).toBe(version.id));
-    fireEvent.change(picker(kind), { target: { value: newer.id } });
+    await waitFor(() => expect(picker(kind).textContent).toContain(versionLabel(kind)));
+    await userEvent.click(picker(kind));
+    await userEvent.click(screen.getByRole('option', { name: versionLabel(kind, newer) }));
     fireEvent.click(run(kind)!);
     await waitFor(() =>
       expect(api.start).toHaveBeenCalledWith(
@@ -117,7 +121,8 @@ it.each(['batch', 'individual'])(
     mount(kind);
     await screen.findByText(/Не удалось загрузить активный чек-лист/);
     await waitFor(() => expect(picker(kind).disabled).toBe(false));
-    fireEvent.change(picker(kind), { target: { value: newer.id } });
+    await userEvent.click(picker(kind));
+    await userEvent.click(screen.getByRole('option', { name: versionLabel(kind, newer) }));
     fireEvent.click(run(kind)!);
     await waitFor(() =>
       expect(api.start).toHaveBeenCalledWith(
@@ -134,7 +139,7 @@ it.each(['batch', 'individual'])(
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('[]')));
     mount(kind);
     await waitFor(() => expect(picker(kind).disabled).toBe(false));
-    expect(picker(kind).value).toBe('');
+    expect(picker(kind).textContent).toContain('Выберите версию явно');
     expect(!run(kind) || run(kind)!.disabled).toBe(true);
     expect(api.start).not.toHaveBeenCalled();
   },

@@ -1,3 +1,4 @@
+import { CoachingPanel } from './CoachingPanel';
 import { useProfiles } from './use-profiles';
 import { Diagnostics, EvaluationComparisonView } from './OperationsPage';
 import { useState } from 'react';
@@ -16,6 +17,7 @@ import { AppealForm, AppealHistory, AppealReview, useEvaluationAppeals } from '.
 import { answerLabel, answerTone, numbers } from './review-format';
 import { ActionButton } from './ActionButton';
 import { Icon } from './Icon';
+import { Select } from './components/ui/select';
 
 const evaluationLabel: Record<Evaluation['status'], string> = {
   queued: 'В очереди',
@@ -88,23 +90,6 @@ export function EvaluationPanel({
       className="panel evaluation-panel"
       aria-labelledby="evaluation-heading"
     >
-      {evaluation &&
-        activeProfile &&
-        evaluation.checklistVersionId !== activeProfile.activeVersionId && (
-          <p className="notice">
-            Оценка по предыдущей версии. Для актуального результата выберите активный чек-лист и
-            запустите новую оценку.
-          </p>
-        )}
-      {profiles.status === 'loading' && <p role="status">Загружаем активный чек-лист…</p>}
-      {profiles.status === 'error' && (
-        <div className="notice notice-error" role="alert">
-          Не удалось загрузить активный чек-лист. Выберите версию явно или повторите загрузку.{' '}
-          <button className="button secondary" onClick={profiles.reload}>
-            Повторить загрузку профилей
-          </button>
-        </div>
-      )}
       <div className="panel-header evaluation-header">
         <div className="title-row">
           <h2 id="evaluation-heading">Оценка</h2>
@@ -116,70 +101,94 @@ export function EvaluationPanel({
             </span>
           )}
         </div>
-        {checklists.length > 0 && (
-          <div className="field-label">
-            <label htmlFor="checklist-version">Чек-лист</label>
-            <select
-              id="checklist-version"
-              className="field"
-              value={checklistId ?? ''}
-              disabled={review.history !== 'ready' || review.submitting}
-              onChange={(event) => {
-                setPreferredVersion(event.currentTarget.value);
-                selectEvaluation(null);
-              }}
-            >
-              {!checklist && <option value={checklistId ?? ''}>Выберите версию явно</option>}
-              {checklists.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.title} · версия {item.version}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        {attempts.length > 1 && evaluation && (
-          <div className="field-label">
-            <label htmlFor="saved-evaluation">Сохранённая оценка</label>
-            <select
-              id="saved-evaluation"
-              className="field"
-              value={evaluation.id}
-              disabled={review.submitting}
-              onChange={(event) => selectEvaluation(event.currentTarget.value)}
-            >
-              {attempts.map((item, index) => (
-                <option key={item.id} value={item.id}>
-                  {attempts.length - index} · {evaluationLabel[item.status]}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="evaluation-filters">
+          {checklists.length > 0 && (
+            <div className="field-label">
+              <label htmlFor="checklist-version">Чек-лист</label>
+              <Select
+                id="checklist-version"
+                className="field"
+                value={checklistId ?? ''}
+                disabled={review.history !== 'ready' || review.submitting}
+                onValueChange={(value) => {
+                  setPreferredVersion(value);
+                  selectEvaluation(null);
+                }}
+                options={[
+                  ...(!checklist
+                    ? [{ value: checklistId ?? '', label: 'Выберите версию явно' }]
+                    : []),
+                  ...checklists.map((item) => ({
+                    value: item.id,
+                    label: `${item.title} · версия ${item.version}`,
+                  })),
+                ]}
+              />
+            </div>
+          )}
+          {attempts.length > 1 && evaluation && (
+            <div className="field-label">
+              <label htmlFor="saved-evaluation">Сохранённая оценка</label>
+              <Select
+                id="saved-evaluation"
+                className="field"
+                value={evaluation.id}
+                disabled={review.submitting}
+                onValueChange={selectEvaluation}
+                options={attempts.map((item, index) => ({
+                  value: item.id,
+                  label: `${attempts.length - index} · ${evaluationLabel[item.status]}`,
+                }))}
+              />
+            </div>
+          )}
+        </div>
       </div>
       <div className="panel-scroll evaluation-scroll">
-        {evaluation && (
-          <p className="saved-evaluation-date">
-            Сохранено{' '}
-            {new Intl.DateTimeFormat('ru-RU', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'Asia/Almaty',
-            }).format(new Date(evaluation.createdAt))}
-          </p>
+        {completed && checklist && evaluation.finalScore && (
+          <ScoreCard evaluation={evaluation} score={evaluation.finalScore} />
         )}
-        {completed && checklist && (
-          <ActionButton
-            icon="refresh"
-            className="rerun-button"
-            disabled={review.submitting}
-            onClick={() => void review.run(checklist.id, undefined, true)}
-          >
-            {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
-          </ActionButton>
+        <div className="evaluation-run-meta">
+          {evaluation && (
+            <p className="saved-evaluation-date">
+              Сохранено{' '}
+              {new Intl.DateTimeFormat('ru-RU', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'Asia/Almaty',
+              }).format(new Date(evaluation.createdAt))}
+            </p>
+          )}
+          {completed && checklist && (
+            <ActionButton
+              icon="refresh"
+              className="rerun-button"
+              disabled={review.submitting}
+              onClick={() => void review.run(checklist.id, undefined, true)}
+            >
+              {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
+            </ActionButton>
+          )}
+        </div>
+        {evaluation &&
+          activeProfile &&
+          evaluation.checklistVersionId !== activeProfile.activeVersionId && (
+            <p className="notice">
+              Оценка по другой версии. Для актуального результата выберите активный чек-лист и
+              запустите новую оценку.
+            </p>
+          )}
+        {profiles.status === 'loading' && <p role="status">Загружаем активный чек-лист…</p>}
+        {profiles.status === 'error' && (
+          <div className="notice notice-error" role="alert">
+            Не удалось загрузить активный чек-лист. Выберите версию явно или повторите загрузку.{' '}
+            <button className="button secondary" onClick={profiles.reload}>
+              Повторить загрузку профилей
+            </button>
+          </div>
         )}
         {review.history === 'loading' && (
           <p className="muted panel-note" role="status">
@@ -279,6 +288,13 @@ export function EvaluationPanel({
               ))}
           </>
         )}
+        {evaluation?.status === 'completed' && (
+          <CoachingPanel
+            key={evaluation.id + JSON.stringify(evaluation.effectiveAnswers)}
+            evaluation={evaluation}
+            onEvidence={(id) => onEvidence(id, evaluation.id)}
+          />
+        )}
         {evaluation && (
           <>
             <Diagnostics evaluation={evaluation} />
@@ -325,7 +341,6 @@ function CompletedReview({
 
   return (
     <>
-      <ScoreCard evaluation={evaluation} score={score} />
       <section className="loss-reasons">
         <h3>Причины снижения</h3>
         {score.contributions.filter(

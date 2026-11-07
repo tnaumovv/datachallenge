@@ -1,6 +1,9 @@
+import { withKnowledge } from '../knowledge/prompt.js';
 import { candidatePrompt, candidateJsonSchema } from './candidate.js';
 import { createHash } from 'node:crypto';
-import { buildEvaluationPrompt } from './prompt.js';
+import { buildEvaluationPrompt, PROMPT_VERSION } from './prompt.js';
+import { buildEvaluationPrompt as buildLegacyPrompt } from './legacy-prompt.js';
+import { buildRubricJsonSchema } from './rubric.js';
 import { buildModelJsonSchema } from './generation-schema.js';
 import {
   ProviderError,
@@ -22,6 +25,7 @@ type Config = {
   baseUrl?: string;
   maxOutputTokens?: number;
   reasoningEffort?: 'none' | 'low' | 'medium' | 'high';
+  outputFormat?: 'answers-v4' | 'rubric-v7';
 };
 const tokens = (value: unknown): number | null =>
   typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : null;
@@ -30,6 +34,8 @@ export class CompatibleProvider implements EvaluationProvider {
   readonly id: CompatibleKind;
   readonly modelId: string;
   readonly configurationId: string;
+  readonly outputFormat: 'answers-v4' | 'rubric-v7';
+  readonly promptVersion: string;
   private readonly endpoint: string;
   private readonly maxOutputTokens: number;
   constructor(
@@ -37,6 +43,8 @@ export class CompatibleProvider implements EvaluationProvider {
     private readonly fetcher: typeof fetch = fetch,
   ) {
     this.id = config.kind;
+    this.outputFormat = config.outputFormat ?? 'rubric-v7';
+    this.promptVersion = this.outputFormat === 'rubric-v7' ? PROMPT_VERSION : 'cqa-evaluator-v4';
     this.modelId = config.modelId.trim();
     if (!this.modelId || (config.kind !== 'ollama' && !config.apiKey?.trim()))
       throw new Error('Explicit model and provider credentials are required');
@@ -68,7 +76,8 @@ export class CompatibleProvider implements EvaluationProvider {
     this.configurationId = createHash('sha256')
       .update(
         JSON.stringify({
-          adapter: 'compatible-v3',
+          adapter: 'compatible-v4',
+          outputFormat: this.outputFormat,
           provider: this.id,
           endpoint: this.endpoint,
           maxOutputTokens: this.maxOutputTokens,
@@ -79,12 +88,23 @@ export class CompatibleProvider implements EvaluationProvider {
   }
 
   async generate(input: ProviderInput): Promise<ProviderResult> {
-    const prompt = input.policyVersion
+    const basePrompt = input.policyVersion
       ? candidatePrompt(input)
-      : buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
+      : (this.outputFormat === 'rubric-v7' ? buildEvaluationPrompt : buildLegacyPrompt)(
+          input.conversation,
+          input.checklist,
+          input.repair,
+        );
+    const prompt = withKnowledge(
+      basePrompt,
+      input.knowledge,
+      input.policyVersion ? 'answers-v4' : this.outputFormat,
+    );
     const schema = input.policyVersion
       ? candidateJsonSchema()
-      : buildModelJsonSchema(input.conversation, input.checklist);
+      : this.outputFormat === 'rubric-v7'
+        ? buildRubricJsonSchema(input.conversation, input.checklist, input.knowledge)
+        : buildModelJsonSchema(input.conversation, input.checklist);
     const jsonMode = this.id === 'deepseek';
     const body = {
       model: this.modelId,

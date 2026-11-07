@@ -1,3 +1,4 @@
+import { KnowledgePage } from './KnowledgePage';
 import { WorkspaceSidebar } from './WorkspaceSidebar';
 import { ReviewQueuePage } from './ReviewQueuePage';
 import { OverviewPage } from './OverviewPage';
@@ -22,6 +23,7 @@ type WorkspaceData = {
   hasConversations: boolean;
 };
 const titles = {
+  knowledge: 'База знаний',
   overview: 'Обзор',
   review: 'Проверка',
   operations: 'Операции',
@@ -45,6 +47,7 @@ export function App() {
   const dataRef = useRef(data);
   dataRef.current = data;
   const isChecklistPage = view.page === 'checklists';
+  const isConversationDetail = view.page === 'dialogs' && Boolean(view.conversationId);
   useEffect(() => {
     if (window.location.pathname === '/') window.history.replaceState(null, '', '/dialogs');
     function sync() {
@@ -136,11 +139,13 @@ export function App() {
         Перейти к содержимому
       </a>
       <WorkspaceSidebar activePage={view.page} titles={titles} onNavigate={navClick} />
-      <div className="app-main">
-        <div className="app-topline">
-          <span className="workspace-path">{titles[view.page]}</span>
-          {demo && <strong className="topline-demo">Демо · данные и оценки вымышлены</strong>}
-        </div>
+      <div className={`app-main${isConversationDetail ? ' conversation-main' : ''}`}>
+        {(!isConversationDetail || demo) && (
+          <div className="app-topline">
+            {!isConversationDetail && <span className="workspace-path">{titles[view.page]}</span>}
+            {demo && <strong className="topline-demo">Демо · данные и оценки вымышлены</strong>}
+          </div>
+        )}
         {loadError && data && (
           <div className="notice notice-error global-notice" role="alert">
             Не удалось обновить данные. Сохранённое на экране осталось доступным.
@@ -214,6 +219,11 @@ export function App() {
                 )}
                 {conversation ? (
                   <div className="review-workspace">
+                    <Transcript
+                      key={'transcript-' + conversation.id}
+                      conversation={conversation}
+                      selectedMessageId={view.messageId}
+                    />
                     <EvaluationPanel
                       key={'evaluation-' + conversation.id}
                       conversation={conversation}
@@ -234,11 +244,6 @@ export function App() {
                         message?.scrollIntoView({ block: 'nearest' });
                       }}
                     />
-                    <Transcript
-                      key={'transcript-' + conversation.id}
-                      conversation={conversation}
-                      selectedMessageId={view.messageId}
-                    />
                   </div>
                 ) : (
                   <div className="panel empty-state">
@@ -255,6 +260,7 @@ export function App() {
               </main>
             )}
             {view.page === 'overview' && <OverviewPage checklists={data.checklists} />}
+            {view.page === 'knowledge' && <KnowledgePage onDirtyChange={setEditorDirty} />}
             {view.page === 'operations' && <OperationsPage />}
             {view.page === 'review' && <ReviewQueuePage />}
             {view.page === 'checklists' && (

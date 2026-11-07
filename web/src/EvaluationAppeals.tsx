@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Select } from './components/ui/select';
 import type {
   Appeal,
   ChecklistVersion,
@@ -411,19 +412,17 @@ function DecisionForm({
           <label className="field-label" htmlFor="replacement-answer">
             Новое значение
           </label>
-          <select
+          <Select
             id="replacement-answer"
             className="field"
-            value={replacement}
+            value={String(replacement)}
             disabled={action.busy}
-            onChange={(event) => setReplacement(Number(event.currentTarget.value))}
-          >
-            {replacements.map((value, index) => (
-              <option key={String(value)} value={index}>
-                {answerLabel(criterion, value)}
-              </option>
-            ))}
-          </select>
+            onValueChange={(value) => setReplacement(Number(value))}
+            options={replacements.map((value, index) => ({
+              value: String(index),
+              label: answerLabel(criterion, value),
+            }))}
+          />
         </>
       )}
       {decision === 'change' && evaluation?.policyVersion && (

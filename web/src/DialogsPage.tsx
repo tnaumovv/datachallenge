@@ -7,6 +7,7 @@ import { numbers } from './review-format';
 import { ImportDialog } from './ImportDialog';
 import { ActionButton } from './ActionButton';
 import { Icon } from './Icon';
+import { Select } from './components/ui/select';
 
 export const evaluationLabel: Record<Evaluation['status'], string> = {
   queued: 'В очереди',
@@ -189,56 +190,57 @@ export function DialogsPage({
               onChange={(e) => filter(() => setQuery(e.target.value))}
             />
           </label>
-          <select
+          <Select
             className="field"
             aria-label="Группа диалогов"
             value={group}
-            onChange={(e) => filter(() => setGroup(e.target.value))}
-          >
-            <option value="">Все группы</option>
-            {[...new Set(conversations.map((item) => item.groupId))].sort().map((value) => (
-              <option key={value}>{value}</option>
-            ))}
-          </select>
-          <select
+            onValueChange={(value) => filter(() => setGroup(value))}
+            options={[
+              { value: '', label: 'Все группы' },
+              ...[...new Set(conversations.map((item) => item.groupId))]
+                .sort()
+                .map((value) => ({ value, label: value })),
+            ]}
+          />
+          <Select
             className="field"
             aria-label="Язык диалогов"
             value={language}
-            onChange={(e) => filter(() => setLanguage(e.target.value))}
-          >
-            <option value="">Все языки</option>
-            <option>RU</option>
-            <option>KZ</option>
-            <option>EN</option>
-          </select>
-          <select
+            onValueChange={(value) => filter(() => setLanguage(value))}
+            options={[
+              { value: '', label: 'Все языки' },
+              ...['RU', 'KZ', 'EN'].map((value) => ({ value, label: value })),
+            ]}
+          />
+          <Select
             className="field"
             aria-label="Канал диалогов"
             value={channel}
-            onChange={(e) => filter(() => setChannel(e.target.value))}
-          >
-            <option value="">Все каналы</option>
-            <option value="agent chat">Чат</option>
-            <option value="voice call">Звонок</option>
-          </select>
+            onValueChange={(value) => filter(() => setChannel(value))}
+            options={[
+              { value: '', label: 'Все каналы' },
+              { value: 'agent chat', label: 'Чат' },
+              { value: 'voice call', label: 'Звонок' },
+            ]}
+          />
         </div>
         <div className="evaluation-toolbar">
           <label className="version-control">
             <span>Чек-лист для оценки</span>
-            <select
+            <Select
               className="field"
               aria-label="Чек-лист для оценки"
               value={versionId ?? ''}
-              onChange={(e) => setVersion(e.target.value)}
+              onValueChange={setVersion}
               disabled={busy || !versions.length}
-            >
-              {!versionId && <option value="">Выберите версию явно</option>}
-              {versions.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.title} · v{item.version}
-                </option>
-              ))}
-            </select>
+              options={[
+                ...(!versionId ? [{ value: '', label: 'Выберите версию явно' }] : []),
+                ...versions.map((item) => ({
+                  value: item.id,
+                  label: `${item.title} · v${item.version}`,
+                })),
+              ]}
+            />
           </label>
           <ActionButton
             icon="play"
@@ -411,7 +413,7 @@ export function DialogsPage({
                                   ?.checklistId &&
                               p.channels.includes(item.channel) &&
                               p.activeVersionId !== evaluation.checklistVersionId,
-                          ) && <small className="muted">Предыдущая версия</small>}
+                          ) && <small className="muted">Другая версия</small>}
                       </td>
                       <td className="row-action">
                         {evaluation?.status === 'failed' &&

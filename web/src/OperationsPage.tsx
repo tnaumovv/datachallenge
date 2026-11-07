@@ -3,6 +3,7 @@ import type { Evaluation } from '../../shared/contracts.js';
 import type { CostSummary, EvaluationComparison } from '../../shared/diagnostics.js';
 import { api, request } from './api';
 import { numbers } from './review-format';
+import { Select } from './components/ui/select';
 export function Diagnostics({ evaluation }: { evaluation: Evaluation }) {
   const [data, setData] = useState<{ cost: CostSummary; cacheReceipts: unknown[] } | null>(null),
     [error, setError] = useState(false);
@@ -98,16 +99,20 @@ export function EvaluationComparisonView({
       <summary>Сравнить прогоны</summary>
       <label>
         Второй прогон
-        <select className="field" value={right} onChange={(e) => setRight(e.target.value)}>
-          <option value="">Выберите оценку</option>
-          {items
-            .filter((e) => e.id !== evaluation.id && e.conversationId === evaluation.conversationId)
-            .map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.modelId} · {e.createdAt} · {e.status}
-              </option>
-            ))}
-        </select>
+        <Select
+          className="field"
+          aria-label="Второй прогон"
+          value={right}
+          onValueChange={setRight}
+          options={[
+            { value: '', label: 'Выберите оценку' },
+            ...items
+              .filter(
+                (e) => e.id !== evaluation.id && e.conversationId === evaluation.conversationId,
+              )
+              .map((e) => ({ value: e.id, label: `${e.modelId} · ${e.createdAt} · ${e.status}` })),
+          ]}
+        />
       </label>
       {error && (
         <p role="alert">Не удалось сравнить оценки. Проверьте, что текст диалога совпадает.</p>

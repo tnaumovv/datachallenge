@@ -22,8 +22,8 @@ export function evaluationOptionsFromEnv(env: Record<string, string | undefined>
       'Hard monetary budget requires a supported upper-bound reservation; automatic calls disabled',
     );
   const policy = z
-    .enum(['v4', 'facts-first-v1'])
-    .default('v4')
+    .enum(['v4', 'rubric-v7', 'facts-first-v1'])
+    .default('rubric-v7')
     .parse(env.AI_EVALUATION_POLICY || undefined);
   const deadlineMs = z.coerce
     .number()
@@ -84,6 +84,7 @@ export function providerFromEnv(
     return new CompatibleProvider({
       ...settings,
       kind,
+      outputFormat: env.AI_EVALUATION_POLICY === 'v4' ? 'answers-v4' : 'rubric-v7',
       baseUrl: kind === 'ollama' ? env.OLLAMA_BASE_URL || undefined : undefined,
     });
   }
@@ -100,6 +101,7 @@ export function providerFromEnv(
     modelId: settings.GEMINI_MODEL,
     maxOutputTokens: settings.AI_MAX_OUTPUT_TOKENS,
     thinkingLevel: settings.GEMINI_THINKING_LEVEL,
+    outputFormat: env.AI_EVALUATION_POLICY === 'v4' ? 'answers-v4' : 'rubric-v7',
   });
 }
 

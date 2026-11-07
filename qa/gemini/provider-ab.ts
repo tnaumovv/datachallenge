@@ -10,7 +10,7 @@ import { EvaluationService } from '../../server/src/evaluations/service.js';
 import { providerFromEnv } from '../../server/src/evaluations/config.js';
 import { CompatibleProvider } from '../../server/src/evaluations/compatible.js';
 import { ProviderError } from '../../server/src/evaluations/provider.js';
-import { PROMPT_VERSION } from '../../server/src/evaluations/prompt.js';
+import { PROMPT_VERSION } from '../../server/src/evaluations/legacy-prompt.js';
 import {
   assertFrozenInputs,
   fingerprint,
@@ -148,7 +148,11 @@ const transport: typeof fetch = async (url, init) => {
   save();
   return fetch(url, init);
 };
-const gemini = providerFromEnv({ ...process.env, AI_PROVIDER: 'gemini' })!;
+const gemini = providerFromEnv({
+  ...process.env,
+  AI_PROVIDER: 'gemini',
+  AI_EVALUATION_POLICY: 'v4',
+})!;
 const openai = new CompatibleProvider(
   {
     kind: 'openai',
@@ -156,6 +160,7 @@ const openai = new CompatibleProvider(
     modelId: values['openai-model']!,
     reasoningEffort: 'none',
     maxOutputTokens: 8192,
+    outputFormat: 'answers-v4',
   },
   transport,
 );

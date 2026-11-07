@@ -11,6 +11,7 @@ export type RepairContext = Pick<
 >;
 
 export type ProviderInput = {
+  knowledge?: import('../../../shared/knowledge.js').KnowledgeSnapshot;
   conversation: Conversation;
   checklist: ChecklistVersion;
   signal: AbortSignal;
@@ -34,6 +35,9 @@ export interface EvaluationProvider {
   id: string;
   modelId: string;
   configurationId: string;
+  /** Omitted by existing integrations that return the public answers contract. */
+  outputFormat?: 'answers-v4' | 'rubric-v7';
+  promptVersion?: string;
   generate(input: ProviderInput): Promise<ProviderResult>;
 }
 /** Only safe, fixed codes cross the provider boundary. Never persist SDK error text. */

@@ -1,3 +1,5 @@
+import { buildCoaching } from './coaching/service.js';
+import { installKnowledgeRoutes } from './knowledge/routes.js';
 import { installReviewRoutes } from './review/routes.js';
 import { installPrecedentRoutes } from './precedents/service.js';
 import { installProfileRoutes } from './checklists/profiles.js';
@@ -43,6 +45,7 @@ export function createApp(
   installProfileRoutes(app, db);
   installReviewRoutes(app, db);
   installPrecedentRoutes(app, db);
+  installKnowledgeRoutes(app, db);
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.get('/api/ai/status', (_req, res) => res.json(evaluations.getConfiguration()));
   app.post('/api/import', async (req, res) => {
@@ -105,6 +108,15 @@ export function createApp(
     if (!evaluation) throw new HttpError(404, 'NOT_FOUND', 'Evaluation not found');
     res.json(evaluation);
   });
+  app.get('/api/evaluations/:id/coaching', (req, res) => {
+    const evaluation = evaluations.get(req.params.id);
+    if (!evaluation) throw new HttpError(404, 'NOT_FOUND', 'Evaluation not found');
+    const conversation = conversations.get(evaluation.conversationId);
+    const checklist = checklists.get(evaluation.checklistVersionId);
+    if (!conversation || !checklist)
+      throw new HttpError(404, 'NOT_FOUND', 'Evaluation source not found');
+    res.json(buildCoaching(evaluation, conversation, checklist));
+  });
   app.post('/api/evaluations/:id/retry', (req, res) =>
     res.status(202).json({ evaluationIds: [evaluations.retry(req.params.id)] }),
   );
@@ -135,6 +147,7 @@ export function createApp(
         '/overview',
         '/review',
         '/operations',
+        '/knowledge',
       ],
       (_req, res) => res.sendFile('index.html', { root: webRoot }),
     );

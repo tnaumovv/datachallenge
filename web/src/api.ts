@@ -1,3 +1,9 @@
+import type {
+  KnowledgeDocument,
+  KnowledgeInput,
+  KnowledgeSnapshot,
+} from '../../shared/knowledge.js';
+import type { CoachingResult } from '../../shared/coaching.js';
 import type { ChecklistProfile } from '../../shared/checklist-profiles.js';
 import type {
   ApiError,
@@ -46,6 +52,20 @@ export function post<T>(path: string, body: unknown, signal?: AbortSignal): Prom
 }
 
 export const api = {
+  knowledge: (signal: AbortSignal) => request<KnowledgeDocument[]>('/knowledge', { signal }),
+  createKnowledge: (body: KnowledgeInput, signal: AbortSignal) =>
+    post<KnowledgeDocument>('/knowledge', body, signal),
+  activateKnowledge: (id: string, active: boolean, signal: AbortSignal) =>
+    request<KnowledgeDocument>(`/knowledge/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ active }),
+      signal,
+    }),
+  searchKnowledge: (body: { query: string; date?: string }, signal: AbortSignal) =>
+    post<KnowledgeSnapshot>('/knowledge/search', body, signal),
+  coaching: (id: string, signal: AbortSignal) =>
+    request<CoachingResult>(`/evaluations/${encodeURIComponent(id)}/coaching`, { signal }),
   profiles: (signal: AbortSignal) => request<ChecklistProfile[]>('/checklist-profiles', { signal }),
   conversations: (signal: AbortSignal) => request<Conversation[]>('/conversations', { signal }),
   checklists: (signal: AbortSignal) => request<ChecklistVersion[]>('/checklists', { signal }),

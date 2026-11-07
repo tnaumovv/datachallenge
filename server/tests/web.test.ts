@@ -43,14 +43,18 @@ describe('production web serving', () => {
     await request(app).get('/api/unknown').expect(404);
   });
 
-  it.each(['/', '/dialogs', '/dialogs/saved-id?evaluation=stored-id', '/checklists', '/appeals'])(
-    'serves the shell for direct navigation to %s',
-    async (path) => {
-      const response = await request(setup()).get(path).expect(200);
-      expect(response.headers['content-type']).toContain('text/html');
-      expect(response.text).toBe(shell);
-    },
-  );
+  it.each([
+    '/knowledge',
+    '/',
+    '/dialogs',
+    '/dialogs/saved-id?evaluation=stored-id',
+    '/checklists',
+    '/appeals',
+  ])('serves the shell for direct navigation to %s', async (path) => {
+    const response = await request(setup()).get(path).expect(200);
+    expect(response.headers['content-type']).toContain('text/html');
+    expect(response.text).toBe(shell);
+  });
 
   it('serves the actual built asset', async () => {
     const response = await request(setup()).get('/assets/app.js').expect(200);

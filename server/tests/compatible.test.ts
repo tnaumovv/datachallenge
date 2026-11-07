@@ -71,10 +71,13 @@ describe('OpenAI-compatible evaluation providers', () => {
     } else {
       expect(body.response_format.type).toBe('json_schema');
       expect(body.response_format.json_schema.strict).toBe(true);
+      expect(body.response_format.json_schema.schema.properties.answers.required).toEqual(
+        checklist.criteria.map((c) => c.id),
+      );
       expect(
-        body.response_format.json_schema.schema.properties.answers.items.anyOf[0].properties
-          .criterionId.enum,
-      ).toEqual(['contact']);
+        body.response_format.json_schema.schema.properties.answers.properties.contact.properties
+          .facts,
+      ).toBeDefined();
     }
     if (kind === 'openai' || kind === 'groq') expect(body.max_completion_tokens).toBe(8192);
     else expect(body.max_tokens).toBe(8192);

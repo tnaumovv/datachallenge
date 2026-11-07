@@ -177,6 +177,7 @@ const gemini = new GeminiProvider(
     modelId: report.model,
     thinkingLevel: report.thinking,
     maxOutputTokens: report.maxOutputTokens,
+    outputFormat: 'answers-v4',
   },
   transport,
 );

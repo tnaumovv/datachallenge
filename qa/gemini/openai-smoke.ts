@@ -1,7 +1,7 @@
 /** One synthetic request. No imported conversations, secrets or provider prose in output. */
 import { CompatibleProvider } from '../../server/src/evaluations/compatible.js';
 import { defaultChecklist } from '../../server/src/checklists/default.js';
-import { ModelOutputSchema } from '../../server/src/evaluations/prompt.js';
+import { parseRubricOutput } from '../../server/src/evaluations/rubric.js';
 import { validateEvidence } from '../../server/src/evaluations/evidence.js';
 import { scoreEvaluation } from '../../server/src/evaluations/scoring.js';
 import type { Conversation, ChecklistVersion } from '../../shared/contracts.js';
@@ -54,7 +54,7 @@ try {
   });
   if (response.blockReason || response.finishReason !== 'STOP')
     throw new Error('INCOMPLETE_RESPONSE');
-  const { answers } = ModelOutputSchema.parse(JSON.parse(response.text));
+  const answers = parseRubricOutput(JSON.parse(response.text), conversation, checklist);
   scoreEvaluation(checklist.criteria, answers);
   validateEvidence(conversation, answers, checklist.criteria);
   console.log(

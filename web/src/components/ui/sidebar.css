@@ -31,6 +31,12 @@
   min-height: 44px;
   margin-bottom: 24px;
 }
+.sidebar-desktop .workspace-sidebar-header {
+  /* Hover must not move a navigation target underneath the pointer. */
+  height: 96px;
+  min-height: 96px;
+  flex-shrink: 0;
+}
 .sidebar-desktop[data-open='false'] .workspace-sidebar-header {
   flex-direction: column;
 }

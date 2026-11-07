@@ -1,12 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import type { ChecklistVersion } from '../../shared/contracts.js';
 import { request } from './api';
+import { useProfiles } from './use-profiles';
 import { AnimatedNumber } from './AnimatedNumber';
 import type { ChartPoint } from './components/ui/chart-line';
 const ChartLine = lazy(() =>
   import('./components/ui/chart-line').then((module) => ({ default: module.ChartLine })),
 );
 import { Icon } from './Icon';
+import { Select } from './components/ui/select';
 import type { CSSProperties } from 'react';
 type Overview = {
   channels?: { chats: number; calls: number };
@@ -28,14 +30,22 @@ type Overview = {
   effective: { average: number | null; denominator: number };
 };
 export function OverviewPage({ checklists }: { checklists: ChecklistVersion[] }) {
-  const [version, setVersion] = useState(checklists[0]?.id ?? ''),
+  const profiles = useProfiles();
+  const [selectedVersion, setVersion] = useState<string | null>(null),
     [data, setData] = useState<Overview | null>(null),
     [error, setError] = useState(false),
     [refresh, setRefresh] = useState(0);
+  const activeProfile = profiles.profiles.find((p) => p.id === 'legacy');
+  const version =
+    selectedVersion ??
+    (profiles.status === 'ready' && checklists.some((v) => v.id === activeProfile?.activeVersionId)
+      ? activeProfile!.activeVersionId
+      : '');
   useEffect(() => {
     const c = new AbortController();
     setData(null);
     setError(false);
+    if (!version) return () => c.abort();
     request<Overview>(
       `/overview?${new URLSearchParams(version ? { checklistVersionId: version } : {})}`,
       { signal: c.signal },
@@ -65,13 +75,17 @@ export function OverviewPage({ checklists }: { checklists: ChecklistVersion[] })
         <div className="overview-actions">
           <label className="overview-version">
             <span className="sr-only">Версия чек-листа</span>
-            <select className="field" value={version} onChange={(e) => setVersion(e.target.value)}>
-              {checklists.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.title} · v{v.version}
-                </option>
-              ))}
-            </select>
+            <Select
+              className="field"
+              aria-label="Версия чек-листа"
+              placeholder="Выберите версию"
+              value={version}
+              onValueChange={setVersion}
+              options={checklists.map((v) => ({
+                value: v.id,
+                label: `${v.title} · v${v.version}`,
+              }))}
+            />
           </label>
           <button className="button secondary" onClick={() => setRefresh((n) => n + 1)}>
             <Icon name="refresh" size={18} />
@@ -79,12 +93,23 @@ export function OverviewPage({ checklists }: { checklists: ChecklistVersion[] })
           </button>
         </div>
       </header>
+      {profiles.status === 'error' && (
+        <div className="notice notice-error" role="alert">
+          Не удалось загрузить активный чек-лист. Выберите версию явно или повторите загрузку.{' '}
+          <button className="button secondary" onClick={profiles.reload}>
+            Повторить загрузку профилей
+          </button>
+        </div>
+      )}
+      {!version && profiles.status === 'ready' && (
+        <p className="notice">Активный чек-лист не выбран. Выберите версию для обзора.</p>
+      )}
       {error && (
         <div className="notice notice-error" role="alert">
           Не удалось загрузить обзор. Попробуйте обновить страницу.
         </div>
       )}
-      {!data && !error && (
+      {!data && !error && (version || profiles.status === 'loading') && (
         <div className="panel empty-state" role="status">
           <span className="loading-ring" aria-hidden="true" />
           Загрузка обзора…

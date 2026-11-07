@@ -40,7 +40,10 @@ function setup(fetcher: typeof fetch, options: { requestTimeoutMs?: number } = {
     demoImport.source === 'json' ? demoImport.records : [],
   ).conversationIds[0];
   const checklist = new ChecklistService(db).seed();
-  const provider = new GeminiProvider({ apiKey: 'test-key', modelId: 'test-model' }, fetcher);
+  const provider = new GeminiProvider(
+    { apiKey: 'test-key', modelId: 'test-model', outputFormat: 'answers-v4' },
+    fetcher,
+  );
   const service = new EvaluationService(db, provider, { retryDelayMs: 1, ...options });
   cleanups.push(() => service.stop());
   const [id] = service.enqueue([conversationId], checklist.id);

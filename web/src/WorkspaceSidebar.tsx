@@ -74,24 +74,40 @@ function WorkspaceSidebarContent({ activePage, titles, onNavigate }: WorkspaceSi
         )}
       </div>
       <nav className="workspace-sidebar-nav" aria-label="Разделы">
-        {(['overview', 'dialogs', 'review', 'checklists', 'appeals', 'operations'] as const).map(
-          (page) => (
-            <SidebarLink
-              key={page}
-              link={{
-                label: titles[page],
-                href: '/' + page,
-                icon: (
-                  <Icon
-                    name={page === 'review' ? 'shield' : page === 'operations' ? 'layers' : page}
-                  />
-                ),
-              }}
-              aria-current={activePage === page ? 'page' : undefined}
-              onClick={(event) => navigate(event, page)}
-            />
-          ),
-        )}
+        {(
+          [
+            'overview',
+            'dialogs',
+            'review',
+            'checklists',
+            'appeals',
+            'knowledge',
+            'operations',
+          ] as const
+        ).map((page) => (
+          <SidebarLink
+            key={page}
+            link={{
+              label: titles[page],
+              href: '/' + page,
+              icon: (
+                <Icon
+                  name={
+                    page === 'knowledge'
+                      ? 'checklists'
+                      : page === 'review'
+                        ? 'shield'
+                        : page === 'operations'
+                          ? 'layers'
+                          : page
+                  }
+                />
+              ),
+            }}
+            aria-current={activePage === page ? 'page' : undefined}
+            onClick={(event) => navigate(event, page)}
+          />
+        ))}
       </nav>
       <div className="workspace-sidebar-settings">
         {!open && !mobile && (

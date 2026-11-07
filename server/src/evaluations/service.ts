@@ -1,3 +1,5 @@
+import { KnowledgeService } from '../knowledge/service.js';
+import { validateKnowledgeReferences } from '../knowledge/prompt.js';
 import { PrecedentService, sourceFamily, type ApprovedPrecedent } from '../precedents/service.js';
 import { criterionFingerprint } from '../checklists/profiles.js';
 import { consistencyReasons } from './consistency.js';
@@ -22,6 +24,7 @@ import { ConversationService } from '../conversations/service.js';
 import { HttpError } from '../errors.js';
 import { validateEvidence } from './evidence.js';
 import { ModelOutputSchema, PROMPT_VERSION } from './prompt.js';
+import { parseRubricOutput } from './rubric.js';
 import {
   ProviderError,
   type EvaluationProvider,
@@ -108,6 +111,7 @@ export class EvaluationService {
       priceSnapshot?: PriceSnapshot;
     } = {},
   ) {
+    new KnowledgeService(db);
     this.concurrency = candidateOptions.concurrency ?? 2;
     this.requestTimeoutMs = candidateOptions.requestTimeoutMs ?? 90_000;
     this.retryDelayMs = candidateOptions.retryDelayMs ?? 1_000;
@@ -135,13 +139,18 @@ export class EvaluationService {
         : null,
     });
   }
+  private currentPromptVersion() {
+    return this.candidateOptions.candidate
+      ? POLICY_VERSION
+      : (this.provider?.promptVersion ?? PROMPT_VERSION);
+  }
   getConfiguration(): EvaluationConfiguration {
     return {
       configured: !!this.provider,
       providerId: this.provider?.id ?? null,
       modelId: this.provider?.modelId ?? null,
       configurationId: this.provider?.configurationId ?? null,
-      promptVersion: this.candidateOptions.candidate ? POLICY_VERSION : PROMPT_VERSION,
+      promptVersion: this.currentPromptVersion(),
     };
   }
   get(id: string): Evaluation | undefined {
@@ -187,6 +196,7 @@ export class EvaluationService {
     this.db.exec('BEGIN IMMEDIATE');
     try {
       const ids = records.map((c) => {
+        const knowledge = new KnowledgeService(this.db).forConversation(c);
         const precedentExamples: ApprovedPrecedent[] = [];
         if (this.candidateOptions.candidate && this.candidateOptions.precedents) {
           const service = new PrecedentService(this.db);
@@ -212,6 +222,7 @@ export class EvaluationService {
             JSON.stringify([
               c.id,
               c.transcriptHash,
+              knowledge,
               checklist.id,
               p.id,
               p.modelId,
@@ -228,7 +239,7 @@ export class EvaluationService {
                     checklist,
                     precedentExamples,
                   ]
-                : PROMPT_VERSION,
+                : this.currentPromptVersion(),
             ]),
           )
           .digest('hex');
@@ -249,6 +260,7 @@ export class EvaluationService {
           }
         }
         const result: Evaluation = {
+          knowledge,
           ...(this.candidateOptions.priceSnapshot
             ? { priceSnapshot: structuredClone(this.candidateOptions.priceSnapshot) }
             : {}),
@@ -258,7 +270,7 @@ export class EvaluationService {
           providerId: p.id,
           modelId: p.modelId,
           configurationId: p.configurationId,
-          promptVersion: this.candidateOptions.candidate ? POLICY_VERSION : PROMPT_VERSION,
+          promptVersion: this.currentPromptVersion(),
           ...(this.candidateOptions.candidate
             ? {
                 policyVersion: POLICY_VERSION,
@@ -343,8 +355,7 @@ export class EvaluationService {
         evaluation.configurationId !== p.configurationId ||
         (evaluation.policyVersion !== undefined &&
           evaluation.policySnapshot !== this.policySnapshot()) ||
-        evaluation.promptVersion !==
-          (this.candidateOptions.candidate ? POLICY_VERSION : PROMPT_VERSION)
+        evaluation.promptVersion !== this.currentPromptVersion()
       ) {
         this.fail(evaluation, 'PROVIDER_CHANGED');
         continue;
@@ -402,6 +413,7 @@ export class EvaluationService {
       return await Promise.race([
         provider.generate({
           policyVersion: evaluation.policyVersion,
+          knowledge: evaluation.knowledge,
           precedents: evaluation.precedentExamples,
           conversation,
           checklist: criterionIds
@@ -513,6 +525,10 @@ export class EvaluationService {
                   ),
                 }
               : checklist,
+          );
+          validateKnowledgeReferences(
+            parsed.assessments.map((a) => (a.status === 'resolved' ? a.answer : a)),
+            evaluation.knowledge,
           );
         } catch (error) {
           attempt.failureStage = 'schema';
@@ -711,11 +727,27 @@ export class EvaluationService {
           stage = 'json_parse';
           const parsed: unknown = JSON.parse(response.text);
           stage = 'schema';
-          const { answers } = ModelOutputSchema.parse(parsed);
+          const checklist = new ChecklistService(this.db).get(evaluation.checklistVersionId)!;
+          const conversation = new ConversationService(this.db).get(evaluation.conversationId)!;
+          if (this.provider!.outputFormat === 'rubric-v7') {
+            this.db.prepare('INSERT INTO evaluation_runs VALUES(?,?,?,?)').run(
+              randomUUID(),
+              evaluation.id,
+              'rubric',
+              JSON.stringify({
+                output: parsed,
+                attempt: attempt.number,
+                format: evaluation.promptVersion,
+              }),
+            );
+          }
+          const answers =
+            this.provider!.outputFormat === 'rubric-v7'
+              ? parseRubricOutput(parsed, conversation, checklist, evaluation.knowledge)
+              : ModelOutputSchema.parse(parsed).answers;
           stage = 'answers';
-          const criteria = new ChecklistService(this.db).get(
-            evaluation.checklistVersionId,
-          )!.criteria;
+          const criteria = checklist.criteria;
+          validateKnowledgeReferences(answers, evaluation.knowledge);
           const score = scoreEvaluation(criteria, answers);
           stage = 'evidence';
           const evidence = validateEvidence(

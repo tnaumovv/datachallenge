@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Select } from './components/ui/select';
 import { ImportRequestSchema, type ImportResult } from '../../shared/contracts.js';
 import { api, importErrorMessage } from './api';
 import { ActionButton } from './ActionButton';
@@ -91,18 +92,19 @@ export function ImportDialog({
           <label className="field-label" htmlFor="import-source">
             Источник
           </label>
-          <select
+          <Select
             className="field"
             id="import-source"
             value={source}
-            onChange={(e) => {
-              setSource(e.target.value as typeof source);
+            onValueChange={(value) => {
+              setSource(value as typeof source);
               setError(null);
             }}
-          >
-            <option value="organizer">Источник организаторов</option>
-            <option value="json">JSON-файл или текст</option>
-          </select>
+            options={[
+              { value: 'organizer', label: 'Источник организаторов' },
+              { value: 'json', label: 'JSON-файл или текст' },
+            ]}
+          />
           <label className="field-label" htmlFor="import-group">
             Группа
           </label>

@@ -71,7 +71,8 @@ describe('working frontend flows', () => {
     );
     render(<App />);
     const picker = await screen.findByRole('combobox', { name: 'Выбрать диалог' });
-    await userEvent.selectOptions(picker, next.id);
+    await userEvent.click(picker);
+    await userEvent.click(screen.getByRole('option', { name: /KZ-002/ }));
     expect(window.location.pathname).toBe('/dialogs/kz%2Fid');
     expect(window.location.search).toBe('');
     expect(window.location.hash).toBe('');
@@ -259,7 +260,8 @@ describe('working frontend flows', () => {
       .mockResolvedValue({ groupId: 'DEV', imported: 1, existing: 0, conversationIds: ['x'] });
     render(<ImportDialog onClose={vi.fn()} onImported={imported} />);
     const user = userEvent.setup();
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Источник' }), 'json');
+    await user.click(screen.getByRole('combobox', { name: 'Источник' }));
+    await user.click(screen.getByRole('option', { name: 'JSON-файл или текст' }));
     fireEvent.change(screen.getByRole('textbox', { name: 'Записи JSON' }), {
       target: { value: 'not json' },
     });
@@ -295,10 +297,12 @@ describe('working frontend flows', () => {
     );
     const user = userEvent.setup();
     await user.click(screen.getByRole('radio', { name: 'Изменить ответ' }));
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Новое значение' }), '3');
+    await user.click(screen.getByRole('combobox', { name: 'Новое значение' }));
+    await user.click(screen.getByRole('option', { name: 'Не применимо' }));
     await user.type(screen.getByRole('textbox', { name: 'Причина решения' }), 'Есть инструкция');
     await waitFor(() => expect(preview).toHaveBeenCalledTimes(1));
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Новое значение' }), '0');
+    await user.click(screen.getByRole('combobox', { name: 'Новое значение' }));
+    await user.click(screen.getByRole('option', { name: '0 / 20' }));
     await waitFor(() => expect(preview).toHaveBeenCalledTimes(2));
     await act(async () => {
       resolvers[1]({ ...evaluation.finalScore!, checklistVersionId: version.id, total: 60 });

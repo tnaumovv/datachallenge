@@ -1,5 +1,13 @@
 export type ReviewLocation = {
-  page: 'dialogs' | 'checklists' | 'appeals' | 'overview' | 'review' | 'operations' | 'not-found';
+  page:
+    | 'knowledge'
+    | 'dialogs'
+    | 'checklists'
+    | 'appeals'
+    | 'overview'
+    | 'review'
+    | 'operations'
+    | 'not-found';
   conversationId: string | null;
   evaluationId: string | null;
   appealId: string | null;
@@ -17,8 +25,9 @@ function decoded(value: string | undefined): string | null {
 
 export function readLocation(url = new URL(window.location.href)): ReviewLocation {
   const route = /^\/dialogs\/([^/]+)\/?$/.exec(url.pathname);
-  const page =
-    /^\/(dialogs)?\/?$/.test(url.pathname) || route
+  const page = /^\/knowledge\/?$/.test(url.pathname)
+    ? 'knowledge'
+    : /^\/(dialogs)?\/?$/.test(url.pathname) || route
       ? 'dialogs'
       : /^\/checklists\/?$/.test(url.pathname)
         ? 'checklists'

@@ -24,6 +24,38 @@ const checklist: ChecklistVersion = {
 };
 afterEach(() => vi.unstubAllEnvs());
 describe('Gemini adapter through actual SDK', () => {
+  it('uses evidence-first facts by default and explicitly preserves the frozen legacy protocol', async () => {
+    let body: any;
+    const fake: typeof fetch = async (_url, init) => {
+      body = JSON.parse(String(init?.body));
+      return new Response(
+        JSON.stringify({
+          candidates: [
+            { content: { role: 'model', parts: [{ text: '{}' }] }, finishReason: 'STOP' },
+          ],
+        }),
+        { headers: { 'Content-Type': 'application/json' } },
+      );
+    };
+    const current = new GeminiProvider({ apiKey: 'test-key', modelId: 'test-model' }, fake);
+    await current.generate({ conversation, checklist, signal: new AbortController().signal });
+    expect(current.outputFormat).toBe('rubric-v7');
+    expect(current.promptVersion).toBe('cqa-evaluator-v7.2');
+    expect(
+      body.generationConfig.responseJsonSchema.properties.answers.properties.contact.properties
+        .facts,
+    ).toBeDefined();
+    const legacy = new GeminiProvider(
+      { apiKey: 'test-key', modelId: 'test-model', outputFormat: 'answers-v4' },
+      fake,
+    );
+    await legacy.generate({ conversation, checklist, signal: new AbortController().signal });
+    expect(legacy.promptVersion).toBe('cqa-evaluator-v4');
+    expect(
+      body.generationConfig.responseJsonSchema.properties.answers.items.anyOf[0].properties.value,
+    ).toBeDefined();
+    expect(current.configurationId).not.toBe(legacy.configurationId);
+  });
   it('passes an explicitly configured thinking level to Gemini', async () => {
     let body: any;
     const fake: typeof fetch = async (_url, init) => {

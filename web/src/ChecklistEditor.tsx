@@ -10,6 +10,7 @@ import {
 } from './ChecklistEditor.model.js';
 import './ChecklistEditor.css';
 import { ActionButton } from './ActionButton';
+import { Select } from './components/ui/select';
 
 export type ChecklistEditorProps = {
   /** Canonical versions returned by GET /api/checklists. Keep prior data during refresh. */
@@ -245,22 +246,20 @@ export function ChecklistEditor({
       </header>
       <div className="ce-version-picker">
         <label htmlFor={`${prefix}-version`}>Версия для просмотра</label>
-        <select
+        <Select
           id={`${prefix}-version`}
           value={selected?.id ?? ''}
           disabled={Boolean(draft) || !selected}
-          onChange={(event) => {
-            setSelectedId(event.target.value);
+          onValueChange={(value) => {
+            setSelectedId(value);
             setSuccess('');
           }}
-        >
-          {!selected && <option value="">Нет версий</option>}
-          {allVersions.map((version) => (
-            <option key={version.id} value={version.id}>
-              {version.title} · версия {version.version}
-            </option>
-          ))}
-        </select>
+          placeholder="Нет версий"
+          options={allVersions.map((version) => ({
+            value: version.id,
+            label: `${version.title} · версия ${version.version}`,
+          }))}
+        />
       </div>
       {loading && (
         <p role="status" className="ce-notice">
@@ -410,19 +409,15 @@ export function ChecklistEditor({
                         {field(
                           'Раздел',
                           `${path}.sectionId`,
-                          <select
+                          <Select
                             {...fieldProps(`${path}.sectionId`)}
                             value={criterion.sectionId}
-                            onChange={(event) =>
-                              changeCriterion(index, { sectionId: event.target.value })
-                            }
-                          >
-                            {draft.sections.map((section) => (
-                              <option key={section.id} value={section.id}>
-                                {section.title}
-                              </option>
-                            ))}
-                          </select>,
+                            onValueChange={(value) => changeCriterion(index, { sectionId: value })}
+                            options={draft.sections.map((section) => ({
+                              value: section.id,
+                              label: section.title,
+                            }))}
+                          />,
                         )}
                       </div>
                       {field(
@@ -442,12 +437,12 @@ export function ChecklistEditor({
                         {field(
                           'Тип ответа',
                           `${path}.answerType`,
-                          <select
+                          <Select
                             {...fieldProps(`${path}.answerType`)}
                             value={criterion.answerType}
                             disabled={flag}
-                            onChange={(event) => {
-                              const answerType = event.target.value as Criterion['answerType'];
+                            onValueChange={(value) => {
+                              const answerType = value as Criterion['answerType'];
                               changeCriterion(index, {
                                 answerType,
                                 levels:
@@ -459,10 +454,11 @@ export function ChecklistEditor({
                                     : criterion.levels,
                               });
                             }}
-                          >
-                            <option value="binary">Да / Нет</option>
-                            <option value="scale">Шкала баллов</option>
-                          </select>,
+                            options={[
+                              { value: 'binary', label: 'Да / Нет' },
+                              { value: 'scale', label: 'Шкала баллов' },
+                            ]}
+                          />,
                         )}
                         {field(
                           'Вес критерия',
@@ -491,13 +487,13 @@ export function ChecklistEditor({
                       {field(
                         'Учёт критерия',
                         `${path}.scoringMode`,
-                        <select
+                        <Select
                           {...fieldProps(`${path}.scoringMode`)}
                           value={criterion.scoringMode}
-                          onChange={(event) =>
+                          onValueChange={(value) =>
                             changeCriterion(
                               index,
-                              event.target.value === 'flag'
+                              value === 'flag'
                                 ? {
                                     scoringMode: 'flag',
                                     answerType: 'binary',
@@ -509,10 +505,11 @@ export function ChecklistEditor({
                                 : { scoringMode: 'weighted' },
                             )
                           }
-                        >
-                          <option value="weighted">Участвует в балле</option>
-                          <option value="flag">Отдельный флаг нарушения</option>
-                        </select>,
+                          options={[
+                            { value: 'weighted', label: 'Участвует в балле' },
+                            { value: 'flag', label: 'Отдельный флаг нарушения' },
+                          ]}
+                        />,
                       )}
                       {criterion.answerType === 'scale' && (
                         <fieldset

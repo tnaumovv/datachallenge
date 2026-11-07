@@ -9,6 +9,7 @@ export type IconName =
   | 'dialogs'
   | 'warning'
   | 'minus'
+  | 'link'
   | 'checklists'
   | 'appeals'
   | 'upload'
@@ -108,6 +109,11 @@ export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
       {name === 'check' && <path d="m5 12 4 4L19 6" />}
       {name === 'warning' && <path d="M12 5v9m0 4v1" />}
       {name === 'minus' && <path d="M6 12h12" />}
+      {name === 'link' && (
+        <>
+          <path d="m10 13 4-4M8 16l-1 1a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0m0 2 1-1a4 4 0 0 1 6 6l-5 5a4 4 0 0 1-6 0" />
+        </>
+      )}
       {name === 'search' && (
         <>
           <circle cx="10.5" cy="10.5" r="6.5" />

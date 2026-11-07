@@ -1,0 +1,124 @@
+.knowledge-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.knowledge-page .panel {
+  padding: 24px;
+}
+.knowledge-fields {
+  display: grid;
+  gap: 16px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.knowledge-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.knowledge-fields textarea {
+  resize: vertical;
+}
+.knowledge-fields input,
+.knowledge-fields select,
+.knowledge-fields textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+.knowledge-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.knowledge-check input {
+  width: 18px;
+  height: 18px;
+}
+.knowledge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.knowledge-aside {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.knowledge-document,
+.coaching-item {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.knowledge-document h3,
+.coaching-item h4 {
+  margin: 0 0 10px;
+}
+.knowledge-source {
+  padding: 12px 0;
+}
+.knowledge-source summary,
+.knowledge-context > summary,
+.knowledge-document summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.knowledge-text,
+.knowledge-source blockquote {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.knowledge-source blockquote {
+  margin: 12px 0;
+  padding: 12px;
+  border-left: 3px solid var(--accent);
+}
+.coaching-panel {
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.coaching-example {
+  padding: 12px;
+  background: var(--surface-alt, var(--surface));
+  border-radius: 12px;
+}
+.coaching-quote {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.coaching-quote span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.knowledge-context {
+  margin-top: 18px;
+}
+@media (max-width: 900px) {
+  .knowledge-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .knowledge-pair {
+    grid-template-columns: 1fr;
+  }
+  .knowledge-page .panel {
+    padding: 18px;
+  }
+}
