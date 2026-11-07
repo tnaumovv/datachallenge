@@ -11,8 +11,9 @@ import type {
 } from '../../shared/contracts.js';
 import { useEvaluation } from './use-evaluation';
 import { AppealForm, AppealHistory, AppealReview, useEvaluationAppeals } from './EvaluationAppeals';
-import { answerLabel, numbers } from './review-format';
+import { answerLabel, answerTone, numbers } from './review-format';
 import { ActionButton } from './ActionButton';
+import { Icon } from './Icon';
 
 const evaluationLabel: Record<Evaluation['status'], string> = {
   queued: 'В очереди',
@@ -132,29 +133,6 @@ export function EvaluationPanel({
         )}
       </div>
       <div className="panel-scroll evaluation-scroll">
-        {evaluation && (
-          <p className="saved-evaluation-date">
-            Сохранено{' '}
-            {new Intl.DateTimeFormat('ru-RU', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'Asia/Almaty',
-            }).format(new Date(evaluation.createdAt))}
-          </p>
-        )}
-        {completed && checklist && (
-          <ActionButton
-            icon="refresh"
-            className="rerun-button"
-            disabled={review.submitting}
-            onClick={() => void review.run(checklist.id, undefined, true)}
-          >
-            {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
-          </ActionButton>
-        )}
         {review.history === 'loading' && (
           <p className="muted panel-note" role="status">
             Загружаем оценку…
@@ -243,6 +221,31 @@ export function EvaluationPanel({
           </>
         )}
       </div>
+      {evaluation && (
+        <div className="evaluation-footer">
+          <p className="saved-evaluation-date">
+            Сохранено{' '}
+            {new Intl.DateTimeFormat('ru-RU', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              timeZone: 'Asia/Almaty',
+            }).format(new Date(evaluation.createdAt))}
+          </p>
+          {completed && checklist && (
+            <ActionButton
+              icon="refresh"
+              className="rerun-button"
+              disabled={review.submitting}
+              onClick={() => void review.run(checklist.id, undefined, true)}
+            >
+              {review.submitting ? 'Запускаем новую оценку…' : 'Оценить заново'}
+            </ActionButton>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -451,7 +454,7 @@ function CriterionRow({
 }) {
   const revised = isRevised(original, answer);
   const awarded = contribution && points(contribution.points, contribution.maxPoints);
-  const isNegative = answer?.value === (criterion.scoringMode === 'flag' ? true : false);
+  const tone = answerTone(criterion, answer?.value);
   const directQuotes =
     evidence?.evidence.filter((message) => answer?.evidenceMessageIds.includes(message.id)) ?? [];
   const checked =
@@ -459,8 +462,20 @@ function CriterionRow({
     [];
 
   return (
-    <details className="criterion" open={open}>
+    <details className={`criterion criterion-${tone}`} open={open}>
       <summary className="criterion-summary">
+        <span className="criterion-indicator" aria-hidden="true">
+          <Icon
+            name={
+              tone === 'positive'
+                ? 'check'
+                : tone === 'attention' || tone === 'violation'
+                  ? 'warning'
+                  : 'minus'
+            }
+            size={14}
+          />
+        </span>
         <span className="criterion-name">
           {criterion.title}
           {criterion.scoringMode === 'weighted' && (
@@ -471,8 +486,14 @@ function CriterionRow({
           )}
         </span>
         {answer && (
-          <span className={`answer${isNegative ? ' answer-negative' : ''}`}>
-            {answerLabel(criterion, answer.value)}
+          <span className="criterion-result">
+            {awarded && answer.value !== 'NA' && (
+              <span className="criterion-awarded">
+                {awarded}
+                <span className="sr-only"> баллов</span>
+              </span>
+            )}
+            <span className={`answer answer-${tone}`}>{answerLabel(criterion, answer.value)}</span>
           </span>
         )}
       </summary>
