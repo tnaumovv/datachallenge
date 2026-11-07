@@ -7,12 +7,17 @@ import type {
   DecisionInput,
   Evaluation,
   EvaluationRequest,
+  ImportRequest,
+  ImportResult,
+  ChecklistInput,
+  ScoreRequest,
+  ScoreResponse,
 } from '../../shared/contracts.js';
 
 type Enqueued = { evaluationIds: string[] };
 
-class RequestError extends Error {
-  constructor(readonly code: string) {
+export class RequestError extends Error {
+  constructor(readonly code: string, readonly status = 0) {
     super(code);
   }
 }
@@ -21,7 +26,7 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   const response = await fetch(`/api${path}`, options);
   if (!response.ok) {
     const body: Partial<ApiError> | null = await response.json().catch(() => null);
-    throw new RequestError(body?.error?.code ?? 'UNAVAILABLE');
+    throw new RequestError(body?.error?.code ?? 'UNAVAILABLE', response.status);
   }
 
   return (await response.json()) as T;
@@ -58,7 +63,20 @@ export const api = {
   submitAppeal: (body: AppealInput, signal: AbortSignal) => post<Appeal>('/appeals', body, signal),
   resolveAppeal: (id: string, body: DecisionInput, signal: AbortSignal) =>
     post<Evaluation>(`/appeals/${encodeURIComponent(id)}/decision`, body, signal),
+  importRecords: (body: ImportRequest, signal: AbortSignal) => post<ImportResult>('/import', body, signal),
+  saveVersion: (checklistId: string, body: ChecklistInput, signal: AbortSignal) =>
+    post<ChecklistVersion>(`/checklists/${encodeURIComponent(checklistId)}/versions`, body, signal),
+  scorePreview: (body: ScoreRequest, signal: AbortSignal) => post<ScoreResponse>('/score', body, signal),
 };
+
+export function importErrorMessage(error: unknown): string {
+  if (error instanceof RequestError) {
+    if (error.code === 'SOURCE_NOT_CONFIGURED') return 'Источник импорта не настроен. Выберите JSON-файл или настройте источник на сервере.';
+    if (error.code === 'INVALID_INPUT') return 'Не удалось импортировать: проверьте группу и формат записей.';
+    if (error.status === 413) return 'Файл слишком большой. Максимальный размер импорта — 10 МБ.';
+  }
+  return 'Не удалось импортировать диалоги. Проверьте источник и повторите попытку.';
+}
 
 export function startErrorMessage(error: unknown): string {
   if (error instanceof RequestError && error.code === 'AI_NOT_CONFIGURED') {
