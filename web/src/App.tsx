@@ -4,6 +4,8 @@ import { api } from './api';
 import { EvaluationPanel } from './EvaluationPanel';
 import { Transcript, channelName } from './Transcript';
 
+declare const __CQA_DEMO__: boolean;
+
 type ReviewLocation = {
   conversationId: string | null;
   evaluationId: string | null;
@@ -96,7 +98,12 @@ export function App() {
         <div className="topbar-inner">
           <div className="brand">
             <img className="brand-mark" src="/cqa.svg" width="34" height="34" alt="" />
-            <h1>Контроль качества</h1>
+            <div>
+              <h1>Контроль качества</h1>
+              {__CQA_DEMO__ && (
+                <span className="demo-label">Демо · вымышленные данные и оценки</span>
+              )}
+            </div>
           </div>
           <div className="sponsor">
             <span>При поддержке</span> <strong>Freedom Bank</strong>

@@ -16,7 +16,8 @@
     "format:check": "prettier --check shared server web",
     "dev:web": "vite --config web/vite.config.ts",
     "build:web": "vite build --config web/vite.config.ts",
-    "preview:web": "vite preview --config web/vite.config.ts"
+    "preview:web": "vite preview --config web/vite.config.ts",
+    "demo:web": "tsx web/demo.ts"
   },
   "dependencies": {
     "@google/genai": "^3.0.0",
