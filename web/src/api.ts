@@ -2,6 +2,7 @@ import type {
   ApiError,
   Appeal,
   AppealInput,
+  ChecklistInput,
   ChecklistVersion,
   Conversation,
   DecisionInput,
@@ -27,7 +28,7 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
-function post<T>(path: string, body: unknown, signal: AbortSignal): Promise<T> {
+function post<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   return request<T>(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -39,6 +40,8 @@ function post<T>(path: string, body: unknown, signal: AbortSignal): Promise<T> {
 export const api = {
   conversations: (signal: AbortSignal) => request<Conversation[]>('/conversations', { signal }),
   checklists: (signal: AbortSignal) => request<ChecklistVersion[]>('/checklists', { signal }),
+  createChecklistVersion: (checklistId: string, input: ChecklistInput) =>
+    post<ChecklistVersion>(`/checklists/${encodeURIComponent(checklistId)}/versions`, input),
   evaluations: (conversationId: string | null, signal: AbortSignal) =>
     request<Evaluation[]>(
       conversationId ? `/evaluations?${new URLSearchParams({ conversationId })}` : '/evaluations',
