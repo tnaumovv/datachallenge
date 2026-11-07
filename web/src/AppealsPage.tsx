@@ -4,6 +4,7 @@ import { api } from './api';
 import { answerLabel, appealStatusLabel, scoreLabel } from './review-format';
 import { AppealReview } from './EvaluationAppeals';
 import { conversationTitle } from './DialogsPage';
+import { ActionButton } from './ActionButton';
 
 type Queue =
   | { status: 'loading' | 'error' }
@@ -75,13 +76,11 @@ export function AppealsPage({
     <main id="main-content" className="page-content queue" tabIndex={-1}>
       <header className="page-heading">
         <div>
-          <p className="eyebrow">Проверка решений</p>
           <h1>Апелляции</h1>
-          <p className="page-description">Обращения, доказательства и история пересмотра.</p>
         </div>
-        <button className="button secondary" disabled={queue.status === 'loading'} onClick={reload}>
+        <ActionButton icon="refresh" disabled={queue.status === 'loading'} onClick={reload}>
           Обновить
-        </button>
+        </ActionButton>
       </header>
       <div className="appeals-workspace">
         <section className="panel" aria-labelledby="appeal-queue-heading">
@@ -177,7 +176,7 @@ export function AppealsPage({
               </p>
             </header>
             <div className="original-score">
-              <span>Исходная AI-оценка</span>
+              <span>Исходная оценка</span>
               <strong>
                 {original ? answerLabel(criterion, original.value) : '—'} ·{' '}
                 {scoreLabel(evaluation.originalScore)}
@@ -185,7 +184,7 @@ export function AppealsPage({
             </div>
             {quotes.length > 0 && (
               <section className="original-evidence">
-                <h3>Исходные доказательства AI</h3>
+                <h3>Исходные цитаты</h3>
                 {quotes.map((message) => (
                   <blockquote key={message.id}>
                     {message.text}
@@ -204,9 +203,9 @@ export function AppealsPage({
               </section>
             )}
             <div>
-              <button className="text-button" onClick={() => onOpen(evaluation, selected.id)}>
-                Открыть диалог и транскрипт ↗
-              </button>
+              <ActionButton icon="dialogs" onClick={() => onOpen(evaluation, selected.id)}>
+                Открыть диалог
+              </ActionButton>
             </div>
             <AppealReview
               key={selected.id}

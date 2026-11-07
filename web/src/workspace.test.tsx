@@ -50,7 +50,7 @@ describe('working frontend flows', () => {
     await user.clear(screen.getByRole('searchbox', { name: 'Найти диалог' }));
     await user.click(screen.getByRole('button', { name: conversation.messages[0].text }));
     expect(window.location.pathname).toBe('/dialogs/' + conversation.id);
-    expect(await screen.findByRole('heading', { name: 'Транскрипт' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Содержание диалога' })).toBeTruthy();
     expect(row).toBeTruthy();
   });
   it('renders unavailable data as an error rather than a successful empty list', async () => {
@@ -91,7 +91,7 @@ describe('working frontend flows', () => {
     );
     const button = await screen.findByRole('button', { name: 'Оценить заново' });
     expect(screen.getByText('Вес: 10')).toBeTruthy();
-    expect(screen.getByText('Вес: 20 · исключён (N/A)')).toBeTruthy();
+    expect(screen.getByText('Вес: 20 · не учитывается')).toBeTruthy();
     expect(start).not.toHaveBeenCalled();
     expect(screen.getByText(/Сохранено/)).toBeTruthy();
     await userEvent.click(button);
@@ -113,12 +113,12 @@ describe('working frontend flows', () => {
       }));
     render(<App />);
     const user = userEvent.setup();
-    await user.click(await screen.findByRole('button', { name: 'Создать новую версию' }));
+    await user.click(await screen.findByRole('button', { name: 'Новая версия' }));
     expect(api.conversations).not.toHaveBeenCalled();
     const title = screen.getByRole('textbox', { name: 'Название чек-листа' });
     await user.clear(title);
     await user.type(title, 'Мои правила');
-    await user.click(screen.getByRole('button', { name: 'Сохранить новую версию' }));
+    await user.click(screen.getByRole('button', { name: 'Сохранить версию' }));
     expect(await screen.findByText(/Версия 2 сохранена/)).toBeTruthy();
     expect(create).toHaveBeenCalledTimes(1);
     expect(version.title).not.toBe('Мои правила');
@@ -132,11 +132,11 @@ describe('working frontend flows', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(false);
     render(<App />);
     const user = userEvent.setup();
-    await user.click(await screen.findByRole('button', { name: 'Создать новую версию' }));
+    await user.click(await screen.findByRole('button', { name: 'Новая версия' }));
     const title = screen.getByRole('textbox', { name: 'Название чек-листа' });
     await user.clear(title);
     await user.type(title, 'Не терять');
-    await user.click(screen.getByRole('button', { name: 'Сохранить новую версию' }));
+    await user.click(screen.getByRole('button', { name: 'Сохранить версию' }));
     expect(await screen.findByText(/Не удалось подтвердить сохранение/)).toBeTruthy();
     expect(
       (screen.getByRole('textbox', { name: 'Название чек-листа' }) as HTMLInputElement).value,

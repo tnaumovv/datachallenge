@@ -4,6 +4,8 @@ import { api, startErrorMessage } from './api';
 import { channelName } from './Transcript';
 import { numbers } from './review-format';
 import { ImportDialog } from './ImportDialog';
+import { ActionButton } from './ActionButton';
+import { Icon } from './Icon';
 
 export const evaluationLabel: Record<Evaluation['status'], string> = {
   queued: 'В очереди',
@@ -145,29 +147,27 @@ export function DialogsPage({
     <main id="main-content" className="page-content" tabIndex={-1}>
       <header className="page-heading">
         <div>
-          <p className="eyebrow">Контроль качества</p>
           <h1>Диалоги</h1>
-          <p className="page-description">Переписка, звонки и результаты проверки.</p>
         </div>
         <div className="heading-actions">
-          <button
-            className="button secondary"
+          <ActionButton
+            icon="refresh"
             onClick={() => {
               onRefresh();
               setLoadKey((key) => key + 1);
             }}
           >
             Обновить
-          </button>
-          <button className="button primary" onClick={() => setImporting(true)}>
-            ＋ Импортировать
-          </button>
+          </ActionButton>
+          <ActionButton icon="upload" variant="primary" onClick={() => setImporting(true)}>
+            Импортировать
+          </ActionButton>
         </div>
       </header>
       <section className="panel conversations-panel" aria-label="Список диалогов">
         <div className="list-toolbar">
           <label className="search-control">
-            <span aria-hidden="true">⌕</span>
+            <Icon name="search" />
             <input
               type="search"
               aria-label="Найти диалог"
@@ -227,13 +227,14 @@ export function DialogsPage({
               ))}
             </select>
           </label>
-          <button
-            className="button primary"
+          <ActionButton
+            icon="play"
+            variant="primary"
             disabled={busy || !selected.size || !versionId}
             onClick={() => void run()}
           >
             {busy ? 'Запускаем…' : `Оценить выбранные${selected.size ? ` (${selected.size})` : ''}`}
-          </button>
+          </ActionButton>
           <span className="muted small">До 100 диалогов за запуск</span>
         </div>
         {error && (
@@ -288,23 +289,27 @@ export function DialogsPage({
               <thead>
                 <tr>
                   <th className="selection-cell">
-                    <input
-                      type="checkbox"
-                      aria-label="Выбрать диалоги на странице"
-                      checked={visible.length > 0 && visible.every((item) => selected.has(item.id))}
-                      disabled={busy}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setSelected((current) => {
-                          const next = new Set(current);
-                          for (const item of visible) {
-                            if (checked && next.size < 100) next.add(item.id);
-                            else if (!checked) next.delete(item.id);
-                          }
-                          return next;
-                        });
-                      }}
-                    />
+                    <label className="checkbox-hitbox">
+                      <input
+                        type="checkbox"
+                        aria-label="Выбрать диалоги на странице"
+                        checked={
+                          visible.length > 0 && visible.every((item) => selected.has(item.id))
+                        }
+                        disabled={busy}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setSelected((current) => {
+                            const next = new Set(current);
+                            for (const item of visible) {
+                              if (checked && next.size < 100) next.add(item.id);
+                              else if (!checked) next.delete(item.id);
+                            }
+                            return next;
+                          });
+                        }}
+                      />
+                    </label>
                   </th>
                   <th>Диалог</th>
                   <th>Канал</th>
@@ -322,13 +327,15 @@ export function DialogsPage({
                   return (
                     <tr key={item.id} className={selected.has(item.id) ? 'selected-row' : ''}>
                       <td>
-                        <input
-                          type="checkbox"
-                          aria-label={`Выбрать ${item.sourceConversationId}`}
-                          checked={selected.has(item.id)}
-                          disabled={busy || (!selected.has(item.id) && selected.size >= 100)}
-                          onChange={() => toggle(item.id)}
-                        />
+                        <label className="checkbox-hitbox">
+                          <input
+                            type="checkbox"
+                            aria-label={`Выбрать ${item.sourceConversationId}`}
+                            checked={selected.has(item.id)}
+                            disabled={busy || (!selected.has(item.id) && selected.size >= 100)}
+                            onChange={() => toggle(item.id)}
+                          />
+                        </label>
                       </td>
                       <td>
                         <button
@@ -377,12 +384,13 @@ export function DialogsPage({
                             Повторить
                           </button>
                         ) : (
-                          <button
-                            className="button secondary small-button"
+                          <ActionButton
+                            icon="next"
+                            className="small-button"
                             onClick={() => onOpen(item.id)}
                           >
-                            Открыть <span aria-hidden="true">↗</span>
-                          </button>
+                            Открыть
+                          </ActionButton>
                         )}
                       </td>
                     </tr>
