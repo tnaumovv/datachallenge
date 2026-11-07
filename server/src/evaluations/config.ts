@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { GeminiProvider } from './gemini.js';
+import { CompatibleProvider } from './compatible.js';
 import type { EvaluationProvider } from './provider.js';
 
 export function evaluationOptionsFromEnv(env: Record<string, string | undefined>): {
@@ -17,10 +18,31 @@ export function providerFromEnv(
   env: Record<string, string | undefined>,
 ): EvaluationProvider | undefined {
   const kind = z
-    .enum(['none', 'gemini'])
+    .enum(['none', 'gemini', 'groq', 'ollama', 'openai', 'deepseek'])
     .default('none')
     .parse(env.AI_PROVIDER || undefined);
   if (kind === 'none') return undefined;
+  if (kind !== 'gemini') {
+    const prefix = kind.toUpperCase();
+    const settings = z
+      .object({
+        modelId: z.string().trim().min(1),
+        apiKey: kind === 'ollama' ? z.string().optional() : z.string().trim().min(1),
+        maxOutputTokens: z.coerce.number().int().min(1024).max(32768).default(8192),
+        reasoningEffort: z.enum(['low', 'medium', 'high']).optional(),
+      })
+      .parse({
+        modelId: env[prefix + '_MODEL'],
+        apiKey: env[prefix + '_API_KEY'],
+        maxOutputTokens: env.AI_MAX_OUTPUT_TOKENS,
+        reasoningEffort: env.AI_REASONING_EFFORT || undefined,
+      });
+    return new CompatibleProvider({
+      ...settings,
+      kind,
+      baseUrl: kind === 'ollama' ? env.OLLAMA_BASE_URL || undefined : undefined,
+    });
+  }
   const settings = z
     .object({
       GEMINI_API_KEY: z.string().trim().min(1),

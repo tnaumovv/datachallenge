@@ -46,10 +46,12 @@ export function assertFrozenInputs(
 ) {
   if (configuration) {
     if (!configuration.configured) throw new Error('AI provider is not configured');
+    if (!reference.configurationId?.trim())
+      throw new Error('Frozen configuration ID is required for a live comparison');
     if (
       configuration.modelId !== reference.modelId ||
       configuration.promptVersion !== reference.promptVersion ||
-      (reference.configurationId && configuration.configurationId !== reference.configurationId)
+      configuration.configurationId !== reference.configurationId
     )
       throw new Error('Live provider configuration differs from the frozen reference');
   }
@@ -59,6 +61,14 @@ export function assertFrozenInputs(
     criteria: checklist.criteria,
   });
   if (checklistHash !== reference.checklistHash) throw new Error('Checklist changed after freeze');
+  const actualIds = checklist.criteria.map((c) => c.id);
+  if (
+    reference.criterionIds &&
+    (new Set(reference.criterionIds).size !== actualIds.length ||
+      reference.criterionIds.length !== actualIds.length ||
+      actualIds.some((id) => !reference.criterionIds!.includes(id)))
+  )
+    throw new Error('Frozen criterion IDs differ from the actual checklist');
   const ids = new Set<string>();
   for (const item of reference.cases) {
     if (ids.has(item.sourceId)) throw new Error('Duplicate reference source ID');
@@ -223,15 +233,20 @@ export function summarizeBenchmark(cases: FrozenCase[], results: BenchmarkResult
 }
 
 /** Claim eligibility is deliberately stronger than a completed-only calibration percentage. */
-export function assessQualityTarget(reference: FrozenBenchmark, results: BenchmarkResult[]) {
+export function assessQualityTarget(
+  reference: FrozenBenchmark,
+  results: BenchmarkResult[],
+  checklist?: ChecklistVersion,
+) {
   const metrics = summarizeBenchmark(reference.cases, results);
   const holdout = reference.cases.filter((c) => c.split === 'holdout');
   const summary = metrics.holdout;
   const reasons: string[] = [];
   if (!reference.humanReviewed) reasons.push('LABELS_NOT_HUMAN_REVIEWED');
   if (!reference.independentDialogs) reasons.push('INDEPENDENT_DIALOGUES_NOT_CONFIRMED');
+  if (!reference.configurationId?.trim()) reasons.push('CONFIGURATION_NOT_FROZEN');
   if (!holdout.length) reasons.push('NO_HOLDOUT');
-  const criteria = reference.criterionIds;
+  const criteria = checklist?.criteria.map((c) => c.id);
   if (!criteria?.length) reasons.push('CHECKLIST_COVERAGE_UNKNOWN');
   else if (
     holdout.some(
@@ -241,6 +256,23 @@ export function assessQualityTarget(reference: FrozenBenchmark, results: Benchma
     )
   )
     reasons.push('PARTIAL_REFERENCE_LABELS');
+  if (
+    checklist &&
+    fingerprint({
+      title: checklist.title,
+      sections: checklist.sections,
+      criteria: checklist.criteria,
+    }) !== reference.checklistHash
+  )
+    reasons.push('CHECKLIST_CONTENT_MISMATCH');
+  if (
+    criteria &&
+    reference.criterionIds &&
+    (reference.criterionIds.length !== criteria.length ||
+      new Set(reference.criterionIds).size !== criteria.length ||
+      criteria.some((id) => !reference.criterionIds!.includes(id)))
+  )
+    reasons.push('CHECKLIST_CRITERIA_MISMATCH');
   if (summary.completedDialogs !== summary.scheduledDialogs) reasons.push('INCOMPLETE_HOLDOUT');
   if ((summary.criterionAgreementPercent ?? 0) <= 95)
     reasons.push('CRITERION_AGREEMENT_NOT_ABOVE_95');

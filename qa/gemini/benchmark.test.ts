@@ -35,6 +35,7 @@ function reference(): FrozenBenchmark {
     labelSource: 'assistant_draft',
     humanReviewed: false,
     modelId: 'test-model',
+    configurationId: 'test-config',
     promptVersion: 'test-prompt',
     checklistVersionId: checklist.id,
     checklistHash: fingerprint({
@@ -74,6 +75,19 @@ function result(patch: Partial<BenchmarkResult> = {}): BenchmarkResult {
 }
 
 describe('frozen benchmark inputs', () => {
+  it('rejects a live comparison when generation options were not frozen', () => {
+    const frozen = reference();
+    delete frozen.configurationId;
+    expect(() =>
+      assertFrozenInputs(frozen, [conversation], checklist, {
+        configured: true,
+        providerId: 'gemini',
+        modelId: 'test-model',
+        configurationId: 'test-config',
+        promptVersion: 'test-prompt',
+      }),
+    ).toThrow(/configuration.*required/i);
+  });
   it('refuses a different live model before any prediction is submitted', () => {
     expect(() =>
       assertFrozenInputs(reference(), [conversation], checklist, {
@@ -163,10 +177,12 @@ describe('benchmark metrics', () => {
       independentDialogs: true,
       criterionIds: ['contact', 'needs', 'gross', 'closing'],
     };
-    expect(assessQualityTarget(frozen, [result()]).reasons).toContain('PARTIAL_REFERENCE_LABELS');
+    expect(assessQualityTarget(frozen, [result()], checklist).reasons).toContain(
+      'PARTIAL_REFERENCE_LABELS',
+    );
   });
 
-  it('supports a claim only with sufficient independent fully labelled holdout evidence', () => {
+  it('cannot certify a self-declared three-criterion subset of the actual eight-criterion checklist', () => {
     const frozen = {
       ...reference(),
       humanReviewed: true,
@@ -174,7 +190,7 @@ describe('benchmark metrics', () => {
       criterionIds: ['contact', 'needs', 'gross'],
       cases: Array.from({ length: 100 }, (_, i) => ({
         ...reference().cases[0],
-        sourceId: 'source-' + i,
+        sourceId: 'subset-' + i,
         language: (['RU', 'KZ', 'EN'] as const)[i % 3],
         expectedValues: { contact: true, needs: 'NA' as const, gross: i === 0 },
       })),
@@ -182,9 +198,38 @@ describe('benchmark metrics', () => {
     const results = frozen.cases.map((c) =>
       result({ sourceId: c.sourceId, values: c.expectedValues }),
     );
-    expect(assessQualityTarget(frozen, results).claimSupported).toBe(true);
+    expect(assessQualityTarget(frozen, results, checklist).claimSupported).toBe(false);
+    expect(() => assertFrozenInputs(frozen, [conversation], checklist)).toThrow(/criterion/i);
+  });
+
+  it('supports a claim only with sufficient independent fully labelled holdout evidence', () => {
+    const frozen = {
+      ...reference(),
+      humanReviewed: true,
+      independentDialogs: true,
+      criterionIds: checklist.criteria.map((c) => c.id),
+      cases: Array.from({ length: 100 }, (_, i) => ({
+        ...reference().cases[0],
+        sourceId: 'source-' + i,
+        language: (['RU', 'KZ', 'EN'] as const)[i % 3],
+        expectedValues: {
+          contact: true,
+          needs: 'NA' as const,
+          identity: 'NA' as const,
+          consultation: 20,
+          empathy: true,
+          dialogue: 10,
+          closing: true,
+          gross: i === 0,
+        },
+      })),
+    };
+    const results = frozen.cases.map((c) =>
+      result({ sourceId: c.sourceId, values: c.expectedValues }),
+    );
+    expect(assessQualityTarget(frozen, results, checklist).claimSupported).toBe(true);
     results[0].values = { ...results[0].values, gross: false };
-    const failedGate = assessQualityTarget(frozen, results);
+    const failedGate = assessQualityTarget(frozen, results, checklist);
     expect(failedGate.claimSupported).toBe(false);
     expect(failedGate.reasons).toContain('GROSS_VIOLATION_ERRORS');
   });

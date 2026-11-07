@@ -124,7 +124,9 @@ describe('Gemini blocked responses and structured output', () => {
     });
     const result = await settled(service, id);
     const variants =
-      body.generationConfig.responseJsonSchema.properties.answers.items.properties.value.anyOf;
+      body.generationConfig.responseJsonSchema.properties.answers.items.anyOf.flatMap(
+        (criterion: any) => criterion.properties.value.anyOf,
+      );
     expect(variants.find((v: any) => v.type === 'string')).toEqual({
       type: 'string',
       enum: ['NA'],
