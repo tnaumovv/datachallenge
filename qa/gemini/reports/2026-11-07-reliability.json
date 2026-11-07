@@ -15,7 +15,19 @@
     "build": "passed",
     "productionSmoke": "passed",
     "codeReview": "approved",
-    "offlineReviewAddedModelCalls": 0
+    "offlineReviewAddedModelCalls": 0,
+    "savedExperimentRevalidation": {
+      "comparisonRulesFromCommit": "b2beea9f13ef59bb77aad4f40d5608e8423f7f7c",
+      "evaluationAndAllAttemptStartsAtOrAfterFreeze": true,
+      "missingOrStaleTimestamps": 0,
+      "evaluationsChecked": 15,
+      "attemptsChecked": 18,
+      "exactDialogMatchesIncludeSemanticMismatchesAndExpectedTotal": true,
+      "matchingDialogMetricsChecked": 6,
+      "matchingDialogMetricsChanged": 0,
+      "configurationsPooled": false,
+      "additionalModelCalls": 0
+    }
   },
   "ownCalibration": {
     "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
