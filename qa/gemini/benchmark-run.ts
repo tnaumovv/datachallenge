@@ -12,6 +12,8 @@ import {
   fingerprint,
   summarizeBenchmark,
   assessQualityTarget,
+  selectSavedEvaluation,
+  predictionFollowsFreeze,
   type BenchmarkResult,
   type FrozenBenchmark,
 } from './benchmark.js';
@@ -126,15 +128,7 @@ for (const item of cases) {
   const conversation = conversations.find((c) => c.sourceConversationId === item.sourceId)!;
   let evaluationId: string;
   if (maxCalls === 0) {
-    const saved = previous.find(
-      (e) =>
-        ['completed', 'failed'].includes(e.status) &&
-        e.conversationId === conversation.id &&
-        e.checklistVersionId === checklist.id &&
-        e.modelId === reference.modelId &&
-        e.promptVersion === reference.promptVersion &&
-        e.configurationId === reference.configurationId,
-    );
+    const saved = selectSavedEvaluation(reference, item, conversation.id, previous);
     if (!saved) continue;
     evaluationId = saved.id;
   } else {
@@ -167,6 +161,8 @@ for (const item of cases) {
     await delay(1500);
   }
   const review = reviewEvaluation(evaluation, conversation, checklist, item);
+  if (item.split === 'holdout' && !predictionFollowsFreeze(reference, evaluation))
+    review.technicalErrors.push('Holdout prediction did not start after the reference freeze');
   if (
     evaluation.modelId !== reference.modelId ||
     evaluation.promptVersion !== reference.promptVersion ||

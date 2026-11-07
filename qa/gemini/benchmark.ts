@@ -3,6 +3,7 @@ import type {
   ChecklistVersion,
   Conversation,
   CriterionAnswer,
+  Evaluation,
   EvaluationConfiguration,
 } from '../../shared/contracts.js';
 import type { ReferenceCase } from './review.js';
@@ -32,10 +33,44 @@ export type BenchmarkResult = {
   technicalErrors: string[];
   values: Record<string, CriterionAnswer['value']>;
   total: number | null;
+  semanticMismatches?: readonly unknown[];
 };
 
 export function fingerprint(value: unknown): string {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+
+export function selectSavedEvaluation(
+  reference: FrozenBenchmark,
+  item: FrozenCase,
+  conversationId: string,
+  evaluations: Evaluation[],
+): Evaluation | undefined {
+  return evaluations.find(
+    (e) =>
+      ['completed', 'failed'].includes(e.status) &&
+      e.conversationId === conversationId &&
+      e.checklistVersionId === reference.checklistVersionId &&
+      e.modelId === reference.modelId &&
+      e.promptVersion === reference.promptVersion &&
+      e.configurationId === reference.configurationId &&
+      (item.split !== 'holdout' || predictionFollowsFreeze(reference, e)),
+  );
+}
+
+export function predictionFollowsFreeze(
+  reference: Pick<FrozenBenchmark, 'frozenAt'>,
+  evaluation: Pick<Evaluation, 'startedAt' | 'attempts'>,
+): boolean {
+  const frozenAt = Date.parse(reference.frozenAt);
+  const starts = [evaluation.startedAt, ...evaluation.attempts.map((a) => a.startedAt)];
+  return (
+    Number.isFinite(frozenAt) &&
+    starts.every((value) => {
+      const start = value === null ? NaN : Date.parse(value);
+      return Number.isFinite(start) && start >= frozenAt;
+    })
+  );
 }
 
 export function assertFrozenInputs(
@@ -134,7 +169,9 @@ function summarize(cases: FrozenCase[], byId: Map<string, BenchmarkResult>) {
       continue;
     }
     completedDialogs++;
-    let matching = true;
+    let matching =
+      !result.semanticMismatches?.length &&
+      (item.expectedTotal === undefined || result.total === item.expectedTotal);
     for (const [criterionId, expected] of Object.entries(item.expectedValues)) {
       const actual = result.values[criterionId];
       comparedCriteria++;

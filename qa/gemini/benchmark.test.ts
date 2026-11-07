@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { ChecklistVersion, Conversation } from '../../shared/contracts.js';
 import { defaultChecklist } from '../../server/src/checklists/default.js';
+import { evaluation as fixtureEvaluation } from '../../web/tests/fixtures.js';
 import {
   assertFrozenInputs,
   fingerprint,
   summarizeBenchmark,
   assessQualityTarget,
+  selectSavedEvaluation,
   type FrozenBenchmark,
   type BenchmarkResult,
 } from './benchmark.js';
@@ -69,12 +71,50 @@ function result(patch: Partial<BenchmarkResult> = {}): BenchmarkResult {
     status: 'completed',
     technicalErrors: [],
     values: { contact: true, needs: 'NA', gross: false },
-    total: 80,
+    total: 90,
     ...patch,
   };
 }
 
 describe('frozen benchmark inputs', () => {
+  it('does not reuse a holdout prediction made before its reference freeze', () => {
+    const frozen = reference();
+    const old = {
+      ...fixtureEvaluation,
+      conversationId: conversation.id,
+      checklistVersionId: checklist.id,
+      modelId: frozen.modelId,
+      promptVersion: frozen.promptVersion,
+      configurationId: frozen.configurationId!,
+      startedAt: '2026-11-06T23:00:00Z',
+    };
+    const fresh = { ...old, id: 'after-freeze', startedAt: '2026-11-07T00:01:00Z' };
+    expect(selectSavedEvaluation(frozen, frozen.cases[0], conversation.id, [old, fresh])).toBe(
+      fresh,
+    );
+    expect(selectSavedEvaluation(frozen, frozen.cases[0], conversation.id, [old])).toBeUndefined();
+  });
+
+  it('excludes holdout predictions with unknown generation time and retains known regressions', () => {
+    const frozen = reference();
+    const saved = {
+      ...fixtureEvaluation,
+      conversationId: conversation.id,
+      checklistVersionId: checklist.id,
+      modelId: frozen.modelId,
+      promptVersion: frozen.promptVersion,
+      configurationId: frozen.configurationId!,
+      startedAt: null,
+    };
+    expect(
+      selectSavedEvaluation(frozen, frozen.cases[0], conversation.id, [saved]),
+    ).toBeUndefined();
+    expect(
+      selectSavedEvaluation(frozen, { ...frozen.cases[0], split: 'regression' }, conversation.id, [
+        saved,
+      ]),
+    ).toBe(saved);
+  });
   it('rejects a live comparison when generation options were not frozen', () => {
     const frozen = reference();
     delete frozen.configurationId;
@@ -140,6 +180,20 @@ describe('frozen benchmark inputs', () => {
 });
 
 describe('benchmark metrics', () => {
+  it('keeps value agreement separate from missing required evidence and score mismatches', () => {
+    const missingEvidence = {
+      ...result(),
+      semanticMismatches: [{ criterionId: 'gross', missingEvidence: ['m1'] }],
+    };
+    const evidenceSummary = summarizeBenchmark(reference().cases, [missingEvidence]).holdout;
+    expect(evidenceSummary.criterionAgreementPercent).toBe(100);
+    expect(evidenceSummary.matchingDialogs).toBe(0);
+    const wrongScore = summarizeBenchmark(reference().cases, [result({ total: 80 })]).holdout;
+    expect(wrongScore.criterionAgreementPercent).toBe(100);
+    expect(wrongScore.matchingDialogs).toBe(0);
+    expect(wrongScore.meanAbsoluteScoreError).toBe(10);
+  });
+
   it('shows per-criterion agreement and an exact-dialog confidence interval', () => {
     const summary = summarizeBenchmark(reference().cases, [result()]).holdout;
     expect(summary.byCriterion).toMatchObject({
@@ -228,6 +282,13 @@ describe('benchmark metrics', () => {
       result({ sourceId: c.sourceId, values: c.expectedValues }),
     );
     expect(assessQualityTarget(frozen, results, checklist).claimSupported).toBe(true);
+    const missingEvidence = results.map((r) => ({
+      ...r,
+      semanticMismatches: [{ criterionId: 'gross', missingEvidence: ['m1'] }],
+    }));
+    const evidenceGate = assessQualityTarget(frozen, missingEvidence, checklist);
+    expect(evidenceGate.claimSupported).toBe(false);
+    expect(evidenceGate.reasons).toContain('INSUFFICIENT_STATISTICAL_EVIDENCE');
     results[0].values = { ...results[0].values, gross: false };
     const failedGate = assessQualityTarget(frozen, results, checklist);
     expect(failedGate.claimSupported).toBe(false);
@@ -236,7 +297,7 @@ describe('benchmark metrics', () => {
 
   it('counts exact criterion decisions, N/A mistakes, gross misses and score error separately', () => {
     const report = summarizeBenchmark(reference().cases, [
-      result({ values: { contact: true, needs: false, gross: true } }),
+      result({ values: { contact: true, needs: false, gross: true }, total: 80 }),
     ]);
     expect(report.holdout).toMatchObject({
       scheduledDialogs: 1,
