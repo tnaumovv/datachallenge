@@ -1,4 +1,4 @@
-import { DisplaySettings } from './DisplaySettings';
+import { WorkspaceSidebar } from './WorkspaceSidebar';
 import { ReviewQueuePage } from './ReviewQueuePage';
 import { OverviewPage } from './OverviewPage';
 import { OperationsPage } from './OperationsPage';
@@ -11,7 +11,6 @@ import { ChecklistEditor } from './ChecklistEditor';
 import { DialogsPage, conversationTitle } from './DialogsPage';
 import { EvaluationPanel } from './EvaluationPanel';
 import { ActionButton } from './ActionButton';
-import { Icon } from './Icon';
 import { ReviewNavigation } from './ReviewNavigation';
 import { Transcript, channelName } from './Transcript';
 import { pageLocation, readLocation, reviewUrl, type ReviewLocation } from './navigation';
@@ -99,19 +98,20 @@ export function App() {
       next.page !== view.page &&
       !window.confirm('На экране есть несохранённые изменения. Покинуть редактор?')
     )
-      return;
+      return false;
     const url = reviewUrl(next);
     if (url !== window.location.pathname + window.location.search + window.location.hash) {
       if (replace) window.history.replaceState(null, '', url);
       else window.history.pushState(null, '', url);
     }
     setView(next);
+    return true;
   }
   function navClick(event: MouseEvent<HTMLAnchorElement>, page: ReviewLocation['page']) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)
-      return;
+      return false;
     event.preventDefault();
-    navigate(pageLocation(page));
+    return navigate(pageLocation(page));
   }
   function refreshWorkspace() {
     setLoadKey((key) => key + 1);
@@ -135,47 +135,7 @@ export function App() {
       <a href="#main-content" className="skip-link">
         Перейти к содержимому
       </a>
-      <aside className="app-sidebar">
-        <a
-          className="app-brand"
-          href="/dialogs"
-          onClick={(e) => navClick(e, 'dialogs')}
-          aria-label="Freedom CQA — Диалоги"
-        >
-          <span className="brand-identity">
-            <span className="freedom-logo" aria-hidden="true" />
-          </span>
-        </a>
-        <div className="sidebar-divider" />
-        <nav className="sidebar-nav" aria-label="Разделы">
-          {(['overview', 'dialogs', 'review', 'checklists', 'appeals', 'operations'] as const).map(
-            (page) => (
-              <a
-                key={page}
-                href={'/' + page}
-                aria-current={view.page === page ? 'page' : undefined}
-                onClick={(e) => navClick(e, page)}
-              >
-                <span className="nav-icon">
-                  <Icon
-                    name={
-                      page === 'overview'
-                        ? 'overview'
-                        : page === 'review'
-                          ? 'shield'
-                          : page === 'operations'
-                            ? 'layers'
-                            : page
-                    }
-                  />
-                </span>
-                <span>{titles[page]}</span>
-              </a>
-            ),
-          )}
-        </nav>
-        <DisplaySettings />
-      </aside>
+      <WorkspaceSidebar activePage={view.page} titles={titles} onNavigate={navClick} />
       <div className="app-main">
         <div className="app-topline">
           <span className="workspace-path">{titles[view.page]}</span>

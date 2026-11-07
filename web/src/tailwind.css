@@ -1,0 +1,32 @@
+/* Keep the existing app reset; scope utility discovery to frontend sources. */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+@source './';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *, [data-theme='black'], [data-theme='black'] *));
+
+@theme inline {
+  --color-background: var(--canvas);
+  --color-foreground: var(--text);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--text);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--on-accent);
+  --color-secondary: var(--surface-subtle);
+  --color-secondary-foreground: var(--text);
+  --color-muted: var(--surface-subtle);
+  --color-muted-foreground: var(--muted);
+  --color-accent: var(--green-soft);
+  --color-accent-foreground: var(--green-dark);
+  --color-destructive: var(--red);
+  --color-border: var(--line);
+  --color-input: var(--line);
+  --color-ring: var(--green);
+  --radius-sm: 5px;
+  --radius-md: 7px;
+  --radius-lg: 9px;
+  --radius-xl: 13px;
+}

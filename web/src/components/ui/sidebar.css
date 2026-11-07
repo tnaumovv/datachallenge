@@ -1,0 +1,169 @@
+.app-shell:has(.sidebar-desktop) {
+  display: flex;
+  padding: 0;
+  gap: 0;
+}
+.app-shell:has(.sidebar-mobile-bar) {
+  display: block;
+  padding: 0;
+  background: var(--canvas);
+}
+.app-shell > .app-main {
+  flex: 1;
+  min-width: 0;
+}
+.sidebar-desktop {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  min-width: 60px;
+  padding: 24px 8px 16px;
+  overflow: hidden auto;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+  color: var(--text);
+}
+.workspace-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 24px;
+}
+.sidebar-desktop[data-open='false'] .workspace-sidebar-header {
+  flex-direction: column;
+}
+.workspace-sidebar-brand {
+  display: block;
+  flex-shrink: 0;
+  width: 36px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.workspace-sidebar-brand[data-expanded='true'] {
+  width: 180px;
+}
+.workspace-sidebar-brand .freedom-logo {
+  width: 180px;
+  max-width: none;
+}
+.workspace-sidebar-nav {
+  display: grid;
+  gap: 6px;
+}
+.sidebar-link {
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  overflow: hidden;
+}
+.sidebar-link:hover {
+  background: var(--surface-subtle);
+  color: var(--text);
+}
+.sidebar-link[aria-current='page'] {
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-weight: 600;
+}
+.sidebar-link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 24px;
+}
+.sidebar-link-label {
+  transition: transform 150ms ease;
+}
+.sidebar-link:hover .sidebar-link-label {
+  transform: translateX(4px);
+}
+.sidebar-icon-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+}
+.sidebar-icon-button:hover {
+  background: var(--surface-subtle);
+  color: var(--text);
+}
+.sidebar-link:focus-visible,
+.sidebar-icon-button:focus-visible,
+.workspace-sidebar-brand:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+}
+.workspace-sidebar-settings {
+  margin-top: auto;
+  padding-top: 28px;
+}
+.workspace-sidebar-settings .display-settings {
+  margin: 0;
+  padding: 0;
+}
+.sidebar-mobile-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 68px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.sidebar-mobile-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--surface);
+  color: var(--text);
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
+.sidebar-mobile-dialog::backdrop {
+  background: var(--canvas);
+}
+.sidebar-mobile-content {
+  position: relative;
+  min-height: 100%;
+  padding: max(24px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+}
+.sidebar-mobile-close {
+  position: absolute;
+  right: 16px;
+  top: max(14px, env(safe-area-inset-top));
+}
+.sidebar-mobile-content .workspace-sidebar-header {
+  min-height: 44px;
+  padding-right: 48px;
+  margin-bottom: 24px;
+}
+.sidebar-mobile-content .workspace-sidebar-brand {
+  width: min(180px, 45vw);
+}
+.sidebar-mobile-content .theme-label {
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-link:hover .sidebar-link-label {
+    transform: none;
+  }
+}
