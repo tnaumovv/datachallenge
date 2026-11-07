@@ -1,16 +1,27 @@
-import type { ChecklistVersion, Conversation, TokenUsage } from '../../../shared/contracts.js';
+import type {
+  ChecklistVersion,
+  Conversation,
+  EvaluationAttempt,
+  TokenUsage,
+} from '../../../shared/contracts.js';
+
+export type RepairContext = Pick<
+  EvaluationAttempt,
+  'failureStage' | 'finishReason' | 'validationErrors'
+>;
 
 export type ProviderInput = {
   conversation: Conversation;
   checklist: ChecklistVersion;
   signal: AbortSignal;
-  repairInstruction?: string;
+  repair?: RepairContext;
 };
 export type ProviderResult = {
   text: string;
   usage: Partial<TokenUsage>;
   modelVersion?: string;
   finishReason?: string;
+  blockReason?: string;
 };
 export interface EvaluationProvider {
   id: string;
