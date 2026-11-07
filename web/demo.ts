@@ -35,7 +35,14 @@ const demoProvider: EvaluationProvider = {
             : 'Ответ для демонстрации интерфейса.',
         naReason: value === 'NA' ? sample?.naReason : null,
         evidenceMessageIds: value === 'NA' ? [] : [greeting.id],
-        checkedSpanMessageIds: value === 'NA' ? [first.id] : [],
+        checkedSpanMessageIds:
+          value === 'NA'
+            ? [first.id]
+            : value === false || value === 0
+              ? conversation.messages
+                  .filter((message) => message.speaker === 'operator')
+                  .map((message) => message.id)
+              : [],
       };
     });
 

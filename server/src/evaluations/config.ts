@@ -26,11 +26,13 @@ export function providerFromEnv(
       GEMINI_API_KEY: z.string().trim().min(1),
       GEMINI_MODEL: z.string().trim().min(1),
       AI_MAX_OUTPUT_TOKENS: z.coerce.number().int().min(1024).max(32768).default(8192),
+      GEMINI_THINKING_LEVEL: z.enum(['minimal', 'low', 'medium', 'high']).optional(),
     })
-    .parse(env);
+    .parse({ ...env, GEMINI_THINKING_LEVEL: env.GEMINI_THINKING_LEVEL || undefined });
   return new GeminiProvider({
     apiKey: settings.GEMINI_API_KEY,
     modelId: settings.GEMINI_MODEL,
     maxOutputTokens: settings.AI_MAX_OUTPUT_TOKENS,
+    thinkingLevel: settings.GEMINI_THINKING_LEVEL,
   });
 }

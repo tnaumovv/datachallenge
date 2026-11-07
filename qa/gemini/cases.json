@@ -108,10 +108,10 @@
     {
       "sourceId": "p1-en-006",
       "language": "EN",
-      "role": "edge_case",
+      "role": "calibration_user_adjudicated_needs",
       "expectedValues": {
         "contact": true,
-        "needs": true,
+        "needs": false,
         "identity": true,
         "consultation": 20,
         "empathy": true,
@@ -119,11 +119,11 @@
         "closing": true,
         "gross": false
       },
-      "expectedTotal": 100,
+      "expectedTotal": 85,
       "requiredEvidence": {
         "identity": ["m0013"]
       },
-      "notes": "System m0013 verifies identity before account review. Operator clarifies currency and timing, provides next step, answers report-download follow-up, summarizes and says goodbye in m0030."
+      "notes": "Local reference records the user's needs=false decision: m0016 reports the case already sent for review, but the important transfer timing is requested only in m0019. Later clarification does not repair the order. System m0013 verifies identity. Consultation remains 20 and closing true. Calibration/regression only; not a blind accuracy case."
     },
     {
       "sourceId": "p1-en-013",

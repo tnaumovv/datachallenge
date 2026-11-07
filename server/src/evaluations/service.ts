@@ -4,6 +4,7 @@ import type {
   Evaluation,
   EvaluationAttempt,
   EvaluationFailureStage,
+  EvaluationConfiguration,
   TokenUsage,
 } from '../../../shared/contracts.js';
 import { EvaluationRequestSchema } from '../../../shared/contracts.js';
@@ -69,6 +70,8 @@ const errorMessage = (code: string) =>
     AUTH_FAILED: 'Model authentication failed',
     RATE_LIMIT: 'Model rate limit exceeded',
     MODEL_UNAVAILABLE: 'Model is unavailable',
+    BILLING_REQUIRED: 'Provider requires paid access; choose an available free provider',
+    INVALID_PROVIDER_REQUEST: 'Provider rejected the configured model or generation options',
     MODEL_BLOCKED: 'Model request or response was blocked by the provider',
     PROVIDER_FAILED: 'Model request failed',
   })[code] ?? 'Evaluation failed';
@@ -97,6 +100,15 @@ export class EvaluationService {
       this.retryDelayMs < 0
     )
       throw new Error('Invalid queue configuration');
+  }
+  getConfiguration(): EvaluationConfiguration {
+    return {
+      configured: !!this.provider,
+      providerId: this.provider?.id ?? null,
+      modelId: this.provider?.modelId ?? null,
+      configurationId: this.provider?.configurationId ?? null,
+      promptVersion: PROMPT_VERSION,
+    };
   }
   get(id: string): Evaluation | undefined {
     const row = this.db.prepare('SELECT payload FROM evaluations WHERE id=?').get(id);
@@ -352,14 +364,15 @@ export class EvaluationService {
           stage = 'schema';
           const { answers } = ModelOutputSchema.parse(parsed);
           stage = 'answers';
-          const score = scoreEvaluation(
-            new ChecklistService(this.db).get(evaluation.checklistVersionId)!.criteria,
-            answers,
-          );
+          const criteria = new ChecklistService(this.db).get(
+            evaluation.checklistVersionId,
+          )!.criteria;
+          const score = scoreEvaluation(criteria, answers);
           stage = 'evidence';
           const evidence = validateEvidence(
             new ConversationService(this.db).get(evaluation.conversationId)!,
             answers,
+            criteria,
           );
           evaluation.originalAnswers = answers;
           evaluation.effectiveAnswers = structuredClone(answers);

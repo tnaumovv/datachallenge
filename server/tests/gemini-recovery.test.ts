@@ -17,7 +17,8 @@ const answers = () =>
   scoreExampleAnswers.map((a) => ({
     ...a,
     evidenceMessageIds: ['m0002'],
-    checkedSpanMessageIds: [],
+    checkedSpanMessageIds:
+      a.value === 'NA' ? ['m0001'] : a.value === false ? ['m0002', 'm0004'] : [],
   }));
 function reply(text = JSON.stringify({ answers: answers() }), finishReason = 'STOP') {
   return {

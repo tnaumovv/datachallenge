@@ -19,7 +19,7 @@ function fixture() {
   const answers = scoreExampleAnswers.map((a) => ({
     ...a,
     evidenceMessageIds: ['m0002'],
-    checkedSpanMessageIds: ['m0001', 'm0002'],
+    checkedSpanMessageIds: ['m0001', 'm0002', 'm0004'],
   }));
   const score = scoreEvaluation(checklist.criteria, answers);
   const evaluation: Evaluation = {
@@ -63,6 +63,20 @@ function fixture() {
 }
 
 describe('Gemini quality review (no API calls)', () => {
+  it('reviews a replaced built-in criterion using the actual checklist instruction', () => {
+    const f = fixture();
+    f.checklist.criteria[0].instruction = 'Да, если клиент попросил о помощи; укажи его сообщение.';
+    f.evaluation.originalAnswers[0].evidenceMessageIds = ['m0001'];
+    f.evaluation.evidence = validateEvidence(
+      f.conversation,
+      f.evaluation.originalAnswers,
+      f.checklist.criteria,
+    );
+    expect(
+      reviewEvaluation(f.evaluation, f.conversation, f.checklist, f.reference).technicalErrors,
+    ).toEqual([]);
+  });
+
   it('accepts a consistent stored result and independent expected values', () => {
     const f = fixture();
     expect(reviewEvaluation(f.evaluation, f.conversation, f.checklist, f.reference)).toEqual({
@@ -105,10 +119,10 @@ describe('Gemini quality review (no API calls)', () => {
   });
   it('checks that a critical confirmation is cited, not just any existing message', () => {
     const f = fixture();
-    f.reference.requiredEvidence = { identity: ['m0004'] };
+    f.reference.requiredEvidence = { identity: ['m0003'] };
     expect(
       reviewEvaluation(f.evaluation, f.conversation, f.checklist, f.reference).semanticMismatches,
-    ).toContainEqual({ criterionId: 'identity', missingEvidence: ['m0004'] });
+    ).toContainEqual({ criterionId: 'identity', missingEvidence: ['m0003'] });
   });
   it('reports provider failure as unreviewed rather than a pass', () => {
     const f = fixture();
