@@ -21,6 +21,34 @@ const CONTENT_FILTER_FINISH_REASONS = new Set([
   'IMAGE_RECITATION',
 ]);
 
+function retryInfoDelayMs(message: string): number | undefined {
+  try {
+    // The SDK stores the JSON error body in ApiError.message. Keep it local.
+    const details = JSON.parse(message)?.error?.details;
+    if (!Array.isArray(details)) return;
+    let longest: number | undefined;
+    for (const detail of details) {
+      if (
+        detail?.['@type'] !== 'type.googleapis.com/google.rpc.RetryInfo' ||
+        typeof detail.retryDelay !== 'string'
+      )
+        continue;
+      const duration = /^(\d+)(?:\.(\d{1,9}))?s$/.exec(detail.retryDelay);
+      if (!duration) continue;
+      const seconds = Number(duration[1]);
+      if (seconds > 315_576_000_000) continue;
+      // Round nanos up to milliseconds so a retry cannot precede the requested delay.
+      const nanos = Number((duration[2] ?? '').padEnd(9, '0'));
+      const delay = seconds * 1000 + Math.ceil(nanos / 1_000_000);
+      longest = Math.max(longest ?? 0, delay);
+    }
+    return longest;
+  } catch {
+    // Optional, malformed metadata must not replace the original safe error.
+    return undefined;
+  }
+}
+
 export class GeminiProvider implements EvaluationProvider {
   readonly id = 'gemini';
   readonly modelId: string;
@@ -110,6 +138,8 @@ export class GeminiProvider implements EvaluationProvider {
     } catch (error) {
       if (input.signal.aborted) throw new ProviderError('INTERRUPTED', false);
       if (error instanceof ApiError) {
+        const bodyDelay = retryInfoDelayMs(error.message);
+        if (bodyDelay !== undefined) retryAfterMs = Math.max(retryAfterMs ?? 0, bodyDelay);
         if (error.status === 401 || error.status === 403)
           throw new ProviderError('AUTH_FAILED', false);
         if (error.status === 404) throw new ProviderError('MODEL_UNAVAILABLE', false);

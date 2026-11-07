@@ -12,12 +12,13 @@
     "start": "node dist/server/src/index.js",
     "typecheck": "tsc --noEmit && tsc -p web/tsconfig.json",
     "test": "vitest run",
-    "format": "prettier --write shared server web",
-    "format:check": "prettier --check shared server web",
+    "format": "prettier --write shared server web qa scripts .github",
+    "format:check": "prettier --check shared server web qa scripts .github",
     "dev:web": "vite --config web/vite.config.ts",
     "build:web": "vite build --config web/vite.config.ts",
     "preview:web": "vite preview --config web/vite.config.ts",
-    "demo:web": "tsx web/demo.ts"
+    "demo:web": "tsx web/demo.ts",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@google/genai": "^3.0.0",

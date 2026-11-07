@@ -9,3 +9,6 @@ work/
 *.db-shm
 *.db-wal
 coverage/
+output/
+playwright-report/
+test-results/
