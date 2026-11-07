@@ -6,6 +6,7 @@ import {
   ImportRequestSchema,
   ScoreRequestSchema,
   EvaluationRequestSchema,
+  AppealFiltersSchema,
 } from '../../shared/contracts.js';
 import { ChecklistService } from './checklists/service.js';
 import { ConversationService } from './conversations/service.js';
@@ -13,6 +14,7 @@ import { fetchOrganizerRecords, type Fetcher } from './conversations/organizer.j
 import { scoreEvaluation } from './evaluations/scoring.js';
 import { HttpError } from './errors.js';
 import { EvaluationService } from './evaluations/service.js';
+import { AppealService } from './appeals/service.js';
 
 export function createApp(
   db: DatabaseSync,
@@ -25,6 +27,7 @@ export function createApp(
   const checklists = new ChecklistService(db);
   checklists.seed();
   const evaluations = options.evaluations ?? new EvaluationService(db);
+  const appeals = new AppealService(db);
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.post('/api/import', async (req, res) => {
     const input = ImportRequestSchema.parse(req.body);
@@ -88,6 +91,18 @@ export function createApp(
   });
   app.post('/api/evaluations/:id/retry', (req, res) =>
     res.status(202).json({ evaluationIds: [evaluations.retry(req.params.id)] }),
+  );
+  app.post('/api/appeals', (req, res) => res.status(201).json(appeals.submit(req.body)));
+  app.get('/api/appeals', (req, res) =>
+    res.json(appeals.list(AppealFiltersSchema.parse(req.query))),
+  );
+  app.get('/api/appeals/:id', (req, res) => {
+    const appeal = appeals.get(req.params.id);
+    if (!appeal) throw new HttpError(404, 'NOT_FOUND', 'Appeal not found');
+    res.json(appeal);
+  });
+  app.post('/api/appeals/:id/decision', (req, res) =>
+    res.json(appeals.resolve(req.params.id, req.body)),
   );
   app.use((_req, _res, next) => next(new HttpError(404, 'NOT_FOUND', 'Route not found')));
   const errors: ErrorRequestHandler = (error, _req, res, _next) => {

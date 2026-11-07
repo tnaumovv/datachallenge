@@ -187,3 +187,46 @@ export type Evaluation = {
   usage: TokenUsage & { calls: number };
   error: { code: string; message: string } | null;
 };
+
+export const AppealInputSchema = z
+  .object({
+    evaluationId: z.string().min(1),
+    criterionId: z.string().min(1),
+    comment: z.string().trim().min(1).max(10000),
+  })
+  .strict();
+export type AppealInput = z.infer<typeof AppealInputSchema>;
+export const DecisionInputSchema = z.discriminatedUnion('decision', [
+  z
+    .object({ decision: z.literal('confirm'), reason: z.string().trim().min(1).max(10000) })
+    .strict(),
+  z
+    .object({
+      decision: z.literal('change'),
+      replacementValue: z.union([z.boolean(), z.number(), z.literal('NA')]),
+      reason: z.string().trim().min(1).max(10000),
+    })
+    .strict(),
+]);
+export type DecisionInput = z.infer<typeof DecisionInputSchema>;
+export const AppealFiltersSchema = z.object({
+  evaluationId: z.string().min(1).optional(),
+  status: z.enum(['pending', 'resolved']).optional(),
+});
+export type AppealFilters = z.infer<typeof AppealFiltersSchema>;
+export type Appeal = {
+  id: string;
+  evaluationId: string;
+  criterionId: string;
+  comment: string;
+  status: 'pending' | 'resolved';
+  decision: 'confirm' | 'change' | null;
+  replacementValue: CriterionAnswer['value'] | null;
+  reason: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
+  beforeAnswer: CriterionAnswer;
+  afterAnswer: CriterionAnswer | null;
+  scoreBefore: ScoreSummary | null;
+  scoreAfter: ScoreSummary | null;
+};

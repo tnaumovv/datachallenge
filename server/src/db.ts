@@ -27,6 +27,15 @@ export function createDatabase(path: string) {
     CREATE INDEX IF NOT EXISTS evaluations_cache ON evaluations(cache_key, status);
     CREATE INDEX IF NOT EXISTS evaluations_conversation ON evaluations(conversation_id);
     CREATE INDEX IF NOT EXISTS evaluations_status ON evaluations(status);
+    CREATE TABLE IF NOT EXISTS appeals (
+      id TEXT PRIMARY KEY,
+      evaluation_id TEXT NOT NULL REFERENCES evaluations(id),
+      criterion_id TEXT NOT NULL,
+      status TEXT NOT NULL CHECK(status IN ('pending','resolved')),
+      payload TEXT NOT NULL
+    );
+    CREATE UNIQUE INDEX IF NOT EXISTS appeals_pending ON appeals(evaluation_id,criterion_id) WHERE status='pending';
+    CREATE INDEX IF NOT EXISTS appeals_evaluation ON appeals(evaluation_id);
     `);
   return db;
 }
