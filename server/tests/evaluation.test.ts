@@ -148,7 +148,10 @@ describe('evaluation lifecycle', () => {
       provider(async (input) => {
         calls++;
         if (calls === 1) return { text: 'not JSON', usage: { inputTokens: 10, outputTokens: 2 } };
-        expect(input.repairInstruction).toBeTruthy();
+        expect(input.repair).toMatchObject({
+          failureStage: 'json_parse',
+          validationErrors: [{ code: 'INVALID_JSON', path: [] }],
+        });
         return {
           text: JSON.stringify({ answers: validAnswers() }),
           usage: { inputTokens: 20, outputTokens: 30 },
@@ -233,6 +236,7 @@ describe('evaluation lifecycle', () => {
         errorCode: null,
         failureStage: null,
         finishReason: null,
+        blockReason: null,
         validationErrors: [],
         usage: { inputTokens: null, outputTokens: null, thinkingTokens: null, totalTokens: null },
         modelVersion: null,

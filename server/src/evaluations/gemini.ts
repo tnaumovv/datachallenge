@@ -10,6 +10,16 @@ import {
 } from './provider.js';
 
 const DEVELOPER_API_URL = 'https://generativelanguage.googleapis.com';
+const CONTENT_FILTER_FINISH_REASONS = new Set([
+  'SAFETY',
+  'RECITATION',
+  'BLOCKLIST',
+  'PROHIBITED_CONTENT',
+  'SPII',
+  'IMAGE_SAFETY',
+  'IMAGE_PROHIBITED_CONTENT',
+  'IMAGE_RECITATION',
+]);
 
 export class GeminiProvider implements EvaluationProvider {
   readonly id = 'gemini';
@@ -45,11 +55,7 @@ export class GeminiProvider implements EvaluationProvider {
     });
   }
   async generate(input: ProviderInput): Promise<ProviderResult> {
-    const prompt = buildEvaluationPrompt(
-      input.conversation,
-      input.checklist,
-      input.repairInstruction,
-    );
+    const prompt = buildEvaluationPrompt(input.conversation, input.checklist, input.repair);
     const { $schema, ...schema } = z.toJSONSchema(ModelOutputSchema);
     let retryAfterMs: number | undefined;
     const trackedFetch: typeof fetch = async (url, init) => {
@@ -79,10 +85,21 @@ export class GeminiProvider implements EvaluationProvider {
         },
       });
       const usage = response.usageMetadata;
+      const finishReason = response.candidates?.[0]?.finishReason;
+      const promptBlockReason = response.promptFeedback?.blockReason;
+      // A default enum alongside a real candidate does not indicate a block.
+      const blockReason =
+        promptBlockReason &&
+        (promptBlockReason !== 'BLOCKED_REASON_UNSPECIFIED' || !response.candidates?.length)
+          ? promptBlockReason
+          : finishReason && CONTENT_FILTER_FINISH_REASONS.has(finishReason)
+            ? finishReason
+            : undefined;
       return {
         text: response.text ?? '',
         modelVersion: response.modelVersion,
-        finishReason: response.candidates?.[0]?.finishReason,
+        finishReason,
+        blockReason,
         usage: {
           inputTokens: usage?.promptTokenCount ?? null,
           outputTokens: usage?.candidatesTokenCount ?? null,

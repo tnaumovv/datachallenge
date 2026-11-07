@@ -1,9 +1,10 @@
 import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { z } from 'zod';
 import { createDatabase } from './db.js';
 import { createApp } from './app.js';
 import { EvaluationService } from './evaluations/service.js';
-import { providerFromEnv } from './evaluations/config.js';
+import { evaluationOptionsFromEnv, providerFromEnv } from './evaluations/config.js';
 
 if (existsSync('.env')) process.loadEnvFile('.env');
 const env = z
@@ -14,10 +15,15 @@ const env = z
     ORGANIZER_API_URL: z.string().optional(),
   })
   .parse(process.env);
+const evaluationOptions = evaluationOptionsFromEnv(process.env);
 const db = createDatabase(env.DATABASE_PATH);
 const provider = providerFromEnv(process.env);
-const evaluations = new EvaluationService(db, provider);
-const app = createApp(db, { organizerUrl: env.ORGANIZER_API_URL, evaluations });
+const evaluations = new EvaluationService(db, provider, evaluationOptions);
+const app = createApp(db, {
+  organizerUrl: env.ORGANIZER_API_URL,
+  evaluations,
+  webRoot: resolve('dist/web'),
+});
 const server = app.listen(env.PORT, env.HOST, () => {
   evaluations.start();
   console.log(
