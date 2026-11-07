@@ -18,12 +18,12 @@
   --muted: #586b5b;
   --green: #087b59;
   --green-dark: #04523c;
-  --green-soft: #eef6e8;
+  --green-soft: #e8f4ee;
   --red: #a4322c;
   --red-soft: #fff0ed;
   --control-radius: 999px;
   --control-height: 44px;
-  --control-focus: #51972d;
+  --control-focus: #16875f;
   letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
 }
@@ -266,7 +266,7 @@ a {
 }
 .button.primary:hover:not(:disabled),
 .ce-primary:hover:not(:disabled) {
-  background: #245c2c;
+  background: #075b40;
 }
 .button.secondary {
   background: white;
@@ -314,11 +314,11 @@ a {
   flex-basis: 36px;
 }
 .sidebar-nav a[aria-current='page'] .nav-icon {
-  background: #a1df63;
+  background: #bcebd8;
   color: #123e27;
 }
 .sidebar-nav a:focus-visible {
-  outline-color: #a1df63;
+  outline-color: #bcebd8;
 }
 .button:active:not(:disabled),
 .ce-button:active:not(:disabled) {
@@ -689,7 +689,7 @@ a {
   grid-template-columns: minmax(180px, 0.52fr) minmax(0, 1fr) minmax(350px, 1.02fr);
   gap: 12px;
   min-height: 520px;
-  height: calc(100dvh - 196px);
+  height: calc(100dvh - 200px);
 }
 .review-workspace > .panel {
   min-width: 0;
@@ -910,6 +910,7 @@ a {
   color: #fff;
 }
 .criterion-result {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -1571,7 +1572,7 @@ a {
     padding: 17px 16px 14px;
   }
   .app-brand {
-    font-size: 25px;
+    font-size: 30px;
   }
   .app-brand small {
     font-size: 11px;
@@ -1590,14 +1591,14 @@ a {
   .sidebar-nav a {
     flex: 1 1 0;
     min-width: 0;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
-    padding: 7px 4px;
-    min-height: 72px;
+    padding: 10px 6px;
+    min-height: 48px;
     font-size: 12px;
     white-space: nowrap;
-    gap: 4px;
-    border-radius: var(--control-radius);
+    gap: 6px;
+    border-radius: 16px;
   }
   .nav-icon {
     width: 28px;
