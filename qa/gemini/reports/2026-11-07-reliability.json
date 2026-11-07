@@ -1,0 +1,1635 @@
+{
+  "auditDate": "2026-11-07",
+  "codeCommit": "a0a72a36d29d88ae5e20ec02101d8e43a85151dd",
+  "codeBranch": "codex/analysis-reliability",
+  "localApi": "http://127.0.0.1:3013",
+  "configuredModel": "gemini-3.5-flash-lite",
+  "promptVersion": "cqa-evaluator-v4",
+  "codeProviderConfigurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+  "verification": {
+    "testsPassed": 237,
+    "testFilesPassed": 14,
+    "typecheck": "passed",
+    "qaTypecheck": "passed",
+    "format": "passed",
+    "build": "passed",
+    "productionSmoke": "passed",
+    "codeReview": "approved",
+    "offlineReviewAddedModelCalls": 0,
+    "savedExperimentRevalidation": {
+      "comparisonRulesFromCommit": "b2beea9f13ef59bb77aad4f40d5608e8423f7f7c",
+      "evaluationAndAllAttemptStartsAtOrAfterFreeze": true,
+      "missingOrStaleTimestamps": 0,
+      "evaluationsChecked": 15,
+      "attemptsChecked": 18,
+      "exactDialogMatchesIncludeSemanticMismatchesAndExpectedTotal": true,
+      "matchingDialogMetricsChecked": 6,
+      "matchingDialogMetricsChanged": 0,
+      "configurationsPooled": false,
+      "additionalModelCalls": 0
+    }
+  },
+  "ownCalibration": {
+    "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+    "metrics": {
+      "scheduledDialogs": 2,
+      "completedDialogs": 2,
+      "failedDialogs": 0,
+      "invalidDialogs": 0,
+      "notRunDialogs": 0,
+      "scheduledCriteria": 12,
+      "comparedCriteria": 12,
+      "matchedCriteria": 11,
+      "matchingDialogs": 1,
+      "exactDialogAgreementPercent": 50,
+      "exactDialogsOverScheduledPercent": 50,
+      "dialogueConfidenceInterval95": {
+        "lowerPercent": 9.453120573423075,
+        "upperPercent": 90.54687942657694
+      },
+      "byCriterion": {
+        "contact": {
+          "scheduled": 2,
+          "compared": 2,
+          "matched": 2,
+          "agreementPercent": 100
+        },
+        "needs": {
+          "scheduled": 1,
+          "compared": 1,
+          "matched": 1,
+          "agreementPercent": 100
+        },
+        "identity": {
+          "scheduled": 2,
+          "compared": 2,
+          "matched": 1,
+          "agreementPercent": 50
+        },
+        "consultation": {
+          "scheduled": 2,
+          "compared": 2,
+          "matched": 2,
+          "agreementPercent": 100
+        },
+        "empathy": {
+          "scheduled": 1,
+          "compared": 1,
+          "matched": 1,
+          "agreementPercent": 100
+        },
+        "dialogue": {
+          "scheduled": 1,
+          "compared": 1,
+          "matched": 1,
+          "agreementPercent": 100
+        },
+        "closing": {
+          "scheduled": 2,
+          "compared": 2,
+          "matched": 2,
+          "agreementPercent": 100
+        },
+        "gross": {
+          "scheduled": 1,
+          "compared": 1,
+          "matched": 1,
+          "agreementPercent": 100
+        }
+      },
+      "criterionAgreementPercent": 91.67,
+      "matchedOverScheduledPercent": 91.67,
+      "comparedScores": 1,
+      "meanAbsoluteScoreError": 0,
+      "na": {
+        "missed": 0,
+        "spurious": 1
+      },
+      "gross": {
+        "truePositives": 0,
+        "trueNegatives": 1,
+        "falsePositives": 0,
+        "falseNegatives": 0
+      },
+      "mismatches": [
+        {
+          "sourceId": "p1-kz-015",
+          "criterionId": "identity",
+          "expected": false,
+          "actual": "NA"
+        }
+      ]
+    },
+    "modelCalls": 2,
+    "report": "runtime/ai-quality/benchmark-1794059979878.json"
+  },
+  "sharedMeasurements": [
+    {
+      "runId": "1794059655172",
+      "source": "saved_parallel_project_experiment_revalidated_offline",
+      "startedAt": "2026-11-07T13:54:15.184Z",
+      "finishedAt": "2026-11-07T13:54:53.251Z",
+      "frozenAt": "2026-11-07T13:54:15.184Z",
+      "referenceHash": "73691c49c017c518760391e2f7fd9c033e2d56e8690de940765a8c22915866a0",
+      "labelSource": "existing_assistant_calibration_and_previously_written_reference_draft",
+      "humanReviewed": false,
+      "independentDialogs": false,
+      "roleSchemaFollowup": false,
+      "calls": 12,
+      "groups": [
+        {
+          "modelId": "gemini-3.5-flash-lite",
+          "configurationId": "89f149faf50f62be5db4b6d360dfd844836459a9fc5d5cf0b674bdb216f30511",
+          "calls": 9,
+          "regression": {
+            "scheduledDialogs": 2,
+            "completedDialogs": 2,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 12,
+            "comparedCriteria": 12,
+            "matchedCriteria": 12,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 100,
+            "exactDialogsOverScheduledPercent": 100,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 34.2380227506653,
+              "upperPercent": 100
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "identity": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "closing": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "empathy": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 100,
+            "matchedOverScheduledPercent": 100,
+            "comparedScores": 1,
+            "meanAbsoluteScoreError": 0,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 1,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "holdout": {
+            "scheduledDialogs": 9,
+            "completedDialogs": 4,
+            "failedDialogs": 1,
+            "invalidDialogs": 0,
+            "notRunDialogs": 4,
+            "scheduledCriteria": 66,
+            "comparedCriteria": 29,
+            "matchedCriteria": 26,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 50,
+            "exactDialogsOverScheduledPercent": 22.22,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 6.322510711784671,
+              "upperPercent": 54.74110308930111
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 8,
+                "compared": 3,
+                "matched": 2,
+                "agreementPercent": 66.67
+              },
+              "identity": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 8,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "empathy": {
+                "scheduled": 7,
+                "compared": 3,
+                "matched": 3,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 7,
+                "compared": 3,
+                "matched": 2,
+                "agreementPercent": 66.67
+              },
+              "closing": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 3,
+                "agreementPercent": 75
+              },
+              "gross": {
+                "scheduled": 9,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 89.66,
+            "matchedOverScheduledPercent": 39.39,
+            "comparedScores": 3,
+            "meanAbsoluteScoreError": 5.31,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 1,
+              "trueNegatives": 3,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "p1-ru-005",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "p1-ru-005",
+                "criterionId": "dialogue",
+                "expected": 4,
+                "actual": 7
+              },
+              {
+                "sourceId": "p1-kz-004",
+                "criterionId": "closing",
+                "expected": false,
+                "actual": true
+              }
+            ]
+          },
+          "records": [
+            {
+              "sourceId": "p1-kz-015",
+              "evaluationId": "578ea101-9c34-4bfb-9947-8d3c688ae67c",
+              "status": "completed",
+              "calls": 1,
+              "total": 80,
+              "semanticMismatches": [],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-en-006",
+              "evaluationId": "240e76eb-439d-4458-80bf-adb50d2359d8",
+              "status": "completed",
+              "calls": 1,
+              "total": 85,
+              "semanticMismatches": [],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-ru-002",
+              "evaluationId": "ed629bdd-01fe-4693-b1c6-4a425cb4c164",
+              "status": "completed",
+              "calls": 1,
+              "total": 100,
+              "semanticMismatches": [],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-ru-005",
+              "evaluationId": "5c4fb436-2f59-4314-8740-aa8a226b06ab",
+              "status": "completed",
+              "calls": 2,
+              "total": 94.38,
+              "semanticMismatches": [
+                {
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "criterionId": "dialogue",
+                  "expected": 4,
+                  "actual": 7
+                },
+                {
+                  "expectedTotal": 86.15,
+                  "actualTotal": 94.38
+                }
+              ],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-ru-022",
+              "evaluationId": "e72c9f9b-bd3d-4b5e-a784-ff7ec6e43640",
+              "status": "completed",
+              "calls": 1,
+              "total": 15.38,
+              "semanticMismatches": [],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-kz-004",
+              "evaluationId": "cbf733b1-7154-4a8a-8324-5f5c759eb8a8",
+              "status": "completed",
+              "calls": 1,
+              "total": 100,
+              "semanticMismatches": [
+                {
+                  "criterionId": "closing",
+                  "expected": false,
+                  "actual": true
+                },
+                {
+                  "expectedTotal": 92.31,
+                  "actualTotal": 100
+                }
+              ],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-kz-008",
+              "evaluationId": "468a9d1c-4bfe-4325-90ae-f42a6895a618",
+              "status": "failed",
+              "calls": 2,
+              "total": null,
+              "semanticMismatches": [],
+              "errorCode": "INVALID_MODEL_OUTPUT"
+            }
+          ]
+        },
+        {
+          "modelId": "gemini-3.1-flash-lite",
+          "configurationId": "89f149faf50f62be5db4b6d360dfd844836459a9fc5d5cf0b674bdb216f30511",
+          "calls": 2,
+          "regression": {
+            "scheduledDialogs": 2,
+            "completedDialogs": 2,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 12,
+            "comparedCriteria": 12,
+            "matchedCriteria": 9,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": 0,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 65.76197724933469
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "identity": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 2,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 1,
+                "agreementPercent": 50
+              },
+              "closing": {
+                "scheduled": 2,
+                "compared": 2,
+                "matched": 1,
+                "agreementPercent": 50
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 0,
+                "agreementPercent": 0
+              },
+              "empathy": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 75,
+            "matchedOverScheduledPercent": 75,
+            "comparedScores": 1,
+            "meanAbsoluteScoreError": 15,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 1,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "p1-kz-015",
+                "criterionId": "consultation",
+                "expected": 20,
+                "actual": 5
+              },
+              {
+                "sourceId": "p1-kz-015",
+                "criterionId": "closing",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "p1-en-006",
+                "criterionId": "needs",
+                "expected": false,
+                "actual": true
+              }
+            ]
+          },
+          "holdout": {
+            "scheduledDialogs": 9,
+            "completedDialogs": 0,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 9,
+            "scheduledCriteria": 66,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 29.914504841954408
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "needs": {
+                "scheduled": 8,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "identity": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "consultation": {
+                "scheduled": 8,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "empathy": {
+                "scheduled": 7,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "dialogue": {
+                "scheduled": 7,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "closing": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "gross": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              }
+            },
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": 0,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "records": [
+            {
+              "sourceId": "p1-kz-015",
+              "evaluationId": "210b20d2-4344-435a-a488-63ad2ecf52eb",
+              "status": "completed",
+              "calls": 1,
+              "total": 21,
+              "semanticMismatches": [
+                {
+                  "criterionId": "consultation",
+                  "expected": 20,
+                  "actual": 5
+                },
+                {
+                  "criterionId": "closing",
+                  "expected": true,
+                  "actual": false
+                }
+              ],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-en-006",
+              "evaluationId": "e885cf31-4a7a-4341-9176-43e001a40a03",
+              "status": "completed",
+              "calls": 1,
+              "total": 100,
+              "semanticMismatches": [
+                {
+                  "criterionId": "needs",
+                  "expected": false,
+                  "actual": true
+                },
+                {
+                  "expectedTotal": 85,
+                  "actualTotal": 100
+                }
+              ],
+              "errorCode": null
+            }
+          ]
+        },
+        {
+          "modelId": "gemini-3.8-flash",
+          "configurationId": "89f149faf50f62be5db4b6d360dfd844836459a9fc5d5cf0b674bdb216f30511",
+          "calls": 1,
+          "regression": {
+            "scheduledDialogs": 2,
+            "completedDialogs": 0,
+            "failedDialogs": 1,
+            "invalidDialogs": 0,
+            "notRunDialogs": 1,
+            "scheduledCriteria": 12,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 65.76197724933469
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "identity": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "consultation": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "closing": {
+                "scheduled": 2,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "empathy": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              }
+            },
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": 0,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "holdout": {
+            "scheduledDialogs": 9,
+            "completedDialogs": 0,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 9,
+            "scheduledCriteria": 66,
+            "comparedCriteria": 0,
+            "matchedCriteria": 0,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": null,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 29.914504841954408
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "needs": {
+                "scheduled": 8,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "identity": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "consultation": {
+                "scheduled": 8,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "empathy": {
+                "scheduled": 7,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "dialogue": {
+                "scheduled": 7,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "closing": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              },
+              "gross": {
+                "scheduled": 9,
+                "compared": 0,
+                "matched": 0,
+                "agreementPercent": null
+              }
+            },
+            "criterionAgreementPercent": null,
+            "matchedOverScheduledPercent": 0,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 0,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 0,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": []
+          },
+          "records": [
+            {
+              "sourceId": "p1-kz-015",
+              "evaluationId": "b29bbdfe-d012-46e1-b6a9-078e66f663c0",
+              "status": "failed",
+              "calls": 1,
+              "total": null,
+              "semanticMismatches": [],
+              "errorCode": "RATE_LIMIT"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "runId": "1794059818007",
+      "source": "saved_parallel_project_experiment_revalidated_offline",
+      "startedAt": "2026-11-07T13:56:58.019Z",
+      "finishedAt": "2026-11-07T13:57:23.208Z",
+      "frozenAt": "2026-11-07T13:56:58.019Z",
+      "referenceHash": "0a9e717502d11e583ce6e8af27b6c2d294e43d46de6be0154648b33e2269d8a4",
+      "labelSource": "existing_assistant_calibration_and_previously_written_reference_draft",
+      "humanReviewed": false,
+      "independentDialogs": false,
+      "roleSchemaFollowup": true,
+      "calls": 6,
+      "groups": [
+        {
+          "modelId": "gemini-3.5-flash-lite",
+          "configurationId": "9fa1fa2dcba49d1d9b553b48f16c46741b2d73094df58ab951bead7a31469fe8",
+          "calls": 6,
+          "regression": {
+            "scheduledDialogs": 1,
+            "completedDialogs": 1,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 7,
+            "comparedCriteria": 7,
+            "matchedCriteria": 5,
+            "matchingDialogs": 0,
+            "exactDialogAgreementPercent": 0,
+            "exactDialogsOverScheduledPercent": 0,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 0,
+              "upperPercent": 79.34506856227625
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "needs": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 0,
+                "agreementPercent": 0
+              },
+              "identity": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 0,
+                "agreementPercent": 0
+              },
+              "closing": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              },
+              "gross": {
+                "scheduled": 1,
+                "compared": 1,
+                "matched": 1,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 71.43,
+            "matchedOverScheduledPercent": 71.43,
+            "comparedScores": 0,
+            "meanAbsoluteScoreError": null,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 1,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "p1-kz-008",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "p1-kz-008",
+                "criterionId": "dialogue",
+                "expected": 4,
+                "actual": 10
+              }
+            ]
+          },
+          "holdout": {
+            "scheduledDialogs": 4,
+            "completedDialogs": 4,
+            "failedDialogs": 0,
+            "invalidDialogs": 0,
+            "notRunDialogs": 0,
+            "scheduledCriteria": 30,
+            "comparedCriteria": 30,
+            "matchedCriteria": 26,
+            "matchingDialogs": 2,
+            "exactDialogAgreementPercent": 50,
+            "exactDialogsOverScheduledPercent": 50,
+            "dialogueConfidenceInterval95": {
+              "lowerPercent": 15.003898915214947,
+              "upperPercent": 84.99610108478505
+            },
+            "byCriterion": {
+              "contact": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 3,
+                "agreementPercent": 75
+              },
+              "needs": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 3,
+                "agreementPercent": 75
+              },
+              "identity": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "consultation": {
+                "scheduled": 3,
+                "compared": 3,
+                "matched": 3,
+                "agreementPercent": 100
+              },
+              "empathy": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              },
+              "dialogue": {
+                "scheduled": 3,
+                "compared": 3,
+                "matched": 3,
+                "agreementPercent": 100
+              },
+              "closing": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 2,
+                "agreementPercent": 50
+              },
+              "gross": {
+                "scheduled": 4,
+                "compared": 4,
+                "matched": 4,
+                "agreementPercent": 100
+              }
+            },
+            "criterionAgreementPercent": 86.67,
+            "matchedOverScheduledPercent": 86.67,
+            "comparedScores": 3,
+            "meanAbsoluteScoreError": 2.56,
+            "na": {
+              "missed": 1,
+              "spurious": 0
+            },
+            "gross": {
+              "truePositives": 0,
+              "trueNegatives": 4,
+              "falsePositives": 0,
+              "falseNegatives": 0
+            },
+            "mismatches": [
+              {
+                "sourceId": "p1-en-004",
+                "criterionId": "contact",
+                "expected": true,
+                "actual": false
+              },
+              {
+                "sourceId": "p1-en-004",
+                "criterionId": "closing",
+                "expected": false,
+                "actual": true
+              },
+              {
+                "sourceId": "p1-en-008",
+                "criterionId": "needs",
+                "expected": "NA",
+                "actual": true
+              },
+              {
+                "sourceId": "p1-en-008",
+                "criterionId": "closing",
+                "expected": false,
+                "actual": true
+              }
+            ]
+          },
+          "records": [
+            {
+              "sourceId": "p1-kz-008",
+              "evaluationId": "0fd63d52-1af3-4f08-b1f0-6a1bb48b2ed5",
+              "status": "completed",
+              "calls": 1,
+              "total": 81.25,
+              "semanticMismatches": [
+                {
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "criterionId": "dialogue",
+                  "expected": 4,
+                  "actual": 10
+                }
+              ],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-kz-012",
+              "evaluationId": "b67c1e36-ae84-4516-aaa8-2e11c38f762e",
+              "status": "completed",
+              "calls": 1,
+              "total": 100,
+              "semanticMismatches": [],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-en-004",
+              "evaluationId": "53ca2454-c2d7-4e6f-87c0-c4c5dd7ee5ad",
+              "status": "completed",
+              "calls": 1,
+              "total": 84.62,
+              "semanticMismatches": [
+                {
+                  "criterionId": "contact",
+                  "expected": true,
+                  "actual": false
+                },
+                {
+                  "criterionId": "closing",
+                  "expected": false,
+                  "actual": true
+                },
+                {
+                  "expectedTotal": 92.31,
+                  "actualTotal": 84.62
+                }
+              ],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-en-008",
+              "evaluationId": "bfedb323-6c42-4644-a752-85a4fca4a906",
+              "status": "completed",
+              "calls": 1,
+              "total": 100,
+              "semanticMismatches": [
+                {
+                  "criterionId": "needs",
+                  "expected": "NA",
+                  "actual": true
+                },
+                {
+                  "criterionId": "closing",
+                  "expected": false,
+                  "actual": true
+                }
+              ],
+              "errorCode": null
+            },
+            {
+              "sourceId": "p1-en-009",
+              "evaluationId": "f952f6af-4d97-4983-a1e6-693433d618d8",
+              "status": "completed",
+              "calls": 2,
+              "total": 100,
+              "semanticMismatches": [],
+              "errorCode": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "conclusions": {
+    "firstProfileNewDialogues": {
+      "completed": 4,
+      "planned": 9,
+      "failed": 1,
+      "unrun": 4,
+      "matched": 26,
+      "compared": 29,
+      "agreementPercent": 89.66
+    },
+    "secondProfileFreshDialogues": {
+      "completed": 4,
+      "matched": 26,
+      "compared": 30,
+      "agreementPercent": 86.67
+    },
+    "secondProfileRetestedKz008": {
+      "matched": 5,
+      "compared": 7,
+      "agreementPercent": 71.43
+    },
+    "singleFixedProfileAllNineVerified": false,
+    "independentHumanAccuracyEstablished": false
+  },
+  "limitations": [
+    "References are assistant drafts; six ambiguous criterion labels were omitted.",
+    "Synthetic dialogues and related templates do not establish representative production accuracy.",
+    "Generation-schema configurations differ between the two shared batches and from this branch baseline; do not pool their percentages.",
+    "KZ-008 in the second batch is a follow-up regression after a role-schema fix, not a fresh holdout.",
+    "The generic-schema baseline also produced identity=NA instead of false on KZ-015; live results vary.",
+    "Product-policy facts and call audio were not independently verified.",
+    "Billing cost is not derived from token counters; incomplete usage stays unknown."
+  ],
+  "calibrationAndTroubleshootingUsage": {
+    "scope": "This task calibration and troubleshooting only; excludes earlier project probes, metadata GETs and the separately listed parallel 18-call experiment.",
+    "evaluations": 11,
+    "completed": 6,
+    "failed": 5,
+    "modelCalls": 19,
+    "knownTokenSubtotal": 46466,
+    "unknownTokenAttempts": 11,
+    "billingCostUsd": null,
+    "errorCounts": {
+      "PROVIDER_FAILED": 6,
+      "RATE_LIMIT": 2,
+      "TIMEOUT": 2,
+      "INVALID_MODEL_OUTPUT": 2,
+      "MODEL_UNAVAILABLE": 1
+    },
+    "records": [
+      {
+        "evaluationId": "e95520db-9120-4af4-afa8-bdce50c5f9ab",
+        "modelId": "gemini-3.6-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3450,
+          "outputTokens": 977,
+          "thinkingTokens": 2133,
+          "totalTokens": 6560,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 15942,
+            "usage": {
+              "inputTokens": 3450,
+              "outputTokens": 977,
+              "thinkingTokens": 2133,
+              "totalTokens": 6560
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "2e496c95-72a3-44cb-844f-e755e40f2d7c",
+        "modelId": "gemini-3.6-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 2,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 2
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 3722,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "RATE_LIMIT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 486,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "e6b0c13a-69af-434d-a5b6-c2f51aa4c4c4",
+        "modelId": "gemini-3.8-flash",
+        "configurationId": "375c2a10886c65fba12f3ec75b40618f19149178bf5bf5ff2267c8a3b0fcc72d",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 3,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 3
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "TIMEOUT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 120014,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 6706,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 3,
+            "status": "failed",
+            "errorCode": "TIMEOUT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 120008,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "b532ba7d-8b46-4118-a76e-2e6ee1f3777c",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3450,
+          "outputTokens": 953,
+          "thinkingTokens": null,
+          "totalTokens": 4403,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 4214,
+            "usage": {
+              "inputTokens": 3450,
+              "outputTokens": 953,
+              "thinkingTokens": null,
+              "totalTokens": 4403
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "9198d1ff-5f18-4506-b382-74c4a31393c3",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 2,
+        "usage": {
+          "inputTokens": 6150,
+          "outputTokens": 1798,
+          "thinkingTokens": null,
+          "totalTokens": 7948,
+          "calls": 2
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "INVALID_MODEL_OUTPUT",
+            "failureStage": "evidence",
+            "finishReason": "STOP",
+            "durationMs": 4674,
+            "usage": {
+              "inputTokens": 3009,
+              "outputTokens": 863,
+              "thinkingTokens": null,
+              "totalTokens": 3872
+            }
+          },
+          {
+            "number": 2,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 3024,
+            "usage": {
+              "inputTokens": 3141,
+              "outputTokens": 935,
+              "thinkingTokens": null,
+              "totalTokens": 4076
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "b8834861-9426-4262-9cf6-6c7ba746789e",
+        "modelId": "gemini-3.8-flash",
+        "configurationId": "375c2a10886c65fba12f3ec75b40618f19149178bf5bf5ff2267c8a3b0fcc72d",
+        "promptVersion": "cqa-evaluator-v4",
+        "status": "failed",
+        "calls": 2,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 2
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 1998,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "RATE_LIMIT",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 268,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "911bc56a-6491-4354-b683-82881b6c493c",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v4",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3753,
+          "outputTokens": 1198,
+          "thinkingTokens": null,
+          "totalTokens": 4951,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 9003,
+            "usage": {
+              "inputTokens": 3753,
+              "outputTokens": 1198,
+              "thinkingTokens": null,
+              "totalTokens": 4951
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "cf16cbc4-a20b-4a1d-a006-12bd4ebb76cb",
+        "modelId": "gemini-3.5-flash-lite",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v4",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3312,
+          "outputTokens": 940,
+          "thinkingTokens": null,
+          "totalTokens": 4252,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 3812,
+            "usage": {
+              "inputTokens": 3312,
+              "outputTokens": 940,
+              "thinkingTokens": null,
+              "totalTokens": 4252
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "64a0d1ae-ba82-4bad-8c17-b433f46b9290",
+        "modelId": "gemini-3.7-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "completed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": 3451,
+          "outputTokens": 885,
+          "thinkingTokens": 2828,
+          "totalTokens": 7164,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "completed",
+            "errorCode": null,
+            "failureStage": null,
+            "finishReason": "STOP",
+            "durationMs": 104414,
+            "usage": {
+              "inputTokens": 3451,
+              "outputTokens": 885,
+              "thinkingTokens": 2828,
+              "totalTokens": 7164
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "3f583414-88a0-4f45-ae03-dc909641ad73",
+        "modelId": "gemini-3.7-flash",
+        "configurationId": "1a0bdd4e8df92a56ea0f819f90ef0e87a7ab01348e4a77d1257f43f13982b928",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 4,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 4
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "INVALID_MODEL_OUTPUT",
+            "failureStage": "finish_reason",
+            "finishReason": "MAX_TOKENS",
+            "durationMs": 108871,
+            "usage": {
+              "inputTokens": 3010,
+              "outputTokens": 316,
+              "thinkingTokens": 7862,
+              "totalTokens": 11188
+            }
+          },
+          {
+            "number": 2,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 792,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 3,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 7862,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          },
+          {
+            "number": 4,
+            "status": "failed",
+            "errorCode": "PROVIDER_FAILED",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 4037,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      },
+      {
+        "evaluationId": "d911fc9a-f6ae-4144-8a61-8c151d6f5e56",
+        "modelId": "gemini-2.5-flash",
+        "configurationId": "2e38f7abf9587e718bf9bd7a2948777838db1f537b55c153a718f2afec63c90a",
+        "promptVersion": "cqa-evaluator-v3",
+        "status": "failed",
+        "calls": 1,
+        "usage": {
+          "inputTokens": null,
+          "outputTokens": null,
+          "thinkingTokens": null,
+          "totalTokens": null,
+          "calls": 1
+        },
+        "attempts": [
+          {
+            "number": 1,
+            "status": "failed",
+            "errorCode": "MODEL_UNAVAILABLE",
+            "failureStage": "provider",
+            "finishReason": null,
+            "durationMs": 692,
+            "usage": {
+              "inputTokens": null,
+              "outputTokens": null,
+              "thinkingTokens": null,
+              "totalTokens": null
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
