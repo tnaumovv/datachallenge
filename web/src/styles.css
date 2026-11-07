@@ -84,6 +84,13 @@ button:disabled {
   line-height: 1.25;
 }
 
+.demo-label {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.2;
+}
 .sponsor {
   color: var(--muted);
   font-size: 12px;
