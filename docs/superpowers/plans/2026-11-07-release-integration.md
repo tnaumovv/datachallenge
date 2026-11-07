@@ -62,7 +62,7 @@
 - [x] Verify actual DEV import separately into a temporary DB without printing credentials or transcripts: 65 records, RU35/KZ15/EN15, 60 chats/5 calls, five audio links, repeat import 0/65, all four tables created.
 - [x] Update README and a concise readiness record with commands, real evidence and outstanding external prerequisites.
 - [x] Run browser QA for the four screens, then perform a fresh full verification and independent review.
-- [ ] Fetch/reconcile, push without force, and confirm the final remote commit and CI result.
+- [x] Fetch/reconcile, push without force, and confirm the final remote commit and CI result.
 
 ### Submission appendix follow-up
 
@@ -88,3 +88,4 @@ The later organizer appendix, “Как сдать результаты” (JSON
 - AI commits `a0a72a3` and `50d57f9` add evidence/language checks, provider identities, constrained JSON and a frozen benchmark. Independent review found two reporting defects: pre-freeze saved predictions and ignored semantic evidence/score failures. Both were reproduced by failing tests and fixed in `b2beea9`; the reviewer then confirmed the fixes. Values, full-dialog agreement and human Ground Truth remain distinct.
 - Export `3184ba4` (including `5142858`) implements organizer JSON 1.0, read-only snapshots, explicit version/history selection, actual cloud/local model modes and exclusive atomic output. Its independent review found no outstanding issues. No real or fabricated submission files were committed.
 - Final integrated source verification: **364 tests in 24 files**, app/QA typechecks, formatting, production build and startup/restart smoke passed. The real isolated demo HTTP flow passed default85.38, custom-criterion version, cache/force and appeal93.08 while preserving original answers/usage. No external model calls were made by release verification. Remaining external tasks are independent labels/quality, accessible audio, complete DEV processing and the unseen control set.
+- Publication confirmed: `main` at `702f1765e8467afcceb732ed8310ed7686ccf61e`; [GitHub Actions succeeded on Node24](https://github.com/tnaumovv/datachallenge/actions/runs/42381295965). The original checkout was safely fast-forwarded to the same commit after byte-checking the committed drafts and saving a local ignored backup. Its `.env` was unchanged, no working database was replaced, and its production build passed. The release and source worktrees were clean.
