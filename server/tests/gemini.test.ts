@@ -24,6 +24,42 @@ const checklist: ChecklistVersion = {
 };
 afterEach(() => vi.unstubAllEnvs());
 describe('Gemini adapter through actual SDK', () => {
+  it('passes an explicitly configured thinking level to Gemini', async () => {
+    let body: any;
+    const fake: typeof fetch = async (_url, init) => {
+      body = JSON.parse(String(init?.body));
+      return new Response(
+        JSON.stringify({
+          candidates: [
+            { content: { role: 'model', parts: [{ text: '{}' }] }, finishReason: 'STOP' },
+          ],
+        }),
+        { headers: { 'Content-Type': 'application/json' } },
+      );
+    };
+    const p = new GeminiProvider(
+      { apiKey: 'test-key', modelId: 'test-model', thinkingLevel: 'low' },
+      fake,
+    );
+    await p.generate({ conversation, checklist, signal: new AbortController().signal });
+    expect(body.generationConfig.thinkingConfig).toEqual({ thinkingLevel: 'LOW' });
+  });
+
+  it('separates cached evaluations when the thinking configuration changes', () => {
+    const base = { apiKey: 'test-key', modelId: 'test-model' };
+    expect(new GeminiProvider({ ...base, thinkingLevel: 'low' }).configurationId).not.toBe(
+      new GeminiProvider(base).configurationId,
+    );
+  });
+
+  it('validates the optional thinking setting from the environment', () => {
+    const env = { AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'test-key', GEMINI_MODEL: 'test-model' };
+    expect(() => providerFromEnv({ ...env, GEMINI_THINKING_LEVEL: 'unbounded' })).toThrow();
+    expect(providerFromEnv({ ...env, GEMINI_THINKING_LEVEL: 'low' })?.configurationId).not.toBe(
+      providerFromEnv(env)?.configurationId,
+    );
+  });
+
   it.each(['GOOGLE_GENAI_USE_VERTEXAI', 'GOOGLE_GENAI_USE_ENTERPRISE'])(
     'pins the Developer API despite inherited %s and endpoint overrides',
     async (flag) => {

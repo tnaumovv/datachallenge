@@ -36,7 +36,12 @@ const answers = scoreExampleAnswers.map((answer) => ({
   ...answer,
   explanation: answer.naReason ?? 'Иллюстративный ответ тестового провайдера.',
   evidenceMessageIds: answer.value === 'NA' ? [] : ['m0002'],
-  checkedSpanMessageIds: answer.value === 'NA' ? ['m0001'] : [],
+  checkedSpanMessageIds:
+    answer.value === 'NA'
+      ? ['m0001']
+      : answer.value === false || answer.value === 0
+        ? conversation.messages.map((message) => message.id)
+        : [],
 }));
 const score = scoreEvaluation(version.criteria, answers);
 const usage: TokenUsage = {

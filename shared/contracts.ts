@@ -144,6 +144,13 @@ export const EvaluationRequestSchema = z.object({
 });
 export type EvaluationRequest = z.input<typeof EvaluationRequestSchema>;
 export type EvaluationStatus = 'queued' | 'running' | 'completed' | 'failed';
+export type EvaluationConfiguration = {
+  configured: boolean;
+  providerId: string | null;
+  modelId: string | null;
+  configurationId: string | null;
+  promptVersion: string;
+};
 export type TokenUsage = {
   inputTokens: number | null;
   outputTokens: number | null;

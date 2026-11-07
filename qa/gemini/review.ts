@@ -46,7 +46,7 @@ export function reviewEvaluation(
     }
     const { answers } = ModelOutputSchema.parse({ answers: evaluation.originalAnswers });
     const score = scoreEvaluation(checklist.criteria, answers);
-    const evidence = validateEvidence(conversation, answers);
+    const evidence = validateEvidence(conversation, answers, checklist.criteria);
     if (!isDeepStrictEqual(score, evaluation.originalScore))
       technicalErrors.push('Persisted original score differs from recomputation');
     if (!isDeepStrictEqual(evidence, evaluation.evidence))

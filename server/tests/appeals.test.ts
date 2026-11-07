@@ -72,7 +72,12 @@ async function setup() {
       calls++;
       return {
         text: JSON.stringify({
-          answers: scoreExampleAnswers.map((a) => ({ ...a, evidenceMessageIds: ['m0002'] })),
+          answers: scoreExampleAnswers.map((a) => ({
+            ...a,
+            evidenceMessageIds: ['m0002'],
+            checkedSpanMessageIds:
+              a.value === 'NA' ? ['m0001'] : a.value === false ? ['m0002', 'm0004'] : [],
+          })),
         }),
         usage: {},
       };

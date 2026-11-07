@@ -36,6 +36,7 @@ export function createApp(
   const evaluations = options.evaluations ?? new EvaluationService(db);
   const appeals = new AppealService(db);
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+  app.get('/api/ai/status', (_req, res) => res.json(evaluations.getConfiguration()));
   app.post('/api/import', async (req, res) => {
     const input = ImportRequestSchema.parse(req.body);
     const records =

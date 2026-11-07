@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { ApiError, GoogleGenAI } from '@google/genai';
+import { ApiError, GoogleGenAI, ThinkingLevel } from '@google/genai';
 import { z } from 'zod';
 import { buildEvaluationPrompt, ModelOutputSchema } from './prompt.js';
 import {
@@ -10,6 +10,13 @@ import {
 } from './provider.js';
 
 const DEVELOPER_API_URL = 'https://generativelanguage.googleapis.com';
+const THINKING_LEVELS = {
+  minimal: ThinkingLevel.MINIMAL,
+  low: ThinkingLevel.LOW,
+  medium: ThinkingLevel.MEDIUM,
+  high: ThinkingLevel.HIGH,
+};
+export type GeminiThinkingLevel = keyof typeof THINKING_LEVELS;
 const CONTENT_FILTER_FINISH_REASONS = new Set([
   'SAFETY',
   'RECITATION',
@@ -55,17 +62,25 @@ export class GeminiProvider implements EvaluationProvider {
   readonly configurationId: string;
   private client: GoogleGenAI;
   private maxOutputTokens: number;
+  private thinkingLevel?: ThinkingLevel;
   constructor(
-    config: { apiKey: string; modelId: string; maxOutputTokens?: number },
+    config: {
+      apiKey: string;
+      modelId: string;
+      maxOutputTokens?: number;
+      thinkingLevel?: GeminiThinkingLevel;
+    },
     private fetcher: typeof fetch = fetch,
   ) {
     this.modelId = config.modelId;
     this.maxOutputTokens = config.maxOutputTokens ?? 8192;
+    this.thinkingLevel = config.thinkingLevel ? THINKING_LEVELS[config.thinkingLevel] : undefined;
     this.configurationId = createHash('sha256')
       .update(
         JSON.stringify({
-          adapter: 'gemini-v1',
+          adapter: 'gemini-v2',
           maxOutputTokens: this.maxOutputTokens,
+          thinkingLevel: this.thinkingLevel ?? null,
           apiVersion: 'v1beta',
           baseUrl: DEVELOPER_API_URL,
           backend: 'developer-api',
@@ -107,6 +122,7 @@ export class GeminiProvider implements EvaluationProvider {
           responseMimeType: 'application/json',
           responseJsonSchema: schema,
           maxOutputTokens: this.maxOutputTokens,
+          thinkingConfig: this.thinkingLevel ? { thinkingLevel: this.thinkingLevel } : undefined,
           abortSignal: input.signal,
           automaticContinuation: false,
           httpOptions: { fetch: trackedFetch, retryOptions: { attempts: 1 } },
