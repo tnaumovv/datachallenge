@@ -231,6 +231,9 @@ describe('evaluation lifecycle', () => {
         durationMs: null,
         status: 'running',
         errorCode: null,
+        failureStage: null,
+        finishReason: null,
+        validationErrors: [],
         usage: { inputTokens: null, outputTokens: null, thinkingTokens: null, totalTokens: null },
         modelVersion: null,
       },
@@ -243,7 +246,15 @@ describe('evaluation lifecycle', () => {
     expect(resumed.get(interruptedId)).toMatchObject({
       status: 'failed',
       error: { code: 'INTERRUPTED' },
-      attempts: [{ status: 'failed', errorCode: 'INTERRUPTED' }],
+      attempts: [
+        {
+          status: 'failed',
+          errorCode: 'INTERRUPTED',
+          failureStage: 'interrupted',
+          finishReason: null,
+          validationErrors: [],
+        },
+      ],
     });
     expect(resumed.get(id)?.status).toBe('completed');
   });

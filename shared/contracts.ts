@@ -150,6 +150,13 @@ export type TokenUsage = {
   thinkingTokens: number | null;
   totalTokens: number | null;
 };
+export type EvaluationFailureStage =
+  'provider' | 'finish_reason' | 'json_parse' | 'schema' | 'answers' | 'evidence' | 'interrupted';
+export type EvaluationValidationIssue = {
+  code: string;
+  path: (string | number)[];
+  message: string;
+};
 export type EvaluationAttempt = {
   number: number;
   startedAt: string;
@@ -157,6 +164,9 @@ export type EvaluationAttempt = {
   durationMs: number | null;
   status: 'running' | 'completed' | 'failed';
   errorCode: string | null;
+  failureStage: EvaluationFailureStage | null;
+  finishReason: string | null;
+  validationErrors: EvaluationValidationIssue[];
   usage: TokenUsage;
   modelVersion: string | null;
 };

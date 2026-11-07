@@ -6,45 +6,75 @@ import {
   type CriterionAnswer,
   type ScoreSummary,
 } from '../../../shared/contracts.js';
-import { HttpError } from '../errors.js';
+import { OutputValidationError } from './validation.js';
 const round = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
-const invalid = (message: string): never => {
-  throw new HttpError(400, 'INVALID_ANSWERS', message);
+const invalid = (code: string, path: (string | number)[], message: string): never => {
+  throw new OutputValidationError(code, path, message);
 };
 
-export function validateCriterionAnswer(criterion: CriterionConfig, answer: CriterionAnswer): void {
+export function validateCriterionAnswer(
+  criterion: CriterionConfig,
+  answer: CriterionAnswer,
+  path: (string | number)[] = [],
+): void {
   const c = CriterionSchema.parse(criterion);
   const a = CriterionAnswerSchema.parse(answer);
-  if (a.criterionId !== c.id) invalid(`Answer does not match criterion ${c.id}`);
+  if (a.criterionId !== c.id)
+    invalid(
+      'CRITERION_MISMATCH',
+      [...path, 'criterionId'],
+      `Answer does not match criterion ${c.id}`,
+    );
   if (a.value === 'NA') {
-    if (!c.allowNA || !a.naReason?.trim()) invalid(`N/A is not allowed or lacks a reason: ${c.id}`);
+    if (!c.allowNA)
+      invalid('NA_NOT_ALLOWED', [...path, 'value'], `N/A is not allowed for criterion ${c.id}`);
+    if (!a.naReason?.trim())
+      invalid(
+        'MISSING_NA_REASON',
+        [...path, 'naReason'],
+        `N/A requires a reason for criterion ${c.id}`,
+      );
     return;
   }
-  if (
-    c.answerType === 'binary'
-      ? typeof a.value !== 'boolean'
-      : typeof a.value !== 'number' || !c.levels.includes(a.value)
-  )
-    invalid(`Invalid value for ${c.id}`);
+  if (c.answerType === 'binary' ? typeof a.value !== 'boolean' : typeof a.value !== 'number')
+    invalid(
+      'INVALID_ANSWER_TYPE',
+      [...path, 'value'],
+      `Expected a ${c.answerType === 'binary' ? 'boolean' : 'number'} value for criterion ${c.id}`,
+    );
+  if (typeof a.value === 'number' && !c.levels.includes(a.value))
+    invalid(
+      'INVALID_LEVEL',
+      [...path, 'value'],
+      `Expected one of ${c.levels.join(', ')} for criterion ${c.id}`,
+    );
 }
 
 /** Arithmetic only: caller supplies answers. This function does not evaluate transcript content. */
 export function scoreEvaluation(criteriaInput: unknown, answersInput: unknown): ScoreSummary {
   const criteria = z.array(CriterionSchema).min(1).parse(criteriaInput);
   const answers = z.array(CriterionAnswerSchema).parse(answersInput);
-  const byId = new Map(answers.map((a) => [a.criterionId, a]));
-  if (
-    new Set(criteria.map((c) => c.id)).size !== criteria.length ||
-    byId.size !== answers.length ||
-    answers.length !== criteria.length ||
-    criteria.some((c) => !byId.has(c.id))
-  )
-    invalid('Provide exactly one answer per criterion');
+  const criterionIds = new Set(criteria.map((c) => c.id));
+  if (criterionIds.size !== criteria.length)
+    invalid('DUPLICATE_CRITERION', ['criteria'], 'Checklist criterion IDs must be unique');
+  const byId = new Map<string, { answer: CriterionAnswer; index: number }>();
+  answers.forEach((answer, index) => {
+    const path = ['answers', index, 'criterionId'];
+    if (byId.has(answer.criterionId))
+      invalid('DUPLICATE_ANSWER', path, 'Duplicate answer for a criterion');
+    if (!criterionIds.has(answer.criterionId))
+      invalid('UNKNOWN_CRITERION', path, 'Answer refers to an unknown criterion');
+    byId.set(answer.criterionId, { answer, index });
+  });
+  for (const criterion of criteria) {
+    if (!byId.has(criterion.id))
+      invalid('MISSING_ANSWER', ['answers'], `Missing answer for criterion ${criterion.id}`);
+  }
   let applicableWeight = 0;
   const flags: ScoreSummary['flags'] = [];
   const raw = criteria.map((c) => {
-    const answer = byId.get(c.id)!;
-    validateCriterionAnswer(c, answer);
+    const { answer, index } = byId.get(c.id)!;
+    validateCriterionAnswer(c, answer, ['answers', index]);
     const value = answer.value;
     if (value === 'NA') {
       return { criterionId: c.id, sectionId: c.sectionId, value, basePoints: 0, weight: 0 };

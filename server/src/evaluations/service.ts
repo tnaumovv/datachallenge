@@ -1,6 +1,11 @@
 import { createHash, randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
-import type { Evaluation, EvaluationAttempt, TokenUsage } from '../../../shared/contracts.js';
+import type {
+  Evaluation,
+  EvaluationAttempt,
+  EvaluationFailureStage,
+  TokenUsage,
+} from '../../../shared/contracts.js';
 import { EvaluationRequestSchema } from '../../../shared/contracts.js';
 import { ChecklistService } from '../checklists/service.js';
 import { ConversationService } from '../conversations/service.js';
@@ -9,6 +14,18 @@ import { validateEvidence } from './evidence.js';
 import { ModelOutputSchema, PROMPT_VERSION } from './prompt.js';
 import { ProviderError, type EvaluationProvider, type ProviderResult } from './provider.js';
 import { scoreEvaluation } from './scoring.js';
+import { OutputValidationError, validationIssues } from './validation.js';
+
+function readEvaluation(payload: string): Evaluation {
+  const evaluation: Evaluation = JSON.parse(payload);
+  for (const attempt of evaluation.attempts) {
+    // Old records did not store these fields; do not infer lost diagnostics.
+    attempt.failureStage ??= null;
+    attempt.finishReason ??= null;
+    attempt.validationErrors ??= [];
+  }
+  return evaluation;
+}
 
 const unknownUsage = (): TokenUsage => ({
   inputTokens: null,
@@ -76,7 +93,7 @@ export class EvaluationService {
   }
   get(id: string): Evaluation | undefined {
     const row = this.db.prepare('SELECT payload FROM evaluations WHERE id=?').get(id);
-    return row ? JSON.parse(row.payload as string) : undefined;
+    return row ? readEvaluation(row.payload as string) : undefined;
   }
   list(conversationId?: string): Evaluation[] {
     const rows = conversationId
@@ -84,7 +101,7 @@ export class EvaluationService {
           .prepare('SELECT payload FROM evaluations WHERE conversation_id=? ORDER BY rowid DESC')
           .all(conversationId)
       : this.db.prepare('SELECT payload FROM evaluations ORDER BY rowid DESC').all();
-    return rows.map((row) => JSON.parse(row.payload as string));
+    return rows.map((row) => readEvaluation(row.payload as string));
   }
   private save(evaluation: Evaluation) {
     evaluation.usage = summarize(evaluation.attempts);
@@ -188,6 +205,7 @@ export class EvaluationService {
       for (const attempt of evaluation.attempts.filter((a) => a.status === 'running')) {
         attempt.status = 'failed';
         attempt.errorCode = 'INTERRUPTED';
+        attempt.failureStage = 'interrupted';
         attempt.finishedAt = new Date().toISOString();
         attempt.durationMs = Date.now() - Date.parse(attempt.startedAt);
       }
@@ -300,6 +318,9 @@ export class EvaluationService {
         durationMs: null,
         status: 'running',
         errorCode: null,
+        failureStage: null,
+        finishReason: null,
+        validationErrors: [],
         usage: unknownUsage(),
         modelVersion: null,
       };
@@ -315,14 +336,25 @@ export class EvaluationService {
         );
         attempt.usage = safeUsage(response.usage);
         attempt.modelVersion = response.modelVersion ?? null;
+        attempt.finishReason = response.finishReason ?? null;
+        let stage: EvaluationFailureStage = 'finish_reason';
         try {
           if (response.finishReason && response.finishReason !== 'STOP')
-            throw new Error('Incomplete generation');
-          const { answers } = ModelOutputSchema.parse(JSON.parse(response.text));
+            throw new OutputValidationError(
+              'INCOMPLETE_GENERATION',
+              ['finishReason'],
+              `Generation ended with ${response.finishReason}; expected STOP`,
+            );
+          stage = 'json_parse';
+          const parsed: unknown = JSON.parse(response.text);
+          stage = 'schema';
+          const { answers } = ModelOutputSchema.parse(parsed);
+          stage = 'answers';
           const score = scoreEvaluation(
             new ChecklistService(this.db).get(evaluation.checklistVersionId)!.criteria,
             answers,
           );
+          stage = 'evidence';
           const evidence = validateEvidence(
             new ConversationService(this.db).get(evaluation.conversationId)!,
             answers,
@@ -335,10 +367,13 @@ export class EvaluationService {
           evaluation.status = 'completed';
           evaluation.finishedAt = new Date().toISOString();
           attempt.status = 'completed';
-        } catch {
+        } catch (error) {
+          attempt.failureStage = stage;
+          attempt.validationErrors = validationIssues(error);
           failure = new ProviderError('INVALID_MODEL_OUTPUT', false);
         }
       } catch (error) {
+        attempt.failureStage = 'provider';
         failure =
           error instanceof ProviderError ? error : new ProviderError('PROVIDER_FAILED', false);
       }
