@@ -1,0 +1,90 @@
+{
+  "teamName": "Paradox",
+  "date": "2026-11-08",
+  "artifact": "results/prod/results.json",
+  "schemaVersion": "1.0",
+  "sourceGroup": "FBroker",
+  "sha256": "c814e56d67e50356a2c2e45b05c57c2f7d77b8af236901e274368e1acc96be69",
+  "dialogs": 10,
+  "channels": {
+    "agent chat": 10
+  },
+  "languages": {
+    "RU": 4,
+    "KZ": 4,
+    "EN": 2
+  },
+  "statuses": {
+    "completed": 10,
+    "failed": 0
+  },
+  "models": {
+    "gemini-3.1-flash-lite": 5,
+    "gemini-3.5-flash-lite": 2,
+    "gemini-3.6-flash": 3
+  },
+  "modelMode": "external_api",
+  "promptVersion": "cqa-evaluator-v7.2",
+  "checklistVersionId": "2e14148d-4385-49d5-9cf9-0ff4a2222e53",
+  "checklistVersion": 2,
+  "configurationIds": ["df77fc8263620d4e8370e45d60eaaec1fd939f9f5e8cbc36bb4197c102cfc8c9"],
+  "startedAt": "2026-11-08T06:11:03.093Z",
+  "finishedAt": "2026-11-08T06:20:39.062Z",
+  "attemptedCalls": 21,
+  "successfulCalls": 10,
+  "failedAttemptsByCode": {
+    "RATE_LIMIT": 10,
+    "BILLING_REQUIRED": 1
+  },
+  "selectedEvaluationIds": {
+    "p2-en-001": "1d9f988b-b5f0-4617-bce3-f09b305f1d81",
+    "p2-en-002": "4e1b5f29-176b-472e-a7a5-be0b348607a8",
+    "p2-kz-001": "a6e4c24a-95bf-4378-9e68-37fc9535328c",
+    "p2-kz-002": "384bd907-5288-415e-b80d-d421db17124c",
+    "p2-kz-003": "8a915d92-5e8f-4097-96f2-8071b5d39268",
+    "p2-kz-004": "e6fcc02e-ac38-49dc-b969-95947c6a02c2",
+    "p2-ru-001": "79eb40f0-adb7-4863-a55c-411805fffa43",
+    "p2-ru-002": "dcb20892-19a5-4373-95ef-ae4e89d92a2a",
+    "p2-ru-003": "962d71f9-ca98-46f0-abff-4aa0f006319a",
+    "p2-ru-004": "b24675d0-5df0-4b56-8393-eb1a8dc3dc5e"
+  },
+  "modelSelectionNotes": [
+    "Original successful evaluations retained. Only failed chats were retried.",
+    "Gemini 3.5 Flash-Lite reached its daily Free Tier quota after two successful chats.",
+    "The authorized OpenAI gpt-6-luna fallback was rejected with credit_balance_exhausted; it produced no submitted result.",
+    "The requested gemini-3.5-flash returned modelVersion gemini-3.6-flash for three chats, then reached its daily Free Tier quota.",
+    "The remaining five chats completed on gemini-3.1-flash-lite. No manual answer corrections were applied."
+  ],
+  "openaiFallback": {
+    "calls": 1,
+    "httpStatus": 429,
+    "errorCode": "credit_balance_exhausted",
+    "usageReported": false,
+    "approvedBudgetUsd": 1,
+    "conservativeReservedCostUsd": 0.3,
+    "reservationIsNotBilledCost": true,
+    "pricingSource": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+    "pricingCheckedAt": "2026-11-08"
+  },
+  "swap": {
+    "sourceGroup": "Swap",
+    "savedDialogs": 3,
+    "evaluations": 0,
+    "includedInProd": false,
+    "rawSourceKeptLocal": true
+  },
+  "verification": {
+    "originalRowsPreserved": true,
+    "sourceIdsExact": true,
+    "scoreArithmeticVerified": true,
+    "evidenceTurnsVerified": true,
+    "originalAnswersMatch": true,
+    "secretScanPassed": true
+  },
+  "readOnlyExportRoundTripMatches": true,
+  "targetedTests": {
+    "files": 3,
+    "passed": 74
+  },
+  "independentSemanticAccuracyConfirmed": false
+}
